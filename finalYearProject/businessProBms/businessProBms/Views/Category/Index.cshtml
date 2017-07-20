@@ -3,7 +3,6 @@
 @{
     ViewBag.Title = "Index";
 }
-
 <h2>Index</h2>
 
 <p>
@@ -17,7 +16,7 @@
         <th>
             @Html.DisplayNameFor(model => model.discription)
         </th>
-        <th></th>
+        <th>Action</th>
     </tr>
 
 @foreach (var item in Model) {
@@ -37,3 +36,7 @@
 }
 
 </table>
+@{
+    var grid = new WebGrid(source: Model);
+}
+@grid.GetHtml();

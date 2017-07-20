@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'E:\MCS\Mcs 4th SEMESTER\finalYearProject\businessProBms\businessProBms\Models\businessProBMS.edmx'. 
+﻿// T4 code generation is enabled for model 'E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\Models\businessProBMS.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.
