@@ -1,44 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using businessProBms.Models;
-using System.IO;
-
+using PagedList;
+using PagedList.Mvc;
 namespace businessProBms.Controllers
 {
     public class CategoryController : Controller
     {
         private businessProBmsEntities db = new businessProBmsEntities();
 
-        // GET: /Category/
-        public ActionResult Index()
-        {
-            return View(db.Categories.ToList());
-        }
-
-        // GET: /Category/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Category category = db.Categories.Find(id);
-            if (category == null)
-            {
-                return HttpNotFound();
-            }
-            return View(category);
-        }
-
         // GET: /Category/Create
-        public ActionResult Create()
+        public ActionResult Create(int? page)
         {
+            //Giving all the list of Categories to ViewBag.Categories
+            ViewBag.Categories = (db.Categories.ToList().ToPagedList(page ??1, 8));
             return View();
         }
 
@@ -51,17 +27,30 @@ namespace businessProBms.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Categories.Add(category);
+                Category cat = db.Categories.Find(category.code);
+                if(cat==null)
+                {
+                    db.Categories.Add(category);
+                }
+                else
+                {
+                    var catDb = db.Categories.Single(m => m.code == category.code);
+                    catDb.code = category.code;
+                    catDb.categoryName = category.categoryName;
+                    catDb.discription = category.discription;
+
+                }
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Create");
             }
 
             return View(category);
         }
-
         // GET: /Category/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int? id, int? page)
         {
+            ViewBag.Categories = db.Categories.ToList().ToPagedList(page ?? 1, 8);
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -71,49 +60,21 @@ namespace businessProBms.Controllers
             {
                 return HttpNotFound();
             }
-            return View(category);
+            return View("Create", category);
         }
 
-        // POST: /Category/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include="code,categoryName,discription")] Category category)
+        public JsonResult DeleteConfirmed(int? id)
         {
-            if (ModelState.IsValid)
+            bool result = false;
+            Category cat = db.Categories.SingleOrDefault(m => m.code == id);
+            if(cat!=null)
             {
-                db.Entry(category).State = EntityState.Modified;
+                db.Categories.Remove(cat);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                result = true;
             }
-            return View(category);
-        }
-
-        // GET: /Category/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Category category = db.Categories.Find(id);
-            if (category == null)
-            {
-                return HttpNotFound();
-            }
-            return View(category);
-        }
-
-        // POST: /Category/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Category category = db.Categories.Find(id);
-            db.Categories.Remove(category);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

@@ -108,4 +108,8 @@ E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessPro
 E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\obj\Debug\businessProBms.csprojResolveAssemblyReference.cache
 E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\obj\Debug\businessProBms.dll
 E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\obj\Debug\businessProBms.pdb
-E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\GridMvc.dll
+E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\System.Web.dll
+E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\PagedList.dll
+E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\PagedList.Mvc.dll
+E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\PagedList.xml
+E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\PagedList.Mvc.xml
