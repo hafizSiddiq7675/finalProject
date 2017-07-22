@@ -19,6 +19,10 @@ namespace businessProBms.Models
         public string UOM { get; set; }
         public decimal price { get; set; }
         public int categoryCode { get; set; }
+        public Nullable<decimal> averagePrice { get; set; }
+        public Nullable<decimal> lastPurchasePrice { get; set; }
+        public Nullable<int> currentQuantity { get; set; }
+        public string categoryName { get; set; }
     
         public virtual Category Category { get; set; }
     }

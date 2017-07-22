@@ -24,6 +24,10 @@
     <EntitySetMapping Name="Products">
       <EntityTypeMapping TypeName="businessProBmsModel.Product">
         <MappingFragment StoreEntitySet="Product">
+          <ScalarProperty Name="categoryName" ColumnName="categoryName" />
+          <ScalarProperty Name="currentQuantity" ColumnName="currentQuantity" />
+          <ScalarProperty Name="lastPurchasePrice" ColumnName="lastPurchasePrice" />
+          <ScalarProperty Name="averagePrice" ColumnName="averagePrice" />
           <ScalarProperty Name="code" ColumnName="code" />
           <ScalarProperty Name="name" ColumnName="name" />
           <ScalarProperty Name="UOM" ColumnName="UOM" />

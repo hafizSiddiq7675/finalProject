@@ -26,7 +26,11 @@
     <Property Name="name" Type="nvarchar" MaxLength="30" Nullable="false" />
     <Property Name="UOM" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="averagePrice" Type="decimal" Precision="18" Scale="0" />
+    <Property Name="lastPurchasePrice" Type="decimal" Precision="18" Scale="0" />
+    <Property Name="currentQuantity" Type="int" />
     <Property Name="categoryCode" Type="int" Nullable="false" />
+    <Property Name="categoryName" Type="varchar" MaxLength="30" Nullable="false" />
   </EntityType>
   <EntityType Name="sysdiagrams">
     <Key>

@@ -1,0 +1,182 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@using businessProBms.Models
+@model Customer
+@{
+    ViewBag.Title = "Customers";
+}
+<h2>Customers</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4" style="padding-top:28px">
+
+        @using (Html.BeginForm("Customers", "Customer", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.code, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.code, htmlAttributes: new { PlaceHolder = "Enter Code For Customer Here..", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.code)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.name, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.name, htmlAttributes: new { PlaceHolder = "Enter Customer Name Here..", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.name)
+
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.contact, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.contact, htmlAttributes: new { PlaceHolder = "Enter Customer Contact info: Here..", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.contact)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.address, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.address, htmlAttributes: new { PlaceHolder = "Enter Address of Vendor Here..", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.address)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.creditLimit, new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.creditLimit, htmlAttributes: new { PlaceHolder = "Enter Debit Limit(RS) Here..", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.creditLimit)
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn btn-success" aria-hidden="true" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-8">
+        <div class="input-group" style=" margin-left: 510px;">
+            <span class="input-group-addon">
+                <i class="glyphicon glyphicon-search">
+                </i>
+            </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
+        </div><br />
+        <table class="table table-bordered">
+            <thead style="background-color:slategrey">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.code)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.contact)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.address)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.creditLimit)
+                    </th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            @*Accessing List of Categories With the help of ViewBag.Categories*@
+            @foreach (var item in ViewBag.customers as PagedList<Customer>)
+            {
+                <tr class="Search" id="_row@item.code">
+                    <td>
+                        @Html.DisplayFor(modeltem => item.code)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.contact)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.address)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.creditLimit)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.code }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
+                        @*@Html.ActionLink("Delete", "Delete", new { id = item.code }, new {id="del", @class="glyphicon glyphicon-trash",
+                            onclick ="return confirm('Are you sure? you want to delete this item')" })*@
+                        <a href="#" onclick="ConfirmDelete(@item.code)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+                    </td>
+                </tr>
+            }
+        </table>
+        @Html.PagedListPager(ViewBag.customers as PagedList<Customer>, page => Url.Action("Customers", new { page }),
+                     new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+        <input type="hidden" id="hiddenCode" />
+    </div>
+    <div class="modal" id="delModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Are you Sure you want to delete this?</h4>
+
+                    <div class="modal-body">
+                        <p>This item will be permanently deleted. </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                        <a href="#" class="btn btn-danger" onclick="DeleteVendor()">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script>
+    var ConfirmDelete = function (code) {
+        $("#hiddenCode").val(code);
+        $("#delModal").modal('show');
+    }
+
+    var DeleteVendor = function () {
+        var mid = $("#hiddenCode").val();
+        $.ajax({
+            type: "POST",
+            url: "/Customer/DeleteConfirmed",
+            data: { id: mid },
+            success: function (result) {
+                $("#myModal").modal("hide");
+                $("#_row_" + mid).remove();
+                window.location = "/Customer/Customers"
+            },
+            error: function (result) {
+                alert('OOps,Something bad happened');
+            }
+
+        })
+    }
+    $(document).ready(function () {
+        function Contains(text_one, text_two) {
+            if (text_one.indexOf(text_two) != -1)
+                return true;
+        }
+        $("#Search").keyup(function () {
+            var searchtext = $("#Search").val().toLowerCase();
+            $(".Search").each(function () {
+                if (!Contains($(this).text().toLowerCase(), searchtext)) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>

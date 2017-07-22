@@ -6,4 +6,16 @@ namespace businessProBms.Models
     public partial class Category
     {
     }
+    [MetadataType(typeof(productMetadata))]
+    public partial class Product
+    {
+    }
+    [MetadataType(typeof(vendorMetadata))]
+    public partial class Vendor
+    {
+    }
+    [MetadataType(typeof(customerMetadata))]
+    public partial class Customer 
+    { 
+    }
 }

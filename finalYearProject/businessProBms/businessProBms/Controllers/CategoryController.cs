@@ -3,7 +3,6 @@ using System.Net;
 using System.Web.Mvc;
 using businessProBms.Models;
 using PagedList;
-using PagedList.Mvc;
 namespace businessProBms.Controllers
 {
     public class CategoryController : Controller
