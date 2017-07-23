@@ -78,4 +78,42 @@ namespace businessProBms.Models
         [Required]
         public decimal creditLimit { get; set; }
     }
+    public class purchaseMetadata
+    {
+        [Display(Name="Purchase ID")]
+        [Required]
+        [Key]
+        public int purchaseId { get; set; }
+        [Display(Name="Date")]
+        [Required]
+        public System.DateTime purchaseDate { get; set; }
+        [Display(Name="Vendor")]
+        [Required]
+        public int vendorCode { get; set; }
+        [Required]
+        public string vendorName { get; set; }
+    }
+    public class purchaseDetailMetadata
+    {
+        [Required]
+        [Key]
+        [Display(Name="Purchase Detail ID")]
+        public int purchaseDetailsId { get; set; }
+        [Display(Name="Purchase ID")]
+        [Required]
+        public int purchaseId { get; set; }
+        [Display(Name="Serial Number")]
+        public string serialNo { get; set; }
+        [Display(Name="Product Code")]
+        [Required]
+        public int productCode { get; set; }
+        [Required]
+        public string productName { get; set; }
+        [Display(Name="Quantity")]
+        [Required]
+        public int quantity { get; set; }
+        [Display(Name="Price")]
+        [Required]
+        public decimal salePrice { get; set; }
+    }
 }

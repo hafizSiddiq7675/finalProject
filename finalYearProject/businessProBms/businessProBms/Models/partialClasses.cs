@@ -18,4 +18,12 @@ namespace businessProBms.Models
     public partial class Customer 
     { 
     }
+    [MetadataType(typeof(purchaseMetadata))]
+    public partial class Purchase
+    {
+    }
+    [MetadataType(typeof(purchaseDetailMetadata))]
+    public partial class PurchaseDetail
+    {
+    }
 }

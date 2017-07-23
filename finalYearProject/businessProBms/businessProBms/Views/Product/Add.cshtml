@@ -30,19 +30,20 @@
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(m => m.categoryName, new { @class = "label-control" })
-                    @Html.TextBoxFor(m => m.categoryName, new { placeholder="Enter Category Name here..", @class="form-control"})
-                    @*@Html.DropDownListFor(m=>m.categoryName,new SelectList(ViewBag.cat,"categoryName","categoryName"), 
-                    "--Select Category Name--", new { @class = "form-control" })*@
+                    @*@Html.LabelFor(m => m.categoryCode, new { @class = "label-control" })*@
+                    <label>Category</label>
+                    @*@Html.TextBoxFor(m => m.categoryName, new { placeholder="Enter Category Name here..", @class="form-control"})*@
+                    @Html.DropDownListFor(m=>m.categoryCode ,new SelectList(ViewBag.cat, "code","categoryName"), 
+                    "--Select Category Here--", new { @class = "form-control", id="drp", onchange="myfunc()"})
                     @*@Html.DropDownListFor(m=>m.categoryName, (IEnumerable<SelectListItem>)@ViewBag.cat, "--Select Category Name--", new {id="catCode",
                    @class = "form-control" })*@
-                    @Html.ValidationMessageFor(m => m.categoryName)
+                    @Html.ValidationMessageFor(m => m.categoryCode)
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(m => m.categoryCode, new { @class = "label-control" })
-                    @Html.TextBoxFor(m => m.categoryCode, new { placeholder = "--Slect Category Code--", @class = "form-control" , @id="txtVal"})
-                    @Html.ValidationMessageFor(m => m.categoryCode)
+                    @*@Html.LabelFor(m => m.categoryName, new { @class = "label-control" })*@
+                    @Html.HiddenFor(m => m.categoryName, new { placeholder = "Category Name", @class = "form-control" , @id="txtVal", @readonly=true})
+                    @*@Html.ValidationMessageFor(m => m.categoryCode)*@
                 </div>
                 
                 <div class="form-group">
@@ -78,7 +79,7 @@
                 </i>
             </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
         </div><br />
-        <table class="table table-bordered">
+        <table class="table table-bordered table-responsive">
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.code)
@@ -196,6 +197,12 @@
             });
         });
     });
+    function myfunc(){
+        var e = $("#drp :selected").text();
+        //document.getElementById("drp").text;
+        $('#txtVal').val(e);
+        //alert(e);
+    }
 </script>
 
 

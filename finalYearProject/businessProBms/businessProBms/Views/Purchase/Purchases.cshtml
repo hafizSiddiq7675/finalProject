@@ -1,0 +1,45 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@using businessProBms.Models
+@model Purchase
+@{
+    ViewBag.Title = "Purchase";
+}
+<h2>Purchases</h2>
+<br />
+<div class="well well-sm">Purchase Order</div>
+@Html.AntiForgeryToken()
+@Html.ValidationSummary(true)
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            @Html.LabelFor(m=>m.purchaseId)
+            @Html.TextBoxFor(m => m.purchaseId, new { placeholder="Enter Purchase ID Here..", @class="form-control", id="pid"})
+            @Html.ValidationMessageFor(m=>m.purchaseId)
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            @Html.LabelFor(m => m.purchaseDate)
+            @*<input type="text" id="pdate" class="form-control" placeholder="--date--"/>*@
+            @Html.EditorFor(m => m.purchaseDate, new { placeholder = "Enter Purchase Date Here..", @class = "form-control" ,id="pdate"})
+            @Html.ValidationMessageFor(m => m.purchaseDate)
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            @Html.LabelFor(m => m.vendorCode)
+            @Html.TextBoxFor(m => m.vendorCode, new { placeholder = "Enter Vendor code Here..", @class = "form-control" ,id="vcode"})
+            @Html.ValidationMessageFor(m => m.vendorCode)
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            @Html.HiddenFor(m => m.vendorName, new { @class = "form-control", id="vname"})
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>

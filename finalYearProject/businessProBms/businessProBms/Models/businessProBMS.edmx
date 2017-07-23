@@ -37,6 +37,32 @@
           <Property Name="categoryCode" Type="int" Nullable="false" />
           <Property Name="categoryName" Type="varchar" MaxLength="30" Nullable="false" />
         </EntityType>
+        <EntityType Name="Purchase">
+          <Key>
+            <PropertyRef Name="purchaseId" />
+          </Key>
+          <Property Name="purchaseId" Type="int" Nullable="false" />
+          <Property Name="purchaseDate" Type="date" Nullable="false" />
+          <Property Name="vendorCode" Type="int" Nullable="false" />
+          <Property Name="vendorName" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="PurchaseDetail">
+          <Key>
+            <PropertyRef Name="purchaseDetailsId" />
+            <PropertyRef Name="productCode" />
+            <PropertyRef Name="productName" />
+            <PropertyRef Name="quantity" />
+            <PropertyRef Name="salePrice" />
+          </Key>
+          <Property Name="purchaseDetailsId" Type="int" Nullable="false" />
+          <Property Name="serialNo" Type="varchar" MaxLength="20" />
+          <Property Name="productCode" Type="int" Nullable="false" />
+          <Property Name="productName" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="quantity" Type="int" Nullable="false" />
+          <Property Name="salePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+        </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
@@ -69,15 +95,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PurchaseDetail_Purchase">
+          <End Role="Purchase" Type="Self.Purchase" Multiplicity="1" />
+          <End Role="PurchaseDetail" Type="Self.PurchaseDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Purchase">
+              <PropertyRef Name="purchaseId" />
+            </Principal>
+            <Dependent Role="PurchaseDetail">
+              <PropertyRef Name="purchaseDetailsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="businessProBmsModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Purchase" EntityType="Self.Purchase" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Vendor" EntityType="Self.Vendor" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseDetail" EntityType="Self.PurchaseDetail" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [PurchaseDetail].[purchaseDetailsId] AS [purchaseDetailsId], 
+    [PurchaseDetail].[serialNo] AS [serialNo], 
+    [PurchaseDetail].[productCode] AS [productCode], 
+    [PurchaseDetail].[productName] AS [productName], 
+    [PurchaseDetail].[quantity] AS [quantity], 
+    [PurchaseDetail].[salePrice] AS [salePrice]
+    FROM [dbo].[PurchaseDetail] AS [PurchaseDetail]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_Product_Category1" Association="Self.FK_Product_Category1">
             <End Role="Category" EntitySet="Category" />
             <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PurchaseDetail_Purchase" Association="Self.FK_PurchaseDetail_Purchase">
+            <End Role="Purchase" EntitySet="Purchase" />
+            <End Role="PurchaseDetail" EntitySet="PurchaseDetail" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -160,7 +213,51 @@
             <End Role="Category" EntitySet="Categories" />
             <End Role="Product" EntitySet="Products" />
           </AssociationSet>
+          <EntitySet Name="Purchases" EntityType="businessProBmsModel.Purchase" />
+          <EntitySet Name="PurchaseDetails" EntityType="businessProBmsModel.PurchaseDetail" />
+          <AssociationSet Name="FK_PurchaseDetail_Purchase" Association="businessProBmsModel.FK_PurchaseDetail_Purchase">
+            <End Role="Purchase" EntitySet="Purchases" />
+            <End Role="PurchaseDetail" EntitySet="PurchaseDetails" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Purchase">
+          <Key>
+            <PropertyRef Name="purchaseId" />
+          </Key>
+          <Property Name="purchaseId" Type="Int32" Nullable="false" />
+          <Property Name="purchaseDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="vendorCode" Type="Int32" Nullable="false" />
+          <Property Name="vendorName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PurchaseDetails" Relationship="businessProBmsModel.FK_PurchaseDetail_Purchase" FromRole="Purchase" ToRole="PurchaseDetail" />
+        </EntityType>
+        <EntityType Name="PurchaseDetail">
+          <Key>
+            <PropertyRef Name="purchaseDetailsId" />
+            <PropertyRef Name="productCode" />
+            <PropertyRef Name="productName" />
+            <PropertyRef Name="quantity" />
+            <PropertyRef Name="salePrice" />
+          </Key>
+          <Property Name="purchaseDetailsId" Type="Int32" Nullable="false" />
+          <Property Name="serialNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="productCode" Type="Int32" Nullable="false" />
+          <Property Name="productName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="quantity" Type="Int32" Nullable="false" />
+          <Property Name="salePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <NavigationProperty Name="Purchase" Relationship="businessProBmsModel.FK_PurchaseDetail_Purchase" FromRole="PurchaseDetail" ToRole="Purchase" />
+        </EntityType>
+        <Association Name="FK_PurchaseDetail_Purchase">
+          <End Type="businessProBmsModel.Purchase" Role="Purchase" Multiplicity="1" />
+          <End Type="businessProBmsModel.PurchaseDetail" Role="PurchaseDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Purchase">
+              <PropertyRef Name="purchaseId" />
+            </Principal>
+            <Dependent Role="PurchaseDetail">
+              <PropertyRef Name="purchaseDetailsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -224,7 +321,29 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          <EntitySetMapping Name="Purchases">
+            <EntityTypeMapping TypeName="businessProBmsModel.Purchase">
+              <MappingFragment StoreEntitySet="Purchase">
+                <ScalarProperty Name="vendorName" ColumnName="vendorName" />
+                <ScalarProperty Name="vendorCode" ColumnName="vendorCode" />
+                <ScalarProperty Name="purchaseDate" ColumnName="purchaseDate" />
+                <ScalarProperty Name="purchaseId" ColumnName="purchaseId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PurchaseDetails">
+            <EntityTypeMapping TypeName="businessProBmsModel.PurchaseDetail">
+              <MappingFragment StoreEntitySet="PurchaseDetail">
+                <ScalarProperty Name="salePrice" ColumnName="salePrice" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+                <ScalarProperty Name="productName" ColumnName="productName" />
+                <ScalarProperty Name="productCode" ColumnName="productCode" />
+                <ScalarProperty Name="serialNo" ColumnName="serialNo" />
+                <ScalarProperty Name="purchaseDetailsId" ColumnName="purchaseDetailsId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

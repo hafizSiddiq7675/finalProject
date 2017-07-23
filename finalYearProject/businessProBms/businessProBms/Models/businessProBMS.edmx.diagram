@@ -6,11 +6,14 @@
     <edmx:Diagrams>
       <Diagram DiagramId="c24b6c8faf44467ba12671a77915c5a8" Name="Diagram1">
         <EntityTypeShape EntityType="businessProBmsModel.Category" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="businessProBmsModel.Customer" Width="1.5" PointX="0.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="businessProBmsModel.Customer" Width="1.5" PointX="4.75" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="businessProBmsModel.Product" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="businessProBmsModel.sysdiagram" Width="1.5" PointX="2.75" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="businessProBmsModel.Vendor" Width="1.5" PointX="4.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="businessProBmsModel.sysdiagram" Width="1.5" PointX="6.5" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="businessProBmsModel.Vendor" Width="1.5" PointX="8.5" PointY="1" IsExpanded="true" />
         <AssociationConnector Association="businessProBmsModel.FK_Product_Category1" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="businessProBmsModel.Purchase" Width="1.5" PointX="0.75" PointY="5.125" />
+        <EntityTypeShape EntityType="businessProBmsModel.PurchaseDetail" Width="1.5" PointX="3" PointY="5" />
+        <AssociationConnector Association="businessProBmsModel.FK_PurchaseDetail_Purchase" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

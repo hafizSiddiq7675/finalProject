@@ -55,10 +55,12 @@ namespace businessProBms.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var pr = db.Products.SingleOrDefault(m => m.code == id);
+            
             if(pr==null)
             {
                 return HttpNotFound();
             }
+            ViewBag.cat = db.Categories.ToList();
             return View("Add", pr);
         }
         [HttpPost]
