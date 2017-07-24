@@ -8,9 +8,11 @@
 <h2>Purchases</h2>
 <br />
 <div class="well well-sm">Purchase Order</div>
-@Html.AntiForgeryToken()
-@Html.ValidationSummary(true)
-<div class="row">
+@using (Html.BeginForm("Purchases","Purchase",FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="row">
     <div class="col-md-4">
         <div class="form-group">
             @Html.LabelFor(m=>m.purchaseId)
@@ -21,25 +23,103 @@
     <div class="col-md-4">
         <div class="form-group">
             @Html.LabelFor(m => m.purchaseDate)
-            @*<input type="text" id="pdate" class="form-control" placeholder="--date--"/>*@
-            @Html.EditorFor(m => m.purchaseDate, new { placeholder = "Enter Purchase Date Here..", @class = "form-control" ,id="pdate"})
+            @Html.TextBoxFor(m => m.purchaseDate, new {placeholder="Format:YYYY/MM/DD ", @class = "form-control" ,id="pdate"}) 
             @Html.ValidationMessageFor(m => m.purchaseDate)
         </div>
     </div>
     <div class="col-md-4">
         <div class="form-group">
             @Html.LabelFor(m => m.vendorCode)
-            @Html.TextBoxFor(m => m.vendorCode, new { placeholder = "Enter Vendor code Here..", @class = "form-control" ,id="vcode"})
+            @Html.DropDownListFor(m => m.vendorCode, new SelectList(ViewBag.vendors, "code", "name"), 
+            "--Select Vendor Here--", new { @class="form-control", id="vcode", onchange="myfunc(),$(this.form).submit();"})
             @Html.ValidationMessageFor(m => m.vendorCode)
+            @Html.HiddenFor(m => m.vendorName, new { @class = "form-control", id = "vname" })
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="form-group">
-            @Html.HiddenFor(m => m.vendorName, new { @class = "form-control", id="vname"})
-        </div>
-    </div>
 </div>
+</div>
+}
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
-<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script>
+    function myfunc() {
+        var e = $("#vcode :selected").text();
+        //document.getElementById("drp").text;
+        $('#vname').val(e);
+    }
+</script>
+<div class="container">
+    <div class="details">
+<div class="well well-sm">Putchase Details</div>
+        <table class="table table-responsive">
+            <tr>
+                <td><b>Purchase Order</b></td>
+                <td><b>Serial Number</b></td>
+                <td><b>Product Code</b></td>
+                <td><b>Quantity</b></td>
+                <td><b>Price</b></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr class="mycontainer" id="mainrow">
+                <td>
+                    <select id="purchaseId" class="pc form-control" onchange="loadPurchaseId(this)">
+                        <option>--Select--</option>
+                    </select>
+                    <span class="error">Select Purchase Id</span>
+                </td>
+                <td>
+                    <input type="text" id="serialNo" class="serialNo form-control" />
+                    <span class="error">Valid Serial No required</span>
+                </td>
+                <td>
+                    <select id="productCode" class="product form-control">
+                        <option>--Select--</option>
+                    </select>
+                    <span class="error">Select product Code</span>
+                </td>
+                <td>
+                    <input type="text" id="quantity" class="quantity form-control" />
+                    <span class="error">Valid quantity required</span>
+                </td>
+                <td>
+                    <input type="text" id="price" class="price form-control" />
+                    <span class="error">Valid price required</span>
+                </td>
+                <td>
+                    <input type="button" id="add" value="Add" style="width:80px" class="btn btn-success" />
+                </td>
+            </tr>
+        </table>
+        <div id="orderItems">
+            <table class="table table-responsive" id="orderdetailsItems"></table>
+            <span id="orderItemError" style="color:red"></span>
+        </div>
+        <div style="padding:10px 0; text-align:right">
+            <input id="submit" type="button" value="Save Purchase" class="btn btn-warning" style="padding:10px 20px" />
+        </div>
+    </div>
+</div>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="~/Scripts/myScripts.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#orderDate').datepicker({
+            dateFormat: 'mm-dd-yy'
+        })
+    })
+</script>
+<style>
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+
+    tr.error {
+        background-color: rgba(255,0,0,0.35);
+    }
+</style>
