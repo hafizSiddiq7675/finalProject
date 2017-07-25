@@ -5,72 +5,107 @@
 @{
     ViewBag.Title = "Purchase";
 }
+<script src='@Url.Content("~/Scripts/jquery.validate.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
 <h2>Purchases</h2>
 <br />
-<div class="well well-sm">Purchase Order</div>
-@using (Html.BeginForm("Purchases","Purchase",FormMethod.Post))
-{
+<form>
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
-    <div class="row">
-    <div class="col-md-4">
-        <div class="form-group">
-            @Html.LabelFor(m=>m.purchaseId)
-            @Html.TextBoxFor(m => m.purchaseId, new { placeholder="Enter Purchase ID Here..", @class="form-control", id="pid"})
-            @Html.ValidationMessageFor(m=>m.purchaseId)
+    <div class="container">
+        <div class="well well-sm"><b>Purchase Order</b></div>
+        <div class="master">
+            <table class="table table-responsive">
+                <tr>
+                    <td><b>@Html.LabelFor(m => m.purchaseId)</b></td>
+                    <td><b>@Html.LabelFor(m => m.purchaseDate)</b></td>
+                    <td><b>@Html.LabelFor(m => m.vendorCode)</b></td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.TextBoxFor(m => m.purchaseId, new { placeholder = "Enter Purchase ID Here..", @class = "form-control", id = "pid" })
+                        @Html.ValidationMessageFor(m => m.purchaseId)
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.purchaseDate, new { placeholder = "Format:YYYY/MM/DD ", @class = "form-control", id = "pdate" })
+                        @Html.ValidationMessageFor(m => m.purchaseDate)
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(m => m.vendorCode, new SelectList(ViewBag.vendors, "code", "name"),
+            "--Select Vendor Here--", new { @class = "form-control", id = "vcode", onchange = "myfunc()" })
+                        @Html.ValidationMessageFor(m => m.vendorCode)
+                        @Html.HiddenFor(m => m.vendorName, new { @class = "form-control", id = "vname" })
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="form-group">
-            @Html.LabelFor(m => m.purchaseDate)
-            @Html.TextBoxFor(m => m.purchaseDate, new {placeholder="Format:YYYY/MM/DD ", @class = "form-control" ,id="pdate"}) 
-            @Html.ValidationMessageFor(m => m.purchaseDate)
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="form-group">
-            @Html.LabelFor(m => m.vendorCode)
-            @Html.DropDownListFor(m => m.vendorCode, new SelectList(ViewBag.vendors, "code", "name"), 
-            "--Select Vendor Here--", new { @class="form-control", id="vcode", onchange="myfunc(),$(this.form).submit();"})
-            @Html.ValidationMessageFor(m => m.vendorCode)
-            @Html.HiddenFor(m => m.vendorName, new { @class = "form-control", id = "vname" })
-        </div>
-</div>
-</div>
-}
-
+</form>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
 <script>
     function myfunc() {
         var e = $("#vcode :selected").text();
-        //document.getElementById("drp").text;
         $('#vname').val(e);
+        var pur = {};
+        pur.purchaseId = $("#pid").val();
+        pur.purchaseDate = $("#pdate").val();
+        pur.vendorCode = $("#vcode").val();
+        pur.vendorName = $("#vname").val();
+        $.ajax(
+        {
+            type: "POST",
+            url: '@Url.Action("Add","Purchase")',
+            data: '{pur: ' + JSON.stringify(pur) + '}',
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                if (result) {
+                    loadPid($("#purchaseId"))
+                }
+                else
+                    alert("Error, OOPS something Went Wrong, Please Provide Purchase Id, Purchase Date");
+            }
+        });
+    }
+    var Pid = []
+    function loadPid(element) {
+        $.ajax({
+            type: "GET",
+            url: "/Purchase/getPurchaseIds",
+            success: function (data) {
+                Pid = data;
+                renderPids(element);
+            }
+        })
+    }
+    function rendorPids(element) {
+        var $ele = $(element);
+        $ele.empty();
+        $ele.append($('<option/>').val('0').text('--Select--'));
+        $.each(Pid, function (i, val) {
+            $ele.append($('<option/>').val(val.purchaseId).text(val.purchaseId));
+        })
     }
 </script>
 <div class="container">
     <div class="details">
-<div class="well well-sm">Putchase Details</div>
+<div class="well well-sm"><b>Putchase Details</b></div>
         <table class="table table-responsive">
             <tr>
                 <td><b>Purchase Order</b></td>
-                <td><b>Serial Number</b></td>
                 <td><b>Product Code</b></td>
                 <td><b>Quantity</b></td>
-                <td><b>Price</b></td>
+                <td><b>Sale Price</b></td>
                 <td>&nbsp;</td>
             </tr>
             <tr class="mycontainer" id="mainrow">
                 <td>
-                    <select id="purchaseId" class="pc form-control" onchange="loadPurchaseId(this)">
+                    <select id="purchaseId" class="Pid form-control">
                         <option>--Select--</option>
                     </select>
                     <span class="error">Select Purchase Id</span>
-                </td>
-                <td>
-                    <input type="text" id="serialNo" class="serialNo form-control" />
-                    <span class="error">Valid Serial No required</span>
                 </td>
                 <td>
                     <select id="productCode" class="product form-control">
@@ -79,11 +114,11 @@
                     <span class="error">Select product Code</span>
                 </td>
                 <td>
-                    <input type="text" id="quantity" class="quantity form-control" />
+                    <input type="text" id="quantity" class="quantity form-control" placeholder="Enter Quantity Here.." />
                     <span class="error">Valid quantity required</span>
                 </td>
                 <td>
-                    <input type="text" id="price" class="price form-control" />
+                    <input type="text" id="price" class="price form-control" placeholder="Enter Sale Price Here.."/>
                     <span class="error">Valid price required</span>
                 </td>
                 <td>
@@ -103,13 +138,8 @@
 <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script src="~/Scripts/myScripts.js"></script>
 <script type="text/javascript">
-    $(function () {
-        $('#orderDate').datepicker({
-            dateFormat: 'mm-dd-yy'
-        })
-    })
+
 </script>
 <style>
     span.error {

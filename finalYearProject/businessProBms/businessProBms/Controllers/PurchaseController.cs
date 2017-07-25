@@ -42,5 +42,23 @@ namespace businessProBms.Controllers
             ViewBag.vendors=db.Vendors.ToList();
             return View(purchase);
         }
+        [HttpPost]
+        public ActionResult Add([Bind(Include="purchaseId, purchaseDate,vendorCode,vendorName")] Purchase pur)
+        {
+            bool result=false;
+            if(ModelState.IsValid)
+            {
+                db.Purchases.Add(pur);
+                db.SaveChanges();
+                result=true;
+            }
+            return Json(result,JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult getPurchaseIds()      
+        {
+            List<Purchase> Ids = new List<Purchase>();
+            Ids = db.Purchases.OrderBy(s => s.purchaseId).ToList();
+            return new JsonResult { Data = Ids, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
 	}
 }
