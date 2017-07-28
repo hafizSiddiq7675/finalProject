@@ -13,7 +13,7 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
     <div class="container">
-        <div class="well well-sm"><b>Purchase Order</b></div>
+        <div class="well well-lg"><b>Purchase Order</b></div>
         <div class="master">
             <table class="table table-responsive">
                 <tr>
@@ -25,10 +25,12 @@
                     <td>
                         @Html.TextBoxFor(m => m.purchaseId, new { placeholder = "Enter Purchase ID Here..", @class = "form-control", id = "pid" })
                         @Html.ValidationMessageFor(m => m.purchaseId)
+                        <span class="error">Valid Purchase ID required</span>
                     </td>
                     <td>
                         @Html.TextBoxFor(m => m.purchaseDate, new { placeholder = "Format:YYYY/MM/DD ", @class = "form-control", id = "pdate" })
                         @Html.ValidationMessageFor(m => m.purchaseDate)
+                        <span class="error">Valid Purchase ID required</span>
                     </td>
                     <td>
                         @Html.DropDownListFor(m => m.vendorCode, new SelectList(ViewBag.vendors, "code", "name"),
@@ -46,48 +48,139 @@
 }
 <script>
     function myfunc() {
-        var e = $("#vcode :selected").text();
-        $('#vname').val(e);
-        var pur = {};
-        pur.purchaseId = $("#pid").val();
-        pur.purchaseDate = $("#pdate").val();
-        pur.vendorCode = $("#vcode").val();
-        pur.vendorName = $("#vname").val();
-        $.ajax(
+        var isAllValid = true;
+        if (!($('#pid').val().trim() != '' && (parseInt($('#pid').val(), 10) || 0))) {
+            isAllValid = false;
+            $('#pid').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#pid').siblings('span.error').css('visibility', 'hidden');
+        }
+        if (isAllValid)
         {
-            type: "POST",
-            url: '@Url.Action("Add","Purchase")',
-            data: '{pur: ' + JSON.stringify(pur) + '}',
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function (result) {
-                if (result) {
-                    loadPid($("#purchaseId"))
+            var e = $("#vcode :selected").text();
+            $('#vname').val(e);
+            var pur = {};
+            pur.purchaseId = $("#pid").val();
+            pur.purchaseDate = $("#pdate").val();
+            pur.vendorCode = $("#vcode").val();
+            pur.vendorName = $("#vname").val();
+            $.ajax(
+            {
+                type: "POST",
+                url: '@Url.Action("Add","Purchase")',
+                data: '{pur: ' + JSON.stringify(pur) + '}',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    if (result) {
+                        loadPid($("#purchaseId"));
+                        $('#pid,#pdate').val('');
+                    }
+                    else
+                        alert("Error, OOPS something Went Wrong, Please appropriate Fields");
                 }
-                else
-                    alert("Error, OOPS something Went Wrong, Please Provide Purchase Id, Purchase Date");
-            }
+            });
+        }
+    }
+    function loadPid(element) {
+        $.getJSON("/Purchase/getPurchaseIds")
+        .done(function(data)
+        {
+            var options=$("#purchaseId");
+            options.empty();
+            //options.append($("<option/>").val('0').text('--Select ID(For Detail)--'));
+            $.each(data, function(index, item){
+                options.append($("<option/>").val(item.value).text(item.text));
+            });
         });
     }
-    var Pid = []
-    function loadPid(element) {
-        $.ajax({
-            type: "GET",
-            url: "/Purchase/getPurchaseIds",
-            success: function (data) {
-                Pid = data;
-                renderPids(element);
+     function loadProducts(element) {
+        $.getJSON("/Purchase/getProducts")
+        .done(function (data) {
+            var options = $("#productCode");
+            options.empty();
+            //options.append($("<option/>").val('0').text('--Select Product--'));
+            $.each(data, function (index, item) {
+                options.append($("<option/>").val(item.value).text(item.text));
+            });
+        });
+     }
+     function load() {
+         loadPid($("#purchaseId"));
+         loadProducts($("#productCode"));
+     }
+     window.onload(load()); 
+         function validate() {
+             //validation and add order items
+             var isAllValid = true;
+             if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+                 isAllValid = false;
+                 $('#quantity').siblings('span.error').css('visibility', 'visible');
+             }
+             else {
+                 $('#quantity').siblings('span.error').css('visibility', 'hidden');
+             }
+
+             if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+                 isAllValid = false;
+                 $('#price').siblings('span.error').css('visibility', 'visible');
+             }
+             else {
+                 $('#price').siblings('span.error').css('visibility', 'hidden');
+             }
+
+             if (isAllValid) {
+                 var $newRow = $('#mainrow').clone().removeAttr('id');
+                 $('.Pid', $newRow).val($('#purchaseId').val());
+                 $('.product', $newRow).val($('#productCode').val());
+
+                 //REmove add button
+                 $('#add', $newRow).remove();
+                 //$('#add', $newRow).addClass('remove').val('Added Successfully').removeClass('btn-default').addClass('btn-success');
+                 //remove id attribute from new clone row
+                 $('#purchaseId,#productCode,#quantity,#price,#add', $newRow).removeAttr('id');
+                 $('span.error', $newRow).remove();
+                 //append clone row
+                 $('#orderdetailsItems').append($newRow);
+
+                 //clear select data
+                 $('#orderItemError').empty();
+                 Add();
+             }
+             $('#orderdetailsItems').on('click', '.remove', function () {
+                 $(this).parents('tr').remove();
+             });
+             
+         }
+         
+         function Add() {
+             var e = $("#productCode :selected").text();
+             $("#productName").val(e);
+             var purD = {};
+             purD.purchaseDetailsId = $("#purchaseId").val();
+             purD.serialNo = '';
+             purD.productCode = $("#productCode :selected").val();
+             purD.productName = $("#productName").val();
+             purD.unitOfMeasure = '';
+             purD.quantity = parseInt($("#quantity").val(),10);
+             purD.purchasePrice = parseFloat($("#price").val(),10);
+             $.ajax(
+             {
+                 type: "POST",
+                 url: "/Purchase/AddDetails",
+                 data: '{purD: ' + JSON.stringify(purD) + '}',
+                 dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    if (result) {
+                        alert("Added Succesfully")
+                    }
+                    else
+                        alert("Error, OOPS something Went Wrong, Please Provide Purchase Id, Purchase Date");
             }
-        })
-    }
-    function rendorPids(element) {
-        var $ele = $(element);
-        $ele.empty();
-        $ele.append($('<option/>').val('0').text('--Select--'));
-        $.each(Pid, function (i, val) {
-            $ele.append($('<option/>').val(val.purchaseId).text(val.purchaseId));
-        })
-    }
+                 });
+         }
 </script>
 <div class="container">
     <div class="details">
@@ -95,9 +188,9 @@
         <table class="table table-responsive">
             <tr>
                 <td><b>Purchase Order</b></td>
-                <td><b>Product Code</b></td>
+                <td><b>Product</b></td>
                 <td><b>Quantity</b></td>
-                <td><b>Sale Price</b></td>
+                <td><b>Price</b></td>
                 <td>&nbsp;</td>
             </tr>
             <tr class="mycontainer" id="mainrow">
@@ -111,6 +204,7 @@
                     <select id="productCode" class="product form-control">
                         <option>--Select--</option>
                     </select>
+                    <input type="hidden" id="productName" />
                     <span class="error">Select product Code</span>
                 </td>
                 <td>
@@ -118,11 +212,13 @@
                     <span class="error">Valid quantity required</span>
                 </td>
                 <td>
-                    <input type="text" id="price" class="price form-control" placeholder="Enter Sale Price Here.."/>
+                    <input type="text" id="price" class="price form-control" placeholder="Enter Price Here.."  />
                     <span class="error">Valid price required</span>
                 </td>
                 <td>
-                    <input type="button" id="add" value="Add" style="width:80px" class="btn btn-success" />
+                    <input type="button" id="add" value="Add" style="width:80px" class="btn btn-success" onclick="validate()"/>
+                    <input type="hidden" id="#serialNo" />
+                    <input type="hidden" id="#uom" />
                 </td>
             </tr>
         </table>
@@ -130,17 +226,14 @@
             <table class="table table-responsive" id="orderdetailsItems"></table>
             <span id="orderItemError" style="color:red"></span>
         </div>
-        <div style="padding:10px 0; text-align:right">
-            <input id="submit" type="button" value="Save Purchase" class="btn btn-warning" style="padding:10px 20px" />
-        </div>
+        @*<div style="padding:10px 0; text-align:right">
+            <a href="@Url.Action("Purchases","Purchase")"><input id="submit" type="button" value="See All Purchase Data" class="btn btn-warning" style="padding:10px 20px" /></a>
+        </div>*@
     </div>
 </div>
 <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script type="text/javascript">
-
-</script>
 <style>
     span.error {
         display: block;

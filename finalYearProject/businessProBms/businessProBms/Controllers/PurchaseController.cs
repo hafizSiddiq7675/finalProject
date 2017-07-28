@@ -15,32 +15,8 @@ namespace businessProBms.Controllers
         public ActionResult Purchases()
         {
             ViewBag.vendors = db.Vendors.ToList();
+           
             return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Purchases([Bind(Include="purchaseId,purchaseDate,vendorCode,vendorName")] Purchase purchase)
-        {
-            if(ModelState.IsValid)
-            {
-                var pur = db.Purchases.SingleOrDefault(m => m.purchaseId == purchase.purchaseId);
-                    if(pur==null)
-                    {
-                        db.Purchases.Add(purchase);
-                    }
-                    else
-                    {
-                        var purDb=db.Purchases.Single(m=>m.purchaseId==pur.purchaseId);
-                        purDb.purchaseId=purchase.purchaseId;
-                        purDb.purchaseDate=purchase.purchaseDate;
-                        purDb.vendorCode=purchase.vendorCode;
-                        purDb.vendorName=purchase.vendorName;
-                    }
-                db.SaveChanges();
-                return RedirectToAction("Purchases");
-            }
-            ViewBag.vendors=db.Vendors.ToList();
-            return View(purchase);
         }
         [HttpPost]
         public ActionResult Add([Bind(Include="purchaseId, purchaseDate,vendorCode,vendorName")] Purchase pur)
@@ -54,11 +30,36 @@ namespace businessProBms.Controllers
             }
             return Json(result,JsonRequestBehavior.AllowGet);
         }
-        public JsonResult getPurchaseIds()      
+        [HttpPost]
+        public ActionResult AddDetails([Bind(Include = "purchaseDetailsId,serialNo,productCode,productName,unitOfMeasure,quantity,purchasePrice")] PurchaseDetail purD)
         {
-            List<Purchase> Ids = new List<Purchase>();
-            Ids = db.Purchases.OrderBy(s => s.purchaseId).ToList();
+            bool result = false;
+            purD.serialNo = db.Purchases.Sum(r => r.purchaseId).ToString();
+            Product uom = db.Products.First(s => s.code == purD.productCode);
+            if (uom != null)
+            {
+                purD.unitOfMeasure = uom.UOM;
+            }
+            TryUpdateModel(purD);
+            if(ModelState.IsValid)
+            {
+
+                db.PurchaseDetails.Add(purD);
+                db.SaveChanges();
+                result = true;
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult getPurchaseIds()      
+        
+        {
+            var Ids = db.Purchases.Select(r => new { value = r.purchaseId, text = r.purchaseId });
             return new JsonResult { Data = Ids, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+        public JsonResult getProducts()
+        {
+            var product = db.Products.Select(r => new { value = r.code, text = r.name });
+            return new JsonResult { Data = product, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 	}
 }

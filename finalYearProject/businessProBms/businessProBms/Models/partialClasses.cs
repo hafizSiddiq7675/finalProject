@@ -26,4 +26,12 @@ namespace businessProBms.Models
     public partial class PurchaseDetail
     {
     }
+    [MetadataType(typeof(saleMetadata))]
+    public partial class Sale
+    {
+    }
+    [MetadataType(typeof(saleDetailMetadata))]
+    public partial class SaleDetail 
+    {
+    }
 }

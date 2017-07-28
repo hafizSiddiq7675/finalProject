@@ -82,6 +82,12 @@
       <End Role="Purchase" EntitySet="Purchases" />
       <End Role="PurchaseDetail" EntitySet="PurchaseDetails" />
     </AssociationSet>
+    <EntitySet Name="Sales" EntityType="businessProBmsModel.Sale" />
+    <EntitySet Name="SaleDetails" EntityType="businessProBmsModel.SaleDetail" />
+    <AssociationSet Name="FK_Table_Sale" Association="businessProBmsModel.FK_Table_Sale">
+      <End Role="Sale" EntitySet="Sales" />
+      <End Role="SaleDetail" EntitySet="SaleDetails" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="Purchase">
     <Key>
@@ -95,18 +101,16 @@
   </EntityType>
   <EntityType Name="PurchaseDetail">
     <Key>
-      <PropertyRef Name="purchaseDetailsId" />
-      <PropertyRef Name="productCode" />
-      <PropertyRef Name="productName" />
-      <PropertyRef Name="quantity" />
-      <PropertyRef Name="salePrice" />
+      <PropertyRef Name="code" />
     </Key>
+    <Property Name="code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="purchaseDetailsId" Type="Int32" Nullable="false" />
     <Property Name="serialNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
     <Property Name="productCode" Type="Int32" Nullable="false" />
     <Property Name="productName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="unitOfMeasure" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
     <Property Name="quantity" Type="Int32" Nullable="false" />
-    <Property Name="salePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="purchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
     <NavigationProperty Name="Purchase" Relationship="businessProBmsModel.FK_PurchaseDetail_Purchase" FromRole="PurchaseDetail" ToRole="Purchase" />
   </EntityType>
   <Association Name="FK_PurchaseDetail_Purchase">
@@ -118,6 +122,42 @@
       </Principal>
       <Dependent Role="PurchaseDetail">
         <PropertyRef Name="purchaseDetailsId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="Sale">
+    <Key>
+      <PropertyRef Name="saleId" />
+    </Key>
+    <Property Name="saleId" Type="Int32" Nullable="false" />
+    <Property Name="saleDate" Type="DateTime" Nullable="false" Precision="0" />
+    <Property Name="customerCode" Type="Int32" Nullable="false" />
+    <Property Name="customerName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="SaleDetails" Relationship="businessProBmsModel.FK_Table_Sale" FromRole="Sale" ToRole="SaleDetail" />
+  </EntityType>
+  <EntityType Name="SaleDetail">
+    <Key>
+      <PropertyRef Name="code" />
+    </Key>
+    <Property Name="code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="saleDetailsId" Type="Int32" Nullable="false" />
+    <Property Name="serialNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="productCode" Type="Int32" Nullable="false" />
+    <Property Name="productName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="unitOfMeasure" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="quantity" Type="Int32" Nullable="false" />
+    <Property Name="salePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <NavigationProperty Name="Sale" Relationship="businessProBmsModel.FK_Table_Sale" FromRole="SaleDetail" ToRole="Sale" />
+  </EntityType>
+  <Association Name="FK_Table_Sale">
+    <End Type="businessProBmsModel.Sale" Role="Sale" Multiplicity="1" />
+    <End Type="businessProBmsModel.SaleDetail" Role="SaleDetail" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Sale">
+        <PropertyRef Name="saleId" />
+      </Principal>
+      <Dependent Role="SaleDetail">
+        <PropertyRef Name="saleDetailsId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

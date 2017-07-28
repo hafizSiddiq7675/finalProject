@@ -12,17 +12,17 @@ namespace businessProBms.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class PurchaseDetail
+    public partial class SaleDetail
     {
         public int code { get; set; }
-        public int purchaseDetailsId { get; set; }
+        public int saleDetailsId { get; set; }
         public string serialNo { get; set; }
         public int productCode { get; set; }
         public string productName { get; set; }
         public string unitOfMeasure { get; set; }
         public int quantity { get; set; }
-        public decimal purchasePrice { get; set; }
+        public decimal salePrice { get; set; }
     
-        public virtual Purchase Purchase { get; set; }
+        public virtual Sale Sale { get; set; }
     }
 }

@@ -41,20 +41,38 @@
     <Property Name="vendorCode" Type="int" Nullable="false" />
     <Property Name="vendorName" Type="varchar" MaxLength="50" Nullable="false" />
   </EntityType>
-  <!--Errors Found During Generation:
-warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
   <EntityType Name="PurchaseDetail">
     <Key>
-      <PropertyRef Name="purchaseDetailsId" />
-      <PropertyRef Name="productCode" />
-      <PropertyRef Name="productName" />
-      <PropertyRef Name="quantity" />
-      <PropertyRef Name="salePrice" />
+      <PropertyRef Name="code" />
     </Key>
+    <Property Name="code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="purchaseDetailsId" Type="int" Nullable="false" />
     <Property Name="serialNo" Type="varchar" MaxLength="20" />
     <Property Name="productCode" Type="int" Nullable="false" />
     <Property Name="productName" Type="nvarchar" MaxLength="30" Nullable="false" />
+    <Property Name="unitOfMeasure" Type="varchar" MaxLength="20" Nullable="false" />
+    <Property Name="quantity" Type="int" Nullable="false" />
+    <Property Name="purchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Sale">
+    <Key>
+      <PropertyRef Name="saleId" />
+    </Key>
+    <Property Name="saleId" Type="int" Nullable="false" />
+    <Property Name="saleDate" Type="date" Nullable="false" />
+    <Property Name="customerCode" Type="int" Nullable="false" />
+    <Property Name="customerName" Type="varchar" MaxLength="50" Nullable="false" />
+  </EntityType>
+  <EntityType Name="SaleDetail">
+    <Key>
+      <PropertyRef Name="code" />
+    </Key>
+    <Property Name="code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="saleDetailsId" Type="int" Nullable="false" />
+    <Property Name="serialNo" Type="varchar" MaxLength="20" />
+    <Property Name="productCode" Type="int" Nullable="false" />
+    <Property Name="productName" Type="varchar" MaxLength="30" Nullable="false" />
+    <Property Name="unitOfMeasure" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="quantity" Type="int" Nullable="false" />
     <Property Name="salePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
   </EntityType>
@@ -102,23 +120,28 @@ warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK_Table_Sale">
+    <End Role="Sale" Type="Self.Sale" Multiplicity="1" />
+    <End Role="SaleDetail" Type="Self.SaleDetail" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Sale">
+        <PropertyRef Name="saleId" />
+      </Principal>
+      <Dependent Role="SaleDetail">
+        <PropertyRef Name="saleDetailsId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <EntityContainer Name="businessProBmsModelStoreContainer">
     <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Purchase" EntityType="Self.Purchase" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="PurchaseDetail" EntityType="Self.PurchaseDetail" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Sale" EntityType="Self.Sale" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="SaleDetail" EntityType="Self.SaleDetail" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Vendor" EntityType="Self.Vendor" Schema="dbo" store:Type="Tables" />
-    <EntitySet Name="PurchaseDetail" EntityType="Self.PurchaseDetail" store:Type="Tables" store:Schema="dbo">
-      <DefiningQuery>SELECT 
-    [PurchaseDetail].[purchaseDetailsId] AS [purchaseDetailsId], 
-    [PurchaseDetail].[serialNo] AS [serialNo], 
-    [PurchaseDetail].[productCode] AS [productCode], 
-    [PurchaseDetail].[productName] AS [productName], 
-    [PurchaseDetail].[quantity] AS [quantity], 
-    [PurchaseDetail].[salePrice] AS [salePrice]
-    FROM [dbo].[PurchaseDetail] AS [PurchaseDetail]</DefiningQuery>
-    </EntitySet>
     <AssociationSet Name="FK_Product_Category1" Association="Self.FK_Product_Category1">
       <End Role="Category" EntitySet="Category" />
       <End Role="Product" EntitySet="Product" />
@@ -126,6 +149,10 @@ warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a
     <AssociationSet Name="FK_PurchaseDetail_Purchase" Association="Self.FK_PurchaseDetail_Purchase">
       <End Role="Purchase" EntitySet="Purchase" />
       <End Role="PurchaseDetail" EntitySet="PurchaseDetail" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Table_Sale" Association="Self.FK_Table_Sale">
+      <End Role="Sale" EntitySet="Sale" />
+      <End Role="SaleDetail" EntitySet="SaleDetail" />
     </AssociationSet>
   </EntityContainer>
 </Schema>

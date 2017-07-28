@@ -46,20 +46,38 @@
           <Property Name="vendorCode" Type="int" Nullable="false" />
           <Property Name="vendorName" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="PurchaseDetail">
           <Key>
-            <PropertyRef Name="purchaseDetailsId" />
-            <PropertyRef Name="productCode" />
-            <PropertyRef Name="productName" />
-            <PropertyRef Name="quantity" />
-            <PropertyRef Name="salePrice" />
+            <PropertyRef Name="code" />
           </Key>
+          <Property Name="code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="purchaseDetailsId" Type="int" Nullable="false" />
           <Property Name="serialNo" Type="varchar" MaxLength="20" />
           <Property Name="productCode" Type="int" Nullable="false" />
           <Property Name="productName" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="unitOfMeasure" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="quantity" Type="int" Nullable="false" />
+          <Property Name="purchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sale">
+          <Key>
+            <PropertyRef Name="saleId" />
+          </Key>
+          <Property Name="saleId" Type="int" Nullable="false" />
+          <Property Name="saleDate" Type="date" Nullable="false" />
+          <Property Name="customerCode" Type="int" Nullable="false" />
+          <Property Name="customerName" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SaleDetail">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="saleDetailsId" Type="int" Nullable="false" />
+          <Property Name="serialNo" Type="varchar" MaxLength="20" />
+          <Property Name="productCode" Type="int" Nullable="false" />
+          <Property Name="productName" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="unitOfMeasure" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="quantity" Type="int" Nullable="false" />
           <Property Name="salePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
         </EntityType>
@@ -107,23 +125,28 @@ warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Table_Sale">
+          <End Role="Sale" Type="Self.Sale" Multiplicity="1" />
+          <End Role="SaleDetail" Type="Self.SaleDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sale">
+              <PropertyRef Name="saleId" />
+            </Principal>
+            <Dependent Role="SaleDetail">
+              <PropertyRef Name="saleDetailsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="businessProBmsModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Purchase" EntityType="Self.Purchase" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PurchaseDetail" EntityType="Self.PurchaseDetail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sale" EntityType="Self.Sale" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SaleDetail" EntityType="Self.SaleDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Vendor" EntityType="Self.Vendor" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="PurchaseDetail" EntityType="Self.PurchaseDetail" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [PurchaseDetail].[purchaseDetailsId] AS [purchaseDetailsId], 
-    [PurchaseDetail].[serialNo] AS [serialNo], 
-    [PurchaseDetail].[productCode] AS [productCode], 
-    [PurchaseDetail].[productName] AS [productName], 
-    [PurchaseDetail].[quantity] AS [quantity], 
-    [PurchaseDetail].[salePrice] AS [salePrice]
-    FROM [dbo].[PurchaseDetail] AS [PurchaseDetail]</DefiningQuery>
-          </EntitySet>
           <AssociationSet Name="FK_Product_Category1" Association="Self.FK_Product_Category1">
             <End Role="Category" EntitySet="Category" />
             <End Role="Product" EntitySet="Product" />
@@ -131,6 +154,10 @@ warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a
           <AssociationSet Name="FK_PurchaseDetail_Purchase" Association="Self.FK_PurchaseDetail_Purchase">
             <End Role="Purchase" EntitySet="Purchase" />
             <End Role="PurchaseDetail" EntitySet="PurchaseDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Table_Sale" Association="Self.FK_Table_Sale">
+            <End Role="Sale" EntitySet="Sale" />
+            <End Role="SaleDetail" EntitySet="SaleDetail" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -219,6 +246,12 @@ warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a
             <End Role="Purchase" EntitySet="Purchases" />
             <End Role="PurchaseDetail" EntitySet="PurchaseDetails" />
           </AssociationSet>
+          <EntitySet Name="Sales" EntityType="businessProBmsModel.Sale" />
+          <EntitySet Name="SaleDetails" EntityType="businessProBmsModel.SaleDetail" />
+          <AssociationSet Name="FK_Table_Sale" Association="businessProBmsModel.FK_Table_Sale">
+            <End Role="Sale" EntitySet="Sales" />
+            <End Role="SaleDetail" EntitySet="SaleDetails" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Purchase">
           <Key>
@@ -232,18 +265,16 @@ warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a
         </EntityType>
         <EntityType Name="PurchaseDetail">
           <Key>
-            <PropertyRef Name="purchaseDetailsId" />
-            <PropertyRef Name="productCode" />
-            <PropertyRef Name="productName" />
-            <PropertyRef Name="quantity" />
-            <PropertyRef Name="salePrice" />
+            <PropertyRef Name="code" />
           </Key>
+          <Property Name="code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="purchaseDetailsId" Type="Int32" Nullable="false" />
           <Property Name="serialNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="productCode" Type="Int32" Nullable="false" />
           <Property Name="productName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="unitOfMeasure" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="quantity" Type="Int32" Nullable="false" />
-          <Property Name="salePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="purchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <NavigationProperty Name="Purchase" Relationship="businessProBmsModel.FK_PurchaseDetail_Purchase" FromRole="PurchaseDetail" ToRole="Purchase" />
         </EntityType>
         <Association Name="FK_PurchaseDetail_Purchase">
@@ -255,6 +286,42 @@ warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a
             </Principal>
             <Dependent Role="PurchaseDetail">
               <PropertyRef Name="purchaseDetailsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Sale">
+          <Key>
+            <PropertyRef Name="saleId" />
+          </Key>
+          <Property Name="saleId" Type="Int32" Nullable="false" />
+          <Property Name="saleDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="customerCode" Type="Int32" Nullable="false" />
+          <Property Name="customerName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="SaleDetails" Relationship="businessProBmsModel.FK_Table_Sale" FromRole="Sale" ToRole="SaleDetail" />
+        </EntityType>
+        <EntityType Name="SaleDetail">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="saleDetailsId" Type="Int32" Nullable="false" />
+          <Property Name="serialNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="productCode" Type="Int32" Nullable="false" />
+          <Property Name="productName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="unitOfMeasure" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="quantity" Type="Int32" Nullable="false" />
+          <Property Name="salePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <NavigationProperty Name="Sale" Relationship="businessProBmsModel.FK_Table_Sale" FromRole="SaleDetail" ToRole="Sale" />
+        </EntityType>
+        <Association Name="FK_Table_Sale">
+          <End Type="businessProBmsModel.Sale" Role="Sale" Multiplicity="1" />
+          <End Type="businessProBmsModel.SaleDetail" Role="SaleDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sale">
+              <PropertyRef Name="saleId" />
+            </Principal>
+            <Dependent Role="SaleDetail">
+              <PropertyRef Name="saleDetailsId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -334,12 +401,38 @@ warning 6002: The table/view 'businessProBms.dbo.PurchaseDetail' does not have a
           <EntitySetMapping Name="PurchaseDetails">
             <EntityTypeMapping TypeName="businessProBmsModel.PurchaseDetail">
               <MappingFragment StoreEntitySet="PurchaseDetail">
-                <ScalarProperty Name="salePrice" ColumnName="salePrice" />
+                <ScalarProperty Name="purchasePrice" ColumnName="purchasePrice" />
                 <ScalarProperty Name="quantity" ColumnName="quantity" />
+                <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />
                 <ScalarProperty Name="productName" ColumnName="productName" />
                 <ScalarProperty Name="productCode" ColumnName="productCode" />
                 <ScalarProperty Name="serialNo" ColumnName="serialNo" />
                 <ScalarProperty Name="purchaseDetailsId" ColumnName="purchaseDetailsId" />
+                <ScalarProperty Name="code" ColumnName="code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sales">
+            <EntityTypeMapping TypeName="businessProBmsModel.Sale">
+              <MappingFragment StoreEntitySet="Sale">
+                <ScalarProperty Name="customerName" ColumnName="customerName" />
+                <ScalarProperty Name="customerCode" ColumnName="customerCode" />
+                <ScalarProperty Name="saleDate" ColumnName="saleDate" />
+                <ScalarProperty Name="saleId" ColumnName="saleId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SaleDetails">
+            <EntityTypeMapping TypeName="businessProBmsModel.SaleDetail">
+              <MappingFragment StoreEntitySet="SaleDetail">
+                <ScalarProperty Name="salePrice" ColumnName="salePrice" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+                <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />
+                <ScalarProperty Name="productName" ColumnName="productName" />
+                <ScalarProperty Name="productCode" ColumnName="productCode" />
+                <ScalarProperty Name="serialNo" ColumnName="serialNo" />
+                <ScalarProperty Name="saleDetailsId" ColumnName="saleDetailsId" />
+                <ScalarProperty Name="code" ColumnName="code" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

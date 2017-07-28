@@ -93,16 +93,45 @@ namespace businessProBms.Models
         [Required]
         public string vendorName { get; set; }
     }
+    public class saleMetadata
+    {
+        [Display(Name="Sale ID")]
+        [Key]
+        [Required]
+        public int saleId { get; set; }
+        [Display(Name="Date")]
+        [Required]
+        public System.DateTime saleDate { get; set; }
+        [Display(Name="Customer")]
+        [Required]
+        public int customerCode { get; set; }
+    }
+    public class saleDetailMetadata
+    {
+        [Display(Name="Sale Detail Code")]
+        public int code { get; set; }
+        [Display(Name="Sale Detail ID")]
+        [Required]
+        public int saleDetailsId { get; set; }
+        [Display(Name="Serial Number")]
+        public string serialNo { get; set; }
+        [Display(Name="Product Code")]
+        public int productCode { get; set; }
+        [Display(Name="Product Name")]
+        public string productName { get; set; }
+        [Display(Name="Unit Of Measure")]
+        public string unitOfMeasure { get; set; }
+        [Display(Name="Quantity")]
+        public int quantity { get; set; }
+        [Display(Name="Sale Price")]
+        public decimal salePrice { get; set; }
+    }
     public class purchaseDetailMetadata
     {
         [Required]
         [Key]
         [Display(Name="Purchase Detail ID")]
         public int purchaseDetailsId { get; set; }
-        [Display(Name="Purchase ID")]
-        [Required]
-        public int purchaseId { get; set; }
-        [Display(Name="Serial Number")]
         public string serialNo { get; set; }
         [Display(Name="Product Code")]
         [Required]
@@ -114,6 +143,6 @@ namespace businessProBms.Models
         public int quantity { get; set; }
         [Display(Name="Price")]
         [Required]
-        public decimal salePrice { get; set; }
+        public decimal purchasePrice { get; set; }
     }
 }

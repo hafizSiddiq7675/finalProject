@@ -1,0 +1,239 @@
+﻿@using businessProBms.Models
+@model Sale
+@{
+    ViewBag.Title = "Sales";
+}
+
+<h2>Sales</h2>
+<br />
+<form>
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <div class="container">
+        <div class="well well-lg"><b>Sale Order</b></div>
+        <div class="master">
+            <table class="table table-responsive">
+                <tr>
+                    <td><b>@Html.LabelFor(m => m.saleId)</b></td>
+                    <td><b>@Html.LabelFor(m => m.saleDate)</b></td>
+                    <td><b>@Html.LabelFor(m => m.customerCode)</b></td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.TextBoxFor(m => m.SaleDetails, new { placeholder = "Enter Sale ID Here..", @class = "form-control", id = "sid" })
+                        @Html.ValidationMessageFor(m => m.saleId)
+                        <span class="error">Valid Sale ID required</span>
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(m => m.saleDate, new { placeholder = "Format:YYYY/MM/DD ", @class = "form-control", id = "sdate" })
+                        @Html.ValidationMessageFor(m => m.saleDate)
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(m => m.customerCode, new SelectList(ViewBag.customers, "code", "name"),
+            "--Select Vendor Here--", new { @class = "form-control", id = "ccode", onchange = "myfunc()" })
+                        @Html.ValidationMessageFor(m => m.customerCode)
+                        @Html.HiddenFor(m => m.customerName, new { @class = "form-control", id = "cname" })
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</form>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
+<style>
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+
+    tr.error {
+        background-color: rgba(255,0,0,0.35);
+    }
+</style>
+<div class="container">
+    <div class="details">
+        <div class="well well-sm"><b>Sale Details</b></div>
+        <table class="table table-responsive">
+            <tr>
+                <td><b>Sale Order</b></td>
+                <td><b>Product</b></td>
+                <td><b>Quantity</b></td>
+                <td><b>Sale Price</b></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr class="mycontainer" id="mainrow">
+                <td>
+                    <select id="saleId" class="Sid form-control">
+                        <option>--Select--</option>
+                    </select>
+                    <span class="error">Select Sale Id</span>
+                </td>
+                <td>
+                    <select id="productCode" class="product form-control">
+                        <option>--Select--</option>
+                    </select>
+                    <input type="hidden" id="productName" />
+                    <span class="error">Select product Code</span>
+                </td>
+                <td>
+                    <input type="text" id="quantity" class="quantity form-control" placeholder="Enter Quantity Here.." />
+                    <span class="error">Valid quantity required</span>
+                </td>
+                <td>
+                    <input type="text" id="price" class="price form-control" placeholder="Enter Sale Price Here.." />
+                    <span class="error">Valid price required</span>
+                </td>
+                <td>
+                    <input type="button" id="add" value="Add" style="width:80px" class="btn btn-success" onclick="validate()" />
+                    <input type="hidden" id="#serialNo" />
+                    <input type="hidden" id="#uom" />
+                </td>
+            </tr>
+        </table>
+        <div id="orderItems">
+            <table class="table table-responsive" id="orderdetailsItems"></table>
+            <span id="orderItemError" style="color:red"></span>
+        </div>
+</div>
+</div>
+<script>
+    function myfunc() {
+        var isAllValid = true;
+        if (!($('#sid').val().trim() != '' && (parseInt($('#sid').val(), 10) || 0))) {
+            isAllValid = false;
+            $('#sid').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#sid').siblings('span.error').css('visibility', 'hidden');
+        }
+        if (isAllValid) {
+            var e = $("#ccode :selected").text();
+            $('#cname').val(e);
+            var sale = {};
+            sale.saleId = $("#sid").val();
+            sale.saleDate = $("#sdate").val();
+            sale.customerCode = $("#ccode").val();
+            sale.customerName = $("#cname").val();
+            $.ajax(
+            {
+                type: "POST",
+                url: '@Url.Action("Add","Sale")',
+                data: '{sale: ' + JSON.stringify(sale) + '}',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    if (result) {
+                        loadSid($("#saleId"));
+                        $('#sid,#sdate').val('');
+                    }
+                    else
+                        alert("Error, OOPS something Went Wrong, Please appropriate Fields");
+                }
+            });
+        }
+    }
+    function loadSid(element) {
+        $.getJSON("/Sale/getSaleIds")
+        .done(function (data) {
+            var options = $("#saleId");
+            options.empty();
+            //options.append($("<option/>").val('0').text('--Select ID(For Detail)--'));
+            $.each(data, function (index, item) {
+                options.append($("<option/>").val(item.value).text(item.text));
+            });
+        });
+    }
+    function loadProducts(element) {
+        $.getJSON("/Sale/getProducts")
+        .done(function (data) {
+            var options = $("#productCode");
+            options.empty();
+            //options.append($("<option/>").val('0').text('--Select Product--'));
+            $.each(data, function (index, item) {
+                options.append($("<option/>").val(item.value).text(item.text));
+            });
+        });
+    }
+    function load() {
+        loadSid($("#saleId"));
+        loadProducts($("#productCode"));
+    }
+    window.onload(load());
+    function validate() {
+        //validation and add order items
+        var isAllValid = true;
+        if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+            isAllValid = false;
+            $('#quantity').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#quantity').siblings('span.error').css('visibility', 'hidden');
+        }
+
+        if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+            isAllValid = false;
+            $('#price').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#price').siblings('span.error').css('visibility', 'hidden');
+        }
+
+        if (isAllValid) {
+            var $newRow = $('#mainrow').clone().removeAttr('id');
+            $('.Sid', $newRow).val($('#saleId').val());
+            $('.product', $newRow).val($('#productCode').val());
+
+            //REmove add button
+            $('#add', $newRow).remove();
+            //$('#add', $newRow).addClass('remove').val('Added Successfully').removeClass('btn-default').addClass('btn-success');
+            //remove id attribute from new clone row
+            $('#purchaseId,#productCode,#quantity,#price,#add', $newRow).removeAttr('id');
+            $('span.error', $newRow).remove();
+            //append clone row
+            $('#orderdetailsItems').append($newRow);
+
+            //clear select data
+            $('#orderItemError').empty();
+            Add();
+        }
+        $('#orderdetailsItems').on('click', '.remove', function () {
+            $(this).parents('tr').remove();
+        });
+    }
+    function Add() {
+        var e = $("#productCode :selected").text();
+        $("#productName").val(e);
+        var saleD = {};
+        saleD.saleDetailsId = $("#saleId").val();
+        saleD.serialNo = '';
+        saleD.productCode = $("#productCode :selected").val();
+        saleD.productName = $("#productName").val();
+        saleD.unitOfMeasure = '';
+        saleD.quantity = parseInt($("#quantity").val(), 10);
+        saleD.salePrice = parseFloat($("#price").val(), 10);
+        $.ajax(
+        {
+            type: "POST",
+            url: "/Sale/AddDetails",
+            data: '{saleD: ' + JSON.stringify(saleD) + '}',
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                if (result) {
+                    alert("Added Succesfully")
+                }
+                else
+                    alert("Error, OOPS something Went Wrong, Please Provide Purchase Id, Purchase Date");
+            }
+        });
+    }
+</script>

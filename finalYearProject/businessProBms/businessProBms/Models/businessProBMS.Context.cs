@@ -32,5 +32,7 @@ namespace businessProBms.Models
         public virtual DbSet<Vendor> Vendors { get; set; }
         public virtual DbSet<Purchase> Purchases { get; set; }
         public virtual DbSet<PurchaseDetail> PurchaseDetails { get; set; }
+        public virtual DbSet<Sale> Sales { get; set; }
+        public virtual DbSet<SaleDetail> SaleDetails { get; set; }
     }
 }

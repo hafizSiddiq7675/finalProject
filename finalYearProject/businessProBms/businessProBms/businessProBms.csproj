@@ -177,6 +177,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\PurchaseController.cs" />
+    <Compile Include="Controllers\SaleController.cs" />
     <Compile Include="Controllers\VendorController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -213,6 +214,12 @@
       <DependentUpon>businessProBMS.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\PurchaseDetail.cs">
+      <DependentUpon>businessProBMS.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Sale.cs">
+      <DependentUpon>businessProBMS.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SaleDetail.cs">
       <DependentUpon>businessProBMS.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\sysdiagram.cs">
@@ -302,6 +309,7 @@
     <Content Include="Views\Vendor\Vendors.cshtml" />
     <Content Include="Views\Customer\Customers.cshtml" />
     <Content Include="Views\Purchase\Purchases.cshtml" />
+    <Content Include="Views\Sale\Sales.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
