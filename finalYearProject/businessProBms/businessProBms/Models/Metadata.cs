@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace businessProBms.Models
 {
@@ -86,11 +82,13 @@ namespace businessProBms.Models
         public int purchaseId { get; set; }
         [Display(Name="Date")]
         [Required]
+        [DataType(DataType.Date)]
         public System.DateTime purchaseDate { get; set; }
         [Display(Name="Vendor")]
         [Required]
         public int vendorCode { get; set; }
         [Required]
+        [Display(Name="Vendor Name")]
         public string vendorName { get; set; }
     }
     public class saleMetadata
