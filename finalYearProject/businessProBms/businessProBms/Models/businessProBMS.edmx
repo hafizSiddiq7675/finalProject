@@ -58,6 +58,7 @@
           <Property Name="unitOfMeasure" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="quantity" Type="int" Nullable="false" />
           <Property Name="purchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="amount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
         </EntityType>
         <EntityType Name="Sale">
           <Key>
@@ -80,6 +81,7 @@
           <Property Name="unitOfMeasure" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="quantity" Type="int" Nullable="false" />
           <Property Name="salePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="amount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
         </EntityType>
         <EntityType Name="sysdiagrams">
           <Key>
@@ -242,12 +244,12 @@
           </AssociationSet>
           <EntitySet Name="Purchases" EntityType="businessProBmsModel.Purchase" />
           <EntitySet Name="PurchaseDetails" EntityType="businessProBmsModel.PurchaseDetail" />
+          <EntitySet Name="Sales" EntityType="businessProBmsModel.Sale" />
+          <EntitySet Name="SaleDetails" EntityType="businessProBmsModel.SaleDetail" />
           <AssociationSet Name="FK_PurchaseDetail_Purchase" Association="businessProBmsModel.FK_PurchaseDetail_Purchase">
             <End Role="Purchase" EntitySet="Purchases" />
             <End Role="PurchaseDetail" EntitySet="PurchaseDetails" />
           </AssociationSet>
-          <EntitySet Name="Sales" EntityType="businessProBmsModel.Sale" />
-          <EntitySet Name="SaleDetails" EntityType="businessProBmsModel.SaleDetail" />
           <AssociationSet Name="FK_Table_Sale" Association="businessProBmsModel.FK_Table_Sale">
             <End Role="Sale" EntitySet="Sales" />
             <End Role="SaleDetail" EntitySet="SaleDetails" />
@@ -275,20 +277,9 @@
           <Property Name="unitOfMeasure" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="quantity" Type="Int32" Nullable="false" />
           <Property Name="purchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <NavigationProperty Name="Purchase" Relationship="businessProBmsModel.FK_PurchaseDetail_Purchase" FromRole="PurchaseDetail" ToRole="Purchase" />
         </EntityType>
-        <Association Name="FK_PurchaseDetail_Purchase">
-          <End Type="businessProBmsModel.Purchase" Role="Purchase" Multiplicity="1" />
-          <End Type="businessProBmsModel.PurchaseDetail" Role="PurchaseDetail" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Purchase">
-              <PropertyRef Name="purchaseId" />
-            </Principal>
-            <Dependent Role="PurchaseDetail">
-              <PropertyRef Name="purchaseDetailsId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="Sale">
           <Key>
             <PropertyRef Name="saleId" />
@@ -311,8 +302,21 @@
           <Property Name="unitOfMeasure" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="quantity" Type="Int32" Nullable="false" />
           <Property Name="salePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="amount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <NavigationProperty Name="Sale" Relationship="businessProBmsModel.FK_Table_Sale" FromRole="SaleDetail" ToRole="Sale" />
         </EntityType>
+        <Association Name="FK_PurchaseDetail_Purchase">
+          <End Type="businessProBmsModel.Purchase" Role="Purchase" Multiplicity="1" />
+          <End Type="businessProBmsModel.PurchaseDetail" Role="PurchaseDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Purchase">
+              <PropertyRef Name="purchaseId" />
+            </Principal>
+            <Dependent Role="PurchaseDetail">
+              <PropertyRef Name="purchaseDetailsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Table_Sale">
           <End Type="businessProBmsModel.Sale" Role="Sale" Multiplicity="1" />
           <End Type="businessProBmsModel.SaleDetail" Role="SaleDetail" Multiplicity="*" />
@@ -401,6 +405,7 @@
           <EntitySetMapping Name="PurchaseDetails">
             <EntityTypeMapping TypeName="businessProBmsModel.PurchaseDetail">
               <MappingFragment StoreEntitySet="PurchaseDetail">
+                <ScalarProperty Name="amount" ColumnName="amount" />
                 <ScalarProperty Name="purchasePrice" ColumnName="purchasePrice" />
                 <ScalarProperty Name="quantity" ColumnName="quantity" />
                 <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />
@@ -425,6 +430,7 @@
           <EntitySetMapping Name="SaleDetails">
             <EntityTypeMapping TypeName="businessProBmsModel.SaleDetail">
               <MappingFragment StoreEntitySet="SaleDetail">
+                <ScalarProperty Name="amount" ColumnName="amount" />
                 <ScalarProperty Name="salePrice" ColumnName="salePrice" />
                 <ScalarProperty Name="quantity" ColumnName="quantity" />
                 <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />

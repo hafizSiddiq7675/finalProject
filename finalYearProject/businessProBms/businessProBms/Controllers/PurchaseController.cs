@@ -15,8 +15,12 @@ namespace businessProBms.Controllers
         public ActionResult Purchases()
         {
             ViewBag.vendors = db.Vendors.ToList();
-           
-            return View();
+            Purchase p = new Purchase();
+            p.purchaseId = db.Purchases.Max(pur => pur.purchaseId) + 1;
+            p.purchaseDate = DateTime.Now.Date;
+            ViewBag.purchase = db.Purchases.ToList();
+            ViewBag.vendors = db.Vendors.ToList();
+            return View(p);
         }
         [HttpPost]
         public ActionResult Add([Bind(Include="purchaseId, purchaseDate,vendorCode,vendorName")] Purchase pur)
@@ -46,7 +50,8 @@ namespace businessProBms.Controllers
         public ActionResult AddDetails([Bind(Include = "purchaseDetailsId,serialNo,productCode,productName,unitOfMeasure,quantity,purchasePrice")] PurchaseDetail purD)
         {
             bool result = false;
-            purD.serialNo = db.Purchases.Sum(r => r.purchaseId).ToString();
+            purD.serialNo = db.Purchases.Sum(s => s.purchaseId).ToString();
+            purD.amount = purD.quantity * purD.purchasePrice;
             Product uom = db.Products.First(s => s.code == purD.productCode);
             if (uom != null)
             {
@@ -63,7 +68,7 @@ namespace businessProBms.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public ActionResult AddEditedDetails([Bind(Include = "code,purchaseDetailsId,serialNo,productCode,productName,unitOfMeasure,quantity,purchasePrice")] PurchaseDetail purD)
+        public ActionResult AddEditedDetails([Bind(Include = "code,purchaseDetailsId,serialNo,productCode,productName,unitOfMeasure,quantity,purchasePrice,amount")] PurchaseDetail purD)
         {
             bool result = false;
             if(ModelState.IsValid)
@@ -83,6 +88,7 @@ namespace businessProBms.Controllers
                 pr.unitOfMeasure = purD.unitOfMeasure;
                 pr.quantity = purD.quantity;
                 pr.purchasePrice = purD.purchasePrice;
+                pr.amount = purD.amount;
                 db.SaveChanges();
                 result = true;
             }

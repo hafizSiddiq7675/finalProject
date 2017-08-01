@@ -71,6 +71,7 @@
     <EntitySetMapping Name="PurchaseDetails">
       <EntityTypeMapping TypeName="businessProBmsModel.PurchaseDetail">
         <MappingFragment StoreEntitySet="PurchaseDetail">
+          <ScalarProperty Name="amount" ColumnName="amount" />
           <ScalarProperty Name="purchasePrice" ColumnName="purchasePrice" />
           <ScalarProperty Name="quantity" ColumnName="quantity" />
           <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />
@@ -95,6 +96,7 @@
     <EntitySetMapping Name="SaleDetails">
       <EntityTypeMapping TypeName="businessProBmsModel.SaleDetail">
         <MappingFragment StoreEntitySet="SaleDetail">
+          <ScalarProperty Name="amount" ColumnName="amount" />
           <ScalarProperty Name="salePrice" ColumnName="salePrice" />
           <ScalarProperty Name="quantity" ColumnName="quantity" />
           <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />

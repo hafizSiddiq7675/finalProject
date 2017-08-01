@@ -99,6 +99,7 @@ namespace businessProBms.Models
         public int saleId { get; set; }
         [Display(Name="Date")]
         [Required]
+        [DataType(DataType.Date)]
         public System.DateTime saleDate { get; set; }
         [Display(Name="Customer")]
         [Required]

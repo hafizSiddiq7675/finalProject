@@ -11,11 +11,11 @@
         <EntityTypeShape EntityType="businessProBmsModel.sysdiagram" Width="1.5" PointX="6.5" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="businessProBmsModel.Vendor" Width="1.5" PointX="8.5" PointY="1" IsExpanded="true" />
         <AssociationConnector Association="businessProBmsModel.FK_Product_Category1" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="businessProBmsModel.Purchase" Width="1.5" PointX="0.75" PointY="5.375" />
-        <EntityTypeShape EntityType="businessProBmsModel.PurchaseDetail" Width="1.5" PointX="3" PointY="5" />
+        <EntityTypeShape EntityType="businessProBmsModel.Purchase" Width="1.5" PointX="5.75" PointY="4.5" />
+        <EntityTypeShape EntityType="businessProBmsModel.PurchaseDetail" Width="1.5" PointX="8" PointY="4" />
+        <EntityTypeShape EntityType="businessProBmsModel.Sale" Width="1.5" PointX="0.75" PointY="5.5" />
+        <EntityTypeShape EntityType="businessProBmsModel.SaleDetail" Width="1.5" PointX="3" PointY="5" />
         <AssociationConnector Association="businessProBmsModel.FK_PurchaseDetail_Purchase" />
-        <EntityTypeShape EntityType="businessProBmsModel.Sale" Width="1.5" PointX="5.375" PointY="4.375" />
-        <EntityTypeShape EntityType="businessProBmsModel.SaleDetail" Width="1.5" PointX="7.625" PointY="4" />
         <AssociationConnector Association="businessProBmsModel.FK_Table_Sale" />
       </Diagram>
     </edmx:Diagrams>

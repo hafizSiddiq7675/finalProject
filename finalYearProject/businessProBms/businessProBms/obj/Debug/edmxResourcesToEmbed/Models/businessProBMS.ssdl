@@ -53,6 +53,7 @@
     <Property Name="unitOfMeasure" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="quantity" Type="int" Nullable="false" />
     <Property Name="purchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="amount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
   </EntityType>
   <EntityType Name="Sale">
     <Key>
@@ -75,6 +76,7 @@
     <Property Name="unitOfMeasure" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="quantity" Type="int" Nullable="false" />
     <Property Name="salePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="amount" Type="decimal" Precision="18" Scale="0" Nullable="false" />
   </EntityType>
   <EntityType Name="sysdiagrams">
     <Key>

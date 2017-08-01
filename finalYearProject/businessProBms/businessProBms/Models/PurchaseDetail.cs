@@ -22,6 +22,7 @@ namespace businessProBms.Models
         public string unitOfMeasure { get; set; }
         public int quantity { get; set; }
         public decimal purchasePrice { get; set; }
+        public decimal amount { get; set; }
     
         public virtual Purchase Purchase { get; set; }
     }
