@@ -23,6 +23,18 @@
           <Property Name="address" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="creditLimit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
         </EntityType>
+        <EntityType Name="ExpenseAccount">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="int" Nullable="false" />
+          <Property Name="name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="description" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="parentCode" Type="int" Nullable="false" />
+          <Property Name="isGroup" Type="bit" />
+          <Property Name="openingDebit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="openingCredit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+        </EntityType>
         <EntityType Name="Product">
           <Key>
             <PropertyRef Name="code" />
@@ -103,6 +115,24 @@
           <Property Name="address" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="debitLimit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
         </EntityType>
+        <EntityType Name="Voucher">
+          <Key>
+            <PropertyRef Name="voucherNo" />
+          </Key>
+          <Property Name="voucherNo" Type="int" Nullable="false" />
+          <Property Name="voucherDate" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="VoucherBody">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="int" Nullable="false" />
+          <Property Name="voucherNo" Type="int" Nullable="false" />
+          <Property Name="accountNo" Type="int" Nullable="false" />
+          <Property Name="description" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="debit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="credit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+        </EntityType>
         <Association Name="FK_Product_Category1">
           <End Role="Category" Type="Self.Category" Multiplicity="1" />
           <End Role="Product" Type="Self.Product" Multiplicity="*" />
@@ -139,9 +169,22 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_VoucherBody_Voucher">
+          <End Role="Voucher" Type="Self.Voucher" Multiplicity="1" />
+          <End Role="VoucherBody" Type="Self.VoucherBody" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Voucher">
+              <PropertyRef Name="voucherNo" />
+            </Principal>
+            <Dependent Role="VoucherBody">
+              <PropertyRef Name="voucherNo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="businessProBmsModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ExpenseAccount" EntityType="Self.ExpenseAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Purchase" EntityType="Self.Purchase" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PurchaseDetail" EntityType="Self.PurchaseDetail" Schema="dbo" store:Type="Tables" />
@@ -149,6 +192,8 @@
           <EntitySet Name="SaleDetail" EntityType="Self.SaleDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Vendor" EntityType="Self.Vendor" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Voucher" EntityType="Self.Voucher" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VoucherBody" EntityType="Self.VoucherBody" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_Product_Category1" Association="Self.FK_Product_Category1">
             <End Role="Category" EntitySet="Category" />
             <End Role="Product" EntitySet="Product" />
@@ -160,6 +205,10 @@
           <AssociationSet Name="FK_Table_Sale" Association="Self.FK_Table_Sale">
             <End Role="Sale" EntitySet="Sale" />
             <End Role="SaleDetail" EntitySet="SaleDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VoucherBody_Voucher" Association="Self.FK_VoucherBody_Voucher">
+            <End Role="Voucher" EntitySet="Voucher" />
+            <End Role="VoucherBody" EntitySet="VoucherBody" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -254,6 +303,13 @@
             <End Role="Sale" EntitySet="Sales" />
             <End Role="SaleDetail" EntitySet="SaleDetails" />
           </AssociationSet>
+          <EntitySet Name="ExpenseAccounts" EntityType="businessProBmsModel.ExpenseAccount" />
+          <EntitySet Name="Vouchers" EntityType="businessProBmsModel.Voucher" />
+          <EntitySet Name="VoucherBodies" EntityType="businessProBmsModel.VoucherBody" />
+          <AssociationSet Name="FK_VoucherBody_Voucher" Association="businessProBmsModel.FK_VoucherBody_Voucher">
+            <End Role="Voucher" EntitySet="Vouchers" />
+            <End Role="VoucherBody" EntitySet="VoucherBodies" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Purchase">
           <Key>
@@ -326,6 +382,50 @@
             </Principal>
             <Dependent Role="SaleDetail">
               <PropertyRef Name="saleDetailsId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ExpenseAccount">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="Int32" Nullable="false" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="parentCode" Type="Int32" Nullable="false" />
+          <Property Name="isGroup" Type="Boolean" />
+          <Property Name="openingDebit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="openingCredit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+        </EntityType>
+        <EntityType Name="Voucher">
+          <Key>
+            <PropertyRef Name="voucherNo" />
+          </Key>
+          <Property Name="voucherNo" Type="Int32" Nullable="false" />
+          <Property Name="voucherDate" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="VoucherBodies" Relationship="businessProBmsModel.FK_VoucherBody_Voucher" FromRole="Voucher" ToRole="VoucherBody" />
+        </EntityType>
+        <EntityType Name="VoucherBody">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="Int32" Nullable="false" />
+          <Property Name="voucherNo" Type="Int32" Nullable="false" />
+          <Property Name="accountNo" Type="Int32" Nullable="false" />
+          <Property Name="description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="debit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="credit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <NavigationProperty Name="Voucher" Relationship="businessProBmsModel.FK_VoucherBody_Voucher" FromRole="VoucherBody" ToRole="Voucher" />
+        </EntityType>
+        <Association Name="FK_VoucherBody_Voucher">
+          <End Type="businessProBmsModel.Voucher" Role="Voucher" Multiplicity="1" />
+          <End Type="businessProBmsModel.VoucherBody" Role="VoucherBody" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Voucher">
+              <PropertyRef Name="voucherNo" />
+            </Principal>
+            <Dependent Role="VoucherBody">
+              <PropertyRef Name="voucherNo" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -438,6 +538,39 @@
                 <ScalarProperty Name="productCode" ColumnName="productCode" />
                 <ScalarProperty Name="serialNo" ColumnName="serialNo" />
                 <ScalarProperty Name="saleDetailsId" ColumnName="saleDetailsId" />
+                <ScalarProperty Name="code" ColumnName="code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExpenseAccounts">
+            <EntityTypeMapping TypeName="businessProBmsModel.ExpenseAccount">
+              <MappingFragment StoreEntitySet="ExpenseAccount">
+                <ScalarProperty Name="openingCredit" ColumnName="openingCredit" />
+                <ScalarProperty Name="openingDebit" ColumnName="openingDebit" />
+                <ScalarProperty Name="isGroup" ColumnName="isGroup" />
+                <ScalarProperty Name="parentCode" ColumnName="parentCode" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="code" ColumnName="code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Vouchers">
+            <EntityTypeMapping TypeName="businessProBmsModel.Voucher">
+              <MappingFragment StoreEntitySet="Voucher">
+                <ScalarProperty Name="voucherDate" ColumnName="voucherDate" />
+                <ScalarProperty Name="voucherNo" ColumnName="voucherNo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VoucherBodies">
+            <EntityTypeMapping TypeName="businessProBmsModel.VoucherBody">
+              <MappingFragment StoreEntitySet="VoucherBody">
+                <ScalarProperty Name="credit" ColumnName="credit" />
+                <ScalarProperty Name="debit" ColumnName="debit" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="accountNo" ColumnName="accountNo" />
+                <ScalarProperty Name="voucherNo" ColumnName="voucherNo" />
                 <ScalarProperty Name="code" ColumnName="code" />
               </MappingFragment>
             </EntityTypeMapping>

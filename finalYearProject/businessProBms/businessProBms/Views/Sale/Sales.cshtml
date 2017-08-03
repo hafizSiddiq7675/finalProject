@@ -30,7 +30,7 @@
                     </td>
                     <td>
                         @Html.DropDownListFor(m => m.customerCode, new SelectList(ViewBag.customers, "code", "name"),
-            "--Select Vendor Here--", new { @class = "form-control", id = "ccode", onchange = "myfunc()" })
+            "--Select Customer Here--", new { @class = "form-control", id = "ccode", onchange = "myfunc()" })
                         @Html.ValidationMessageFor(m => m.customerCode)
                         @Html.HiddenFor(m => m.customerName, new { @class = "form-control", id = "cname" })
                     </td>
@@ -72,11 +72,11 @@
             </tr>
             <tr class="mycontainer" id="mainrow">
                 @*<td>
-                    <select id="saleId" class="Sid form-control">
-                        <option>--Select--</option>
-                    </select>
-                    <span class="error">Select Sale Id</span>
-                </td>*@
+                        <select id="saleId" class="Sid form-control">
+                            <option>--Select--</option>
+                        </select>
+                        <span class="error">Select Sale Id</span>
+                    </td>*@
                 <td>
                     <select id="productCode" class="product form-control">
                         <option>--Select--</option>
@@ -99,25 +99,28 @@
                 </td>
             </tr>
         </table>
-        <div id="orderItems">
-            <table class="table table-responsive" id="orderdetailsItems"></table>
-            
+        <div style="padding:10px 0; text-align:right">
+            <a href="@Url.Action("printSaleInvoice", "Sale", new {id= @Model.saleId})"><input id="submit" type="button" value="Print" class="btn btn-warning" style="padding:10px 20px" /></a>
         </div>
-</div>
+    </div>
 </div>
 <table id="listSale" class="table table-bordered">
     <thead>
         <tr>
-            <th>Sale ID</th>
             <th>Product Code</th>
             <th>Product Name</th>
             <th>Quantity</th>
-            <th>Price</th>
+            <th>Price(RS)</th>
             <th>Amount</th>
         </tr>
     </thead>
     <tbody></tbody>
 </table>
+<input type="hidden" id="preTotal" />
+<table id="total">
+    <tr></tr>
+</table>
+<hr />
 <script>
     function myfunc() {
         var isAllValid = true;
@@ -145,12 +148,46 @@
                 contentType: "application/json; charset=utf-8",
                 success: function (result) {
                     if (result) {
-                        window.location = "/Sale/Sales"
+                        //window.location = "/Sale/Sales"
+                        allSales();
                     }
                     else
                         alert("Error, OOPS something Went Wrong, Please Provide All Required Data");
                 }
             });
+        }
+    }
+    function allSales() {
+        $.ajax({
+            url: "/Sale/getAllSales",
+            type: "GET",
+            //data: { id: element },
+            dataType: "json",
+            success: function (data) {
+                var rows = '';
+                $.each(data, function (i, item) {
+                    var date = ToJavaScriptDate(item.saleDate);
+                    rows += "<tr class='Search' id='_row(" + item.saleId + ")'>"
+                    rows += "<td>" + item.saleId + "</td>"
+                    rows += "<td>" + date + "</td>"
+                    rows += "<td>" + item.customerCode + "</td>"
+                    rows += "<td>" + item.customerName + "</td>"
+                    rows += "<td><a href='#' onclick='return getPurchaseById(" + item.saleId + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a><a href='#' onclick='return getPurchaseDetailsById(" + item.saleId + ")'><span class='glyphicon glyphicon-book'></span>Details</a>|<a href='#' onclick='return ConfirmDelete(" + item.saleId + ")'><span class='glyphicon glyphicon-tras'></span>Delete</a></td>"
+                    rows += "</tr>";
+                    $("#sales tbody").html(rows);
+                    //Show Model
+                });
+            },
+            eror: function (err) {
+                alert("Error : " + err.responseText);
+            }
+        });
+        function ToJavaScriptDate(value) {
+            var pattern = /Date\(([^)]+)\)/;
+            var results = pattern.exec(value);
+            var dt = new Date(parseFloat(results[1]));
+            // return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+            return dt.getFullYear() + "/" + (dt.getMonth() + 1) + "/" + dt.getDate();
         }
     }
     //function loadSid(element) {
@@ -177,6 +214,8 @@
     }
     function load() {
         loadProducts($("#productCode"));
+        allSales();
+        parseInt($("#preTotal").val(0))
     }
     window.onload(load());
     function validate() {
@@ -200,8 +239,7 @@
 
         if (isAllValid) {
             var rows = '';
-            rows+="<tr>"
-            rows += "<td>" + ($("#sid").val() - 1) + "</td>"
+            rows += "<tr>"
             rows += "<td>" + $("#productCode :selected").val() + "</td>"
             rows += "<td>" + $("#productCode :selected").text() + "</td>"
             rows += "<td>" + parseInt($("#quantity").val(), 10) + "</td>"
@@ -209,6 +247,10 @@
             rows += "<td>" + (parseInt($("#quantity").val(), 10) * parseFloat($("#price").val(), 10)) + "</td>"
             rows += "</tr>";
             $("#listSale tbody").append(rows);
+            var newTotal = (parseInt($("#quantity").val(), 10) * parseFloat($("#price").val(), 10));
+            var total = newTotal + parseInt($("#preTotal").val());
+            $("#total tr").html("<b>Total(RS): </b> " + total);
+            $("#preTotal").val(total);
             Add();
         }
         $('#orderdetailsItems').on('click', '.remove', function () {
@@ -219,7 +261,7 @@
         var e = $("#productCode :selected").text();
         $("#productName").val(e);
         var saleD = {};
-        saleD.saleDetailsId = ($("#sid").val()-1);
+        saleD.saleDetailsId = $("#sid").val();
         saleD.serialNo = '';
         saleD.productCode = $("#productCode :selected").val();
         saleD.productName = $("#productName").val();
@@ -241,6 +283,9 @@
             }
         });
     }
+    function getPurchaseById(element) {
+
+    }
 </script>
 <a href="@Url.Action("Purchases","Purchase")"><input id="add" type="button" value="New" class="btn btn-primary" /></a>
 <div class="input-group" style="margin-left:820px">
@@ -249,46 +294,58 @@
         </i>
     </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
 </div>
-<table class="table table-bordered table-responsive">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.saleId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.saleDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.customerCode)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.customerName)
-        </th>
-        <th>Action</th>
-    </tr>
-
-    @foreach (var item in ViewBag.sales as List<Sale>)
-    {
-        <tr class="Search" id="_row@item.saleId">
-            <td>
-                @Html.DisplayFor(modelItem => item.saleId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.saleDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.customerCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.customerName)
-            </td>
-            <td>
-                <a href="#" onclick="getPurchaseById(@item.saleId)"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
-                <a href="#" onclick="getPurchaseDetailsById(@item.saleId)"><span class="glyphicon glyphicon-book"></span>Details</a> |
-                <a href="#" onclick="ConfirmDelete(@item.saleId)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
-            </td>
+<table id="sales" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Sale ID</th>
+            <th>Date</th>
+            <th>Customer Code</th>
+            <th>Customer Name</th>
+            <th>Action</th>
         </tr>
-    }
+    </thead>
+    <tbody></tbody>
 </table>
+@*<table class="table table-bordered table-responsive">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.saleId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.saleDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.customerCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.customerName)
+            </th>
+            <th>Action</th>
+        </tr>
+
+        @foreach (var item in ViewBag.sales as List<Sale>)
+        {
+            <tr class="Search" id="_row@item.saleId">
+                <td>
+                    @Html.DisplayFor(modelItem => item.saleId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.saleDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.customerCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.customerName)
+                </td>
+                <td>
+                    <a href="#" onclick="getPurchaseById(@item.saleId)"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+                    <a href="#" onclick="getPurchaseDetailsById(@item.saleId)"><span class="glyphicon glyphicon-book"></span>Details</a> |
+                    <a href="#" onclick="ConfirmDelete(@item.saleId)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+                </td>
+            </tr>
+        }
+    </table>*@
 <input type="hidden" id="hiddenCode" />
 <div class="modal" id="delModal">
     <div class="modal-dialog">

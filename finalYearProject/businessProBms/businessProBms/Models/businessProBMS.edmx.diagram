@@ -17,6 +17,10 @@
         <EntityTypeShape EntityType="businessProBmsModel.SaleDetail" Width="1.5" PointX="3" PointY="5" />
         <AssociationConnector Association="businessProBmsModel.FK_PurchaseDetail_Purchase" />
         <AssociationConnector Association="businessProBmsModel.FK_Table_Sale" />
+        <EntityTypeShape EntityType="businessProBmsModel.ExpenseAccount" Width="1.5" PointX="5.375" PointY="8" />
+        <EntityTypeShape EntityType="businessProBmsModel.Voucher" Width="1.5" PointX="7.375" PointY="8.375" />
+        <EntityTypeShape EntityType="businessProBmsModel.VoucherBody" Width="1.5" PointX="9.625" PointY="8" />
+        <AssociationConnector Association="businessProBmsModel.FK_VoucherBody_Voucher" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

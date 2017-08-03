@@ -48,6 +48,10 @@
       <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Rotativa, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rotativa.1.6.4\lib\net40\Rotativa.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -174,6 +178,8 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
+    <Compile Include="Controllers\ExpenseController.cs" />
+    <Compile Include="Controllers\ExpenseVoucherController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\PurchaseController.cs" />
@@ -204,6 +210,9 @@
     <Compile Include="Models\Customer.cs">
       <DependentUpon>businessProBMS.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ExpenseAccount.cs">
+      <DependentUpon>businessProBMS.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Metadata.cs" />
     <Compile Include="Models\partialClasses.cs" />
@@ -228,6 +237,13 @@
     <Compile Include="Models\Vendor.cs">
       <DependentUpon>businessProBMS.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Voucher.cs">
+      <DependentUpon>businessProBMS.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\VoucherBody.cs">
+      <DependentUpon>businessProBMS.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\voucherViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -242,6 +258,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <EntityDeploy Include="Models\businessProBMS.edmx">
@@ -265,6 +282,7 @@
     <Content Include="Scripts\gridmvc.js" />
     <Content Include="Scripts\gridmvc.lang.ru.js" />
     <Content Include="Scripts\gridmvc.min.js" />
+    <Content Include="App_Browsers\qt.browser" />
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
     <Content Include="Scripts\jquery-1.12.4.js" />
     <Content Include="Scripts\jquery-1.12.4.min.js" />
@@ -311,6 +329,10 @@
     <Content Include="Views\Purchase\Purchases.cshtml" />
     <Content Include="Views\Sale\Sales.cshtml" />
     <Content Include="Views\Purchase\showAll.cshtml" />
+    <Content Include="Views\Sale\printSaleInvoice.cshtml" />
+    <Content Include="Views\Purchase\printPurchaseInvoice.cshtml" />
+    <Content Include="Views\Expense\Expenses.cshtml" />
+    <Content Include="Views\ExpenseVoucher\ExpenseVouchers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace businessProBms.Models
 {
@@ -143,5 +144,58 @@ namespace businessProBms.Models
         [Display(Name="Price")]
         [Required]
         public decimal purchasePrice { get; set; }
+    }
+    public class expenseAccountMetadata
+    {
+        [Display(Name="Account Code")]
+        [Required]
+        public int code { get; set; }
+        [Display(Name = "Account Name")]
+        [Required]
+        public string name { get; set; }
+        [Display(Name = "Description")]
+        [Required]
+        public string description { get; set; }
+        [Display(Name = "Parent Account Code")]
+        [Required]
+        public int parentCode { get; set; }
+        [Display(Name = "Is Group?")]
+        public Nullable<bool> isGroup { get; set; }
+        [Display(Name = "Opening Debit (RS)")]
+        [Required]
+        public decimal openingDebit { get; set; }
+        [Display(Name = "Opening Cridit")]
+        [Required]
+        public decimal openingCredit { get; set; }
+    }
+    public class voucherMetadata
+    {
+        [Display(Name="Voucher Number")]
+        [Required]
+        public int voucherNo { get; set; }
+        [Display(Name="Date")]
+        [DataType(DataType.Date)]
+        [Required]
+        public System.DateTime voucherDate { get; set; }
+    }
+    public class voucherBodyMetadata
+    {
+        [Display(Name="Code")]
+        [Required]
+        public int code { get; set; }
+        [Display(Name="Voucher Number")]
+        [Required]
+        public int voucherNo { get; set; }
+        [Display(Name="Account Number")]
+        [Required]
+        public int accountNo { get; set; }
+        [Display(Name="Description")]
+        public string description { get; set; }
+        [Display(Name="Debit")]
+        [Required]
+        public decimal debit { get; set; }
+        [Display(Name="Creditt")]
+        [Required]
+        public decimal credit { get; set; }
     }
 }

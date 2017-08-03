@@ -34,4 +34,16 @@ namespace businessProBms.Models
     public partial class SaleDetail 
     {
     }
+    [MetadataType(typeof(expenseAccountMetadata))]
+    public partial class ExpenseAccount
+    {
+    }
+    [MetadataType(typeof(voucherMetadata))]
+    public partial class Voucher
+    {
+    }
+    [MetadataType(typeof(voucherBodyMetadata))]
+    public partial class VoucherBody
+    {
+    }
 }

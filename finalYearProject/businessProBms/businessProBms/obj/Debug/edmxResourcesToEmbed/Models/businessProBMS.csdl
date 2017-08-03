@@ -88,6 +88,13 @@
       <End Role="Sale" EntitySet="Sales" />
       <End Role="SaleDetail" EntitySet="SaleDetails" />
     </AssociationSet>
+    <EntitySet Name="ExpenseAccounts" EntityType="businessProBmsModel.ExpenseAccount" />
+    <EntitySet Name="Vouchers" EntityType="businessProBmsModel.Voucher" />
+    <EntitySet Name="VoucherBodies" EntityType="businessProBmsModel.VoucherBody" />
+    <AssociationSet Name="FK_VoucherBody_Voucher" Association="businessProBmsModel.FK_VoucherBody_Voucher">
+      <End Role="Voucher" EntitySet="Vouchers" />
+      <End Role="VoucherBody" EntitySet="VoucherBodies" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="Purchase">
     <Key>
@@ -160,6 +167,50 @@
       </Principal>
       <Dependent Role="SaleDetail">
         <PropertyRef Name="saleDetailsId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="ExpenseAccount">
+    <Key>
+      <PropertyRef Name="code" />
+    </Key>
+    <Property Name="code" Type="Int32" Nullable="false" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="parentCode" Type="Int32" Nullable="false" />
+    <Property Name="isGroup" Type="Boolean" />
+    <Property Name="openingDebit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="openingCredit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+  </EntityType>
+  <EntityType Name="Voucher">
+    <Key>
+      <PropertyRef Name="voucherNo" />
+    </Key>
+    <Property Name="voucherNo" Type="Int32" Nullable="false" />
+    <Property Name="voucherDate" Type="DateTime" Nullable="false" Precision="0" />
+    <NavigationProperty Name="VoucherBodies" Relationship="businessProBmsModel.FK_VoucherBody_Voucher" FromRole="Voucher" ToRole="VoucherBody" />
+  </EntityType>
+  <EntityType Name="VoucherBody">
+    <Key>
+      <PropertyRef Name="code" />
+    </Key>
+    <Property Name="code" Type="Int32" Nullable="false" />
+    <Property Name="voucherNo" Type="Int32" Nullable="false" />
+    <Property Name="accountNo" Type="Int32" Nullable="false" />
+    <Property Name="description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="debit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="credit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <NavigationProperty Name="Voucher" Relationship="businessProBmsModel.FK_VoucherBody_Voucher" FromRole="VoucherBody" ToRole="Voucher" />
+  </EntityType>
+  <Association Name="FK_VoucherBody_Voucher">
+    <End Type="businessProBmsModel.Voucher" Role="Voucher" Multiplicity="1" />
+    <End Type="businessProBmsModel.VoucherBody" Role="VoucherBody" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Voucher">
+        <PropertyRef Name="voucherNo" />
+      </Principal>
+      <Dependent Role="VoucherBody">
+        <PropertyRef Name="voucherNo" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

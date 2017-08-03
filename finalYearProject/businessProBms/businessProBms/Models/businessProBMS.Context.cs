@@ -34,5 +34,8 @@ namespace businessProBms.Models
         public virtual DbSet<PurchaseDetail> PurchaseDetails { get; set; }
         public virtual DbSet<Sale> Sales { get; set; }
         public virtual DbSet<SaleDetail> SaleDetails { get; set; }
+        public virtual DbSet<ExpenseAccount> ExpenseAccounts { get; set; }
+        public virtual DbSet<Voucher> Vouchers { get; set; }
+        public virtual DbSet<VoucherBody> VoucherBodies { get; set; }
     }
 }

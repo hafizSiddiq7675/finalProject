@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using businessProBms.Models;
+using Rotativa;
 namespace businessProBms.Controllers
 {
     public class SaleController : Controller
@@ -17,7 +16,6 @@ namespace businessProBms.Controllers
             s.saleId = db.Sales.Max(pur => pur.saleId) + 1;
             s.saleDate = DateTime.Now.Date;
             ViewBag.customers = db.Customers.ToList();
-            ViewBag.sales = db.Sales.ToList();
             return View(s);
         }
        [HttpPost]
@@ -74,6 +72,22 @@ namespace businessProBms.Controllers
                 result = true;
             }
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult getAllSales()
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            var sal = db.Sales.ToList();
+            return Json(sal, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult printSaleInvoice(int? id)
+        {
+            Sale sa = db.Sales.SingleOrDefault(x => x.saleId == id);
+            ViewBag.sale = db.SaleDetails.Where(x => x.saleDetailsId == id).ToList();
+            return new ViewAsPdf(sa);
+        }
+        public ActionResult Edit(int? id)
+        {
+            return View("Purchases");
         }
 	}
 }

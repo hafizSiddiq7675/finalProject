@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using businessProBms.Models;
-
+using Rotativa;
 namespace businessProBms.Controllers
 {
     public class PurchaseController : Controller
@@ -18,8 +16,6 @@ namespace businessProBms.Controllers
             Purchase p = new Purchase();
             p.purchaseId = db.Purchases.Max(pur => pur.purchaseId) + 1;
             p.purchaseDate = DateTime.Now.Date;
-            ViewBag.purchase = db.Purchases.ToList();
-            ViewBag.vendors = db.Vendors.ToList();
             return View(p);
         }
         [HttpPost]
@@ -150,11 +146,23 @@ namespace businessProBms.Controllers
             Purchase pr = db.Purchases.ToList().Find(s => s.purchaseId==id);
             return Json(pr, JsonRequestBehavior.AllowGet);
         }
+        public ActionResult getAllPurchase()
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            var Pur = db.Purchases.ToList();
+            return Json(Pur, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult getPurchaseDetails(int id)
         {
             db.Configuration.ProxyCreationEnabled = false;
             var data = db.PurchaseDetails.Where(s => s.purchaseDetailsId == id).ToList();
             return Json(data, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult printPurchaseInvoice(int id)
+        {
+            Purchase pa = db.Purchases.SingleOrDefault(x => x.purchaseId == id);
+            ViewBag.purchase = db.PurchaseDetails.Where(x => x.purchaseDetailsId == id).ToList();
+            return new ViewAsPdf(pa);
         }
 	}
 }

@@ -18,6 +18,18 @@
     <Property Name="address" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="creditLimit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
   </EntityType>
+  <EntityType Name="ExpenseAccount">
+    <Key>
+      <PropertyRef Name="code" />
+    </Key>
+    <Property Name="code" Type="int" Nullable="false" />
+    <Property Name="name" Type="varchar" MaxLength="20" Nullable="false" />
+    <Property Name="description" Type="varchar" MaxLength="100" Nullable="false" />
+    <Property Name="parentCode" Type="int" Nullable="false" />
+    <Property Name="isGroup" Type="bit" />
+    <Property Name="openingDebit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="openingCredit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+  </EntityType>
   <EntityType Name="Product">
     <Key>
       <PropertyRef Name="code" />
@@ -98,6 +110,24 @@
     <Property Name="address" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="debitLimit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
   </EntityType>
+  <EntityType Name="Voucher">
+    <Key>
+      <PropertyRef Name="voucherNo" />
+    </Key>
+    <Property Name="voucherNo" Type="int" Nullable="false" />
+    <Property Name="voucherDate" Type="date" Nullable="false" />
+  </EntityType>
+  <EntityType Name="VoucherBody">
+    <Key>
+      <PropertyRef Name="code" />
+    </Key>
+    <Property Name="code" Type="int" Nullable="false" />
+    <Property Name="voucherNo" Type="int" Nullable="false" />
+    <Property Name="accountNo" Type="int" Nullable="false" />
+    <Property Name="description" Type="varchar" MaxLength="100" Nullable="false" />
+    <Property Name="debit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="credit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+  </EntityType>
   <Association Name="FK_Product_Category1">
     <End Role="Category" Type="Self.Category" Multiplicity="1" />
     <End Role="Product" Type="Self.Product" Multiplicity="*" />
@@ -134,9 +164,22 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK_VoucherBody_Voucher">
+    <End Role="Voucher" Type="Self.Voucher" Multiplicity="1" />
+    <End Role="VoucherBody" Type="Self.VoucherBody" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Voucher">
+        <PropertyRef Name="voucherNo" />
+      </Principal>
+      <Dependent Role="VoucherBody">
+        <PropertyRef Name="voucherNo" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <EntityContainer Name="businessProBmsModelStoreContainer">
     <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Customer" EntityType="Self.Customer" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ExpenseAccount" EntityType="Self.ExpenseAccount" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Purchase" EntityType="Self.Purchase" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="PurchaseDetail" EntityType="Self.PurchaseDetail" Schema="dbo" store:Type="Tables" />
@@ -144,6 +187,8 @@
     <EntitySet Name="SaleDetail" EntityType="Self.SaleDetail" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="Vendor" EntityType="Self.Vendor" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Voucher" EntityType="Self.Voucher" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="VoucherBody" EntityType="Self.VoucherBody" Schema="dbo" store:Type="Tables" />
     <AssociationSet Name="FK_Product_Category1" Association="Self.FK_Product_Category1">
       <End Role="Category" EntitySet="Category" />
       <End Role="Product" EntitySet="Product" />
@@ -155,6 +200,10 @@
     <AssociationSet Name="FK_Table_Sale" Association="Self.FK_Table_Sale">
       <End Role="Sale" EntitySet="Sale" />
       <End Role="SaleDetail" EntitySet="SaleDetail" />
+    </AssociationSet>
+    <AssociationSet Name="FK_VoucherBody_Voucher" Association="Self.FK_VoucherBody_Voucher">
+      <End Role="Voucher" EntitySet="Voucher" />
+      <End Role="VoucherBody" EntitySet="VoucherBody" />
     </AssociationSet>
   </EntityContainer>
 </Schema>

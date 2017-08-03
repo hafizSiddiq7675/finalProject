@@ -1,0 +1,180 @@
+﻿@using businessProBms.Models
+@model voucherViewModel
+@{
+    ViewBag.Title = "Expense Vouchers";
+}
+<h2>Expense Vouchers</h2>
+<hr />
+<div class="container">
+    <table class="table-responsive">
+        <tr>
+            <td><b>@Html.LabelFor(m=>m.voucher.voucherNo)</b></td>
+            <td><b>@Html.LabelFor(m => m.voucher.voucherDate)</b></td>
+        </tr>
+        <tr>
+            <td>
+                @Html.TextBoxFor(m => m.voucher.voucherNo, new { @class="form-control"})
+                @Html.ValidationMessageFor(m=>m.voucher.voucherNo)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.voucher.voucherDate, new { @class="form-control"})
+                @Html.ValidationMessageFor(m => m.voucher.voucherDate)
+            </td>
+        </tr>
+    </table>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-horizontal">
+            <div class="form-group">
+                @Html.LabelFor(m => m.voucherDetail.code, new {@class="label-control" })
+                @Html.TextBoxFor(m => m.voucherDetail.code, new { @class="form-control", placeholder="Enter Code Here.."})
+                @Html.ValidationMessageFor(m=>m.voucherDetail.code)
+            </div>
+            <div class="form-group">
+                @Html.HiddenFor(m => m.voucherDetail.voucherNo, new { @class = "form-gruop", placeholder = "Enter Code Here.." })
+                @Html.LabelFor(m=>m.voucherDetail.accountNo)
+                @Html.DropDownListFor(m => m.voucherDetail.accountNo, new SelectList(ViewBag.accounts, "code","name"),
+                         "--Select Account--", new { @class="form-control"})
+                @Html.ValidationMessageFor(m=>m.voucherDetail.accountNo)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.voucherDetail.description, new { @class = "label-control" })
+                @Html.TextAreaFor(m => m.voucherDetail.description, new { @class = "form-control", placeholder = "Enter Description Here.." })
+                @Html.ValidationMessageFor(m => m.voucherDetail.description)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.voucherDetail.debit, new { @class = "label-control" })
+                @Html.TextBoxFor(m => m.voucherDetail.debit, new { @class = "form-control", placeholder = "Enter Debit Here.." })
+                @Html.ValidationMessageFor(m => m.voucherDetail.debit)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.voucherDetail.credit, new { @class = "label-control" })
+                @Html.TextBoxFor(m => m.voucherDetail.credit, new { @class = "form-control", placeholder = "Enter Credit Here.." })
+                @Html.ValidationMessageFor(m => m.voucherDetail.credit)
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-success" aria-hidden="true" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="col-md-8">
+        <table id="listExpenses" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Voucher No</th>
+                    <th>Account No</th>
+                    <th>Description</th>
+                    <th>Debit</th>
+                    <th>Credit</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<div class="input-group" style=" margin-left: 800px;">
+    <span class="input-group-addon">
+        <i class="glyphicon glyphicon-search">
+        </i>
+    </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
+</div><br />
+    <table class="table table-bordered table-striped table-responsive">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(m => m.voucher.voucherNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m => m.voucher.voucherDate)
+            </th>
+            <th>
+                Action
+            </th>
+        </tr>
+        @foreach (var item in ViewBag.vouchers as List<Voucher>)
+        {
+            <tr class="Search" id="_row@item.code">
+                <td>
+                    @Html.DisplayFor(m => item.voucherNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.voucherDate)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.voucherNo }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
+                    @Html.ActionLink("Details", "Edit", new { id = item.voucherNo }, htmlAttributes: new { @class = "glyphicon glyphicon-book" }) |
+                    <a href="#" onclick="ConfirmDelete(@item.voucherNo)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+<input type="hidden" id="hiddenCode" />
+<div class="modal" id="delModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Are you Sure you want to delete this?</h4>
+
+                <div class="modal-body">
+                    <p>This item <strong>And Its Details</strong> will be deleted permanently. </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                    <a href="#" class="btn btn-danger" onclick="DeleteVoucher()">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script>
+    var ConfirmDelete = function (code) {
+        $("#hiddenCode").val(code);
+        $("#delModal").modal('show');
+    }
+
+    var DeleteVoucher = function () {
+        var mid = $("#hiddenCode").val();
+        $.ajax({
+            type: "POST",
+            url: "/ExpenseVoucher/DeleteConfirmed",
+            data: { id: mid },
+            success: function (result) {
+                $("#myModal").modal("hide");
+                $("#_row_" + mid).remove();
+                window.location = "/ExpenseVoucher/ExpenseVouchers"
+            },
+            error: function (result) {
+                alert('OOps,Something bad happened');
+            }
+
+        })
+    }
+    $(document).ready(function () {
+        function Contains(text_one, text_two) {
+            if (text_one.indexOf(text_two) != -1)
+                return true;
+        }
+        $("#Search").keyup(function () {
+            var searchtext = $("#Search").val().toLowerCase();
+            $(".Search").each(function () {
+                if (!Contains($(this).text().toLowerCase(), searchtext)) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>

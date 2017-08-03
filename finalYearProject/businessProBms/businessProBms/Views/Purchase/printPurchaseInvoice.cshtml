@@ -1,0 +1,79 @@
+﻿@using businessProBms.Models
+@model Purchase
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Purchase Invoice</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <h2>Invoice # : @Model.purchaseId &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date: @Model.purchaseDate</h2>
+        <table class="table table-bordered table-condensed table-striped">
+            <tr>
+                <td>Vendor Name : </td>
+                <td>@Model.vendorName</td>
+            </tr>
+            @*<tr>
+                <td>Date : </td>
+                <td>@Model.purchaseDate</td>
+            </tr>*@
+        </table>
+        <table class="table table-bordered table-condensed table-striped">
+            <tr>
+                <th>
+                    Product Code
+                </th>
+                <th>
+                    Product Name
+                </th>
+                <th>
+                    Unit Of Measure
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Price
+                </th>
+                <th>
+                    Amount (RS)
+                </th>
+            </tr>
+            @foreach (var item in ViewBag.purchase as List<PurchaseDetail>)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.productCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.productName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.unitOfMeasure)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.quantity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.purchasePrice)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.amount)
+                    </td>
+                </tr>
+            }
+        </table>
+        <table>
+            <tr>
+                <td><b>Total : RS @Model.PurchaseDetails.Sum(ol => ol.amount) </b></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

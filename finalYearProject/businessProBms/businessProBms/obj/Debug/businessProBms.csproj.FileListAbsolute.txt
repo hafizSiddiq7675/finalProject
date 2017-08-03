@@ -113,3 +113,4 @@ E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessPro
 E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\PagedList.Mvc.dll
 E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\PagedList.xml
 E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\PagedList.Mvc.xml
+E:\MCS\Mcs 4th SEMESTER\finalProject\finalYearProject\businessProBms\businessProBms\bin\Rotativa.dll
