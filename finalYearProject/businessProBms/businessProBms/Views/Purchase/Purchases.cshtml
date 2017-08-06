@@ -1,191 +1,137 @@
-﻿@using PagedList
-@using PagedList.Mvc
-@using businessProBms.Models
-@model Purchase
+﻿@using businessProBms.Models
+@model purchaseViewModel
 @{
     ViewBag.Title = "Purchase";
 }
-<script src='@Url.Content("~/Scripts/jquery.validate.js")'></script>
-<script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
 <h2>Purchases</h2>
-<br />
+<hr />
+<div class="well well-sm"><b>Purchase Order</b></div>
 <form>
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
     <div class="container">
-        <div class="well well-lg"><b>Purchase Order</b></div>
         <div class="master">
             <table class="table table-responsive">
                 <tr>
-                    <td><b>@Html.LabelFor(m => m.purchaseId)</b></td>
-                    <td><b>@Html.LabelFor(m => m.purchaseDate)</b></td>
-                    <td><b>@Html.LabelFor(m => m.vendorCode)</b></td>
+                    <td><b>@Html.LabelFor(m => m.purchases.purchaseId)</b></td>
+                    <td><b>@Html.LabelFor(m => m.purchases.purchaseDate)</b></td>
+                    <td><b>@Html.LabelFor(m => m.purchases.vendorCode)</b></td>
                 </tr>
                 <tr>
                     <td>
-                        @Html.TextBoxFor(m => m.purchaseId, new { placeholder = "Enter Purchase ID Here..", @class = "form-control",  @readonly = "readonly", id = "pid" })
-                        @Html.ValidationMessageFor(m => m.purchaseId)
-                        <span class="error">Valid Purchase ID required</span>
+                        @Html.TextBoxFor(m => m.purchases.purchaseId, new { placeholder = "Enter Purchase ID Here..", @class = "form-control", id = "pid", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.purchases.purchaseId)
                     </td>
                     <td>
-                        @Html.TextBoxFor(m => m.purchaseDate, new { placeholder = "Format:YYYY/MM/DD ", @class = "form-control", id = "pdate" })
-                        @Html.ValidationMessageFor(m => m.purchaseDate)
-                        <span class="error">Valid Purchase ID required</span>
+                        @Html.TextBoxFor(m => m.purchases.purchaseDate, new { placeholder = "Format:YYYY/MM/DD ", @class = "form-control", id = "pdate" })
+                        @Html.ValidationMessageFor(m => m.purchases.purchaseDate)
                     </td>
                     <td>
-                        @Html.DropDownListFor(m => m.vendorCode, new SelectList(ViewBag.vendors, "code", "name"),
-            "--Select Vendor Here--", new { @class = "form-control", id = "vcode", onchange="myfunc()"})
-                        @Html.ValidationMessageFor(m => m.vendorCode)
-                        @Html.HiddenFor(m => m.vendorName, new { @class = "form-control", id = "vname" })
+                        @Html.DropDownListFor(m => m.purchases.vendorCode, new SelectList(ViewBag.vendors, "code", "name"),
+            "--Select Vendor Here--", new { @class = "form-control", id = "vcode" })
+                        @Html.ValidationMessageFor(m => m.purchases.vendorCode)
                     </td>
                 </tr>
             </table>
         </div>
     </div>
 </form>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
-
-<div class="container">
-    <div class="details">
-<div class="well well-sm"><b>Putchase Details</b></div>
-        <table class="table table-responsive">
-            <tr>
-                
-                <td><b>Product</b></td>
-                <td><b>Quantity</b></td>
-                <td><b>Price</b></td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr class="mycontainer" id="mainrow">
-                <td>
-                    <select id="productCode" class="product form-control">
-                        <option>--Select--</option>
-                    </select>
-                    <input type="hidden" id="productName" />
-                    <span class="error">Select product Code</span>
-                </td>
-                <td>
-                    <input type="text" id="quantity" class="quantity form-control" placeholder="Enter Quantity Here.." />
-                    <span class="error">Valid quantity required</span>
-                </td>
-                <td>
-                    <input type="text" id="price" class="price form-control" placeholder="Enter Price Here.."  />
-                    <span class="error">Valid price required</span>
-                </td>
-                <td>
-                    <input type="button" id="add" value="Add" style="width:80px" class="btn btn-success" onclick="validate()"/>
-                    <input type="hidden" id="#serialNo" />
-                    <input type="hidden" id="#uom" />
-                </td>
-            </tr>
-        </table>
-        <div id="orderItems">
-            <table class="table table-responsive" id="orderdetailsItems"></table>
-            <span id="orderItemError" style="color:red"></span>
-        </div>
-        <div style="padding:10px 0; text-align:right">
-            <a href="@Url.Action("printPurchaseInvoice", "Purchase", new { id=@Model.purchaseId})"><input id="submit" type="button" value="Print" class="btn btn-warning" style="padding:10px 20px" /></a>
-        </div>
-    </div>
-</div>
-<table id="listPurchase" class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Product Code</th>
-            <th>Product Name</th>
-            <th>Quantity</th>
-            <th>Price(RS)</th>
-            <th>Amount</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
-<input type="hidden" id="preTotal" />
-<table id="total">
-    <tr></tr>
-</table>
-<hr />
-<style>
-    span.error {
-        display: block;
-        visibility: hidden;
-        color: red;
-        font-size: 90%;
-    }
-
-    tr.error {
-        background-color: rgba(255,0,0,0.35);
-    }
-</style>
-<div>
-    <a href="@Url.Action("Purchases","Purchase")"><input id="add" type="button" value="New" class="btn btn-primary" /></a>
-
-    <div class="input-group" style="margin-left:820px">
-        <span class="input-group-addon">
-            <i class="glyphicon glyphicon-search">
-            </i>
-        </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
-    </div>
-    <table id="Purchase" class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Purchase ID</th>
-                <th>Date</th>
-                <th>Vendor Code</th>
-                <th>Vendor Name</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
-<div id="editModel" class="modal fade">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h2 class="modal-title">Purchases</h2>
-            <hr />
-            <div class="modal-body">
-                <form>
-                    @Html.AntiForgeryToken()
-                    @Html.ValidationSummary(true)
-                    <div class="container">
-                        @*<div class="well well-lg"><b>Purchase Order</b></div>*@
-                        <div class="master">
-                            <table class="table table-responsive">
-                                <tr>
-                                    <td><b>@Html.LabelFor(m => m.purchaseDate)</b></td>
-                                    <td><b>@Html.LabelFor(m => m.vendorCode)</b></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        @Html.HiddenFor(m => m.purchaseId, htmlAttributes: new { @class = "form-control", id = "pid" })
-                                        @Html.TextBoxFor(m => m.purchaseDate, new { placeholder = "Format:YYYY/MM/DD ", @class = "form-control", id = "pdate" })
-                                        @Html.ValidationMessageFor(m => m.purchaseDate)
-                                    </td>
-                                    <td>
-                                        @Html.DropDownListFor(m => m.vendorCode, new SelectList(ViewBag.vendors, "code", "name"),
-            "--Select Vendor Here--", new { @class = "form-control", id = "vcode" })
-                                        @Html.ValidationMessageFor(m => m.vendorCode)
-                                        @Html.HiddenFor(m => m.vendorName, new { @class = "form-control", id = "vname" })
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label>Product</label>
+                    @Html.DropDownListFor(m => m.purchaseDetails.productCode, new SelectList(ViewBag.products, "code", "name"),
+            "--Select Product Here--", new { @class = "form-control", id = "pcode" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.purchaseDetails.quantity, new { @class = "label-control" })
+                    @Html.TextBoxFor(m => m.purchaseDetails.quantity, new { placeholder = "Enter Quantity Here..", @class = "form-control", id = "quantity" })
+                    @Html.ValidationMessageFor(m => m.purchaseDetails.quantity)
+                    <span class="error">Valid Quantity Required</span>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.purchaseDetails.purchasePrice, new { @class = "label-control" })
+                    @Html.TextBoxFor(m => m.purchaseDetails.purchasePrice, new { placeholder = "Enter Price Here..", @class = "form-control", id = "price" })
+                    @Html.ValidationMessageFor(m => m.purchaseDetails.purchasePrice)
+                    <span class="error">Valid Price Required</span>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="button" value="Save" id="addbtn" class="btn btn-success" aria-hidden="true" />
                     </div>
-                </form>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="submit" id="btnSave" class="btn btn-success" onclick="myfunc1()">Save</button>
-                <button type="button" id="btnClose" class="btn btn-primary" data-dismiss="modal">Close</button>
-            </div>
+        </form>
+    </div>
+    <br />
+    <div class="col-md-8">
+        <table id="listPurchase" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product Code</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price(RS)</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <table id="total">
+            <tr>@ViewBag.total</tr>
+        </table>
+        <hr />
+        <div style="padding:10px 0; text-align:right">
+            <a href="@Url.Action("printPurchaseInvoice", "Purchase", new { id = @Model.purchases.purchaseId })"><input id="submit" type="button" value="Print" class="btn btn-warning" style="padding:10px 20px" /></a>
         </div>
     </div>
 </div>
+<div class="input-group" style="margin-left:820px">
+    <span class="input-group-addon">
+        <i class="glyphicon glyphicon-search">
+        </i>
+    </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
+</div>
+<br />
+<table class="table table-bordered table-responsive table-striped">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.purchases.purchaseId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.purchases.purchaseDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.purchases.vendorName)
+        </th>
+        <th>Action</th>
+    </tr>
+
+    @foreach (var item in ViewBag.purchases as List<Purchase>)
+    {
+        <tr class="Search" id="_row@item.saleId">
+            <td>
+                @Html.DisplayFor(modelItem => item.purchaseId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.purchaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.vendorName)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.purchaseId }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
+                <a href="#" onclick="getPurchaseDetails(@item.purchaseId)"><span class="glyphicon glyphicon-book"></span>&nbsp; Details</a> |
+                <a href="#" onclick="ConfirmDelete(@item.purchaseId)"><span class="glyphicon glyphicon-trash"></span>&nbsp; Delete</a> |
+                @Html.ActionLink("Print", "printPurchaseInvoice", new { id = item.purchaseId }, htmlAttributes: new { @class = "glyphicon glyphicon-print" })
+            </td>
+        </tr>
+    }
+</table>
 <input type="hidden" id="hiddenCode" />
-<div class="modal fade" id="delModal">
+<div class="modal" id="delModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -203,14 +149,46 @@
         </div>
     </div>
 </div>
-<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<div class="modal" id="delModalDetails">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Are you Sure you want to delete this?</h4>
+
+                <div class="modal-body">
+                    <p>This item will be deleted permanently. </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                    <a href="#" class="btn btn-danger" onclick="DeletePurchase()">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src='@Url.Content("~/Scripts/jquery.validate.js")'></script>
+<script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
+<script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
+<style>
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+</style>
 <script>
     var ConfirmDelete = function (code) {
         $("#hiddenCode").val(code);
         $("#delModal").modal('show');
+    }
+    var ConfirmDeleteDetail = function (code) {
+        $("#hiddenCode").val(code);
+        $("#delModalDetails").modal('show');
     }
     var DeletePurchase = function () {
         var mid = $("#hiddenCode").val();
@@ -229,201 +207,91 @@
 
         })
     }
-    function myfunc() {
-        var isAllValid = true;
-        if (!($('#pid').val().trim() != '' && (parseInt($('#pid').val(), 10) || 0))) {
-            isAllValid = false;
-            $('#pid').siblings('span.error').css('visibility', 'visible');
+    $(document).ready(function () {
+        function Contains(text_one, text_two) {
+            if (text_one.indexOf(text_two) != -1)
+                return true;
         }
-        else {
-            $('#pid').siblings('span.error').css('visibility', 'hidden');
-        }
-        if (isAllValid)
-        {
-            var e = $("#vcode :selected").text();
-            $('#vname').val(e);
-            var pur = {};
-            pur.purchaseId = $("#pid").val();
-            pur.purchaseDate = $("#pdate").val();
-            pur.vendorCode = $("#vcode").val();
-            pur.vendorName = $("#vname").val();
-            $.ajax(
-            {
-                type: "POST",
-                url: '@Url.Action("Add","Purchase")',
-                data: '{pur: ' + JSON.stringify(pur) + '}',
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-                    if (result) {
-                        allPurchase();
-                    }
-                    else
-                        alert("Error, OOPS something Went Wrong, Please appropriate Fields");
+        $("#Search").keyup(function () {
+            var searchtext = $("#Search").val().toLowerCase();
+            $(".Search").each(function () {
+                if (!Contains($(this).text().toLowerCase(), searchtext)) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
                 }
             });
+        });
+    });
+    $("#addbtn").click(function () {
+        var isAllValid = true;
+        if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+            isAllValid = false;
+            $('#quantity').siblings('span.error').css('visibility', 'visible');
         }
-    }
-    function allPurchase () {
+        else {
+            $('#quantity').siblings('span.error').css('visibility', 'hidden');
+        }
+
+        if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+            isAllValid = false;
+            $('#price').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#price').siblings('span.error').css('visibility', 'hidden');
+        }
+        if (isAllValid) {
+            var val = {};
+            val.purchaseId = $("#pid").val();
+            val.purchaseDate = $("#pdate").val();
+            val.vendorCode = $("#vcode").val();
+            val.vendorName = $("#vcode :selected").text();
+            val.productCode = $("#pcode").val();
+            val.productName = $("#pcode :selected").text();
+            val.quantity = parseInt($("#quantity").val(), 10);
+            val.purchasePrice = parseFloat($("#price").val(), 10);
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "/Purchase/Purchases/",
+                data: val,
+                success: function (result) {
+                    getPurchaseDetails($("#pid").val());
+                    $("#total tr").html("<b>Total(RS): </b> " + result);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('There is an error ');
+                }
+            });
+
+        }
+    })
+    function getPurchaseDetails(element) {
         $.ajax({
-            url: "/Purchase/getAllPurchase",
+            url: "/Purchase/getPurchaseDetails",
             type: "GET",
-            //data: { id: element },
+            data: { id: element },
             dataType: "json",
             success: function (data) {
                 var rows = '';
-                $.each(data, function (i, item) {
-                    var date = ToJavaScriptDate(item.purchaseDate);
-                    rows += "<tr class='Search' id='_row(" + item.purchaseId + ")'>"
-                    rows += "<td>" + item.purchaseId + "</td>"
-                    rows += "<td>" + date + "</td>"
-                    rows += "<td>" + item.vendorCode + "</td>"
-                    rows += "<td>" + item.vendorName + "</td>"
-                    rows += "<td><a href='#' onclick='return getPurchaseById(" + item.purchaseId + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a><a href='#' onclick='return getPurchaseDetailsById(" + item.purchaseId + ")'><span class='glyphicon glyphicon-book'></span>Details</a> | <a href='#' onclick='return ConfirmDelete(" + item.purchaseId + ")'><span class='glyphicon glyphicon-tras'></span>Delete</a></td>"
+                $.each(data.Purchase, function (i, item) {
+                    rows += "<tr class='Search' id='_row(" + item.code + ")'>"
+                    rows += "<td>" + item.productCode + "</td>"
+                    rows += "<td>" + item.productName + "</td>"
+                    rows += "<td>" + item.quantity + "</td>"
+                    rows += "<td>" + item.purchasePrice + "</td>"
+                    rows += "<td>" + item.amount + "</td>"
+                    rows += "<td><a href='#' onclick='return getPurchaseById(" + item.code + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a> |<a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
                     rows += "</tr>";
-                    $("#Purchase tbody").html(rows);
+                    $("#listPurchase tbody").html(rows);
                     //Show Model
                 });
+                $("#total tr").html("<b>Total(RS): </b> " + data.Total);
             },
             eror: function (err) {
                 alert("Error : " + err.responseText);
             }
         });
-        function ToJavaScriptDate(value) {
-            var pattern = /Date\(([^)]+)\)/;
-            var results = pattern.exec(value);
-            var dt = new Date(parseFloat(results[1]));
-            // return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
-            return dt.getFullYear() + "/" + (dt.getMonth() + 1) + "/" + dt.getDate();
-        }
     }
-     function loadProducts(element) {
-        $.getJSON("/Purchase/getProducts")
-        .done(function (data) {
-            var options = $("#productCode");
-            options.empty();
-            //options.append($("<option/>").val('0').text('--Select Product--'));
-            $.each(data, function (index, item) {
-                options.append($("<option/>").val(item.value).text(item.text));
-            });
-        });
-     }
-     function load() {
-         loadProducts($("#productCode"));
-         allPurchase();
-         parseInt($("#preTotal").val(0))
-     }
-     window.onload(load());
-         function validate() {
-             //validation and add order items
-             var isAllValid = true;
-             if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
-                 isAllValid = false;
-                 $('#quantity').siblings('span.error').css('visibility', 'visible');
-             }
-             else {
-                 $('#quantity').siblings('span.error').css('visibility', 'hidden');
-             }
-
-             if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
-                 isAllValid = false;
-                 $('#price').siblings('span.error').css('visibility', 'visible');
-             }
-             else {
-                 $('#price').siblings('span.error').css('visibility', 'hidden');
-             }
-
-             if (isAllValid) {
-                 var rows = '';
-                 rows += "<tr>"
-                 rows += "<td>" + $("#productCode :selected").val() + "</td>"
-                 rows += "<td>" + $("#productCode :selected").text() + "</td>"
-                 rows += "<td>" + parseInt($("#quantity").val(), 10) + "</td>"
-                 rows += "<td>" + parseFloat($("#price").val(), 10) + "</td>"
-                 rows += "<td>" + (parseInt($("#quantity").val(), 10) * parseFloat($("#price").val(), 10)) + "</td>"
-                 rows += "</tr>";
-                 $("#listPurchase tbody").append(rows);
-                 var newTotal = (parseInt($("#quantity").val(), 10) * parseFloat($("#price").val(), 10));
-                 var total = newTotal + parseInt($("#preTotal").val());
-                 $("#total tr").html("<b>Total(RS): </b> " + total);
-                 $("#preTotal").val(total);
-                  Add();
-             }
-             $('#orderdetailsItems').on('click', '.remove', function () {
-                 $(this).parents('tr').remove();
-             });
-
-         }
-
-         function Add() {
-             var e = $("#productCode :selected").text();
-             $("#productName").val(e);
-             var purD = {};
-             purD.purchaseDetailsId = $("#pid").val();
-             purD.serialNo = '';
-             purD.productCode = $("#productCode :selected").val();
-             purD.productName = $("#productName").val();
-             purD.unitOfMeasure = '';
-             purD.quantity = parseInt($("#quantity").val(),10);
-             purD.purchasePrice = parseFloat($("#price").val(),10);
-             $.ajax(
-             {
-                 type: "POST",
-                 url: "/Purchase/AddDetails",
-                 data: '{purD: ' + JSON.stringify(purD) + '}',
-                 dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                success: function (result) {
-                    if (result) {
-                    }
-                    else
-                        alert("Error, OOPS something Went Wrong, Please Provide Purchase Id, Purchase Date");
-            }
-                 });
-         }
-         function getPurchaseById(element) {
-                 $.ajax({
-                     url: "/Purchase/getPurchase",
-                     type: "GET",
-                     data: { id: element },
-                     dataType: "json",
-                     success: function (data) {
-                         var date = ToJavaScriptDate(data.purchaseDate);
-                         $("#pid").val(data.purchaseId);
-                         $("#pdate").val(date);
-                         $("#vcode").val(data.vendorCode);
-                         $("#vname").val(data.vendorName);
-                         //Show Model
-                         $("#editModel").modal('show');
-                     },
-                     error: function (err) {
-                         alert("Error : " + err.responseText);
-                     }
-                 });
-                 //Formating Ticks of Date
-                 function ToJavaScriptDate(value) {
-                     var pattern = /Date\(([^)]+)\)/;
-                     var results = pattern.exec(value);
-                     var dt = new Date(parseFloat(results[1]));
-                     // return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
-                     return dt.getFullYear() + "/" + (dt.getMonth() + 1) + "/" + dt.getDate();
-                 }
-             }
-         $(document).ready(function () {
-             function Contains(text_one, text_two) {
-                 if (text_one.indexOf(text_two) != -1)
-                     return true;
-             }
-             $("#Search").keyup(function () {
-                 var searchtext = $("#Search").val().toLowerCase();
-                 $(".Search").each(function () {
-                     if (!Contains($(this).text().toLowerCase(), searchtext)) {
-                         $(this).hide();
-                     }
-                     else {
-                         $(this).show();
-                     }
-                 });
-             });
-         });
 </script>

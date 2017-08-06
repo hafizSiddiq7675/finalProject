@@ -1,0 +1,89 @@
+﻿@using businessProBms.Models
+@model voucherViewModel
+@{
+    ViewBag.Title = "Report";
+}
+<h2>Expense Report</h2>
+<hr />
+<div class="input-group" style=" margin-left: 800px;">
+    <span class="input-group-addon">
+        <i class="glyphicon glyphicon-search">
+        </i>
+    </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
+</div><br />
+<table class="table table-bordered table-striped table-responsive">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(m => m.voucher.voucherDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.voucher.voucherNo)
+        </th>
+        <th>
+                Account
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.voucherDetail.description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.voucherDetail.debit)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.voucherDetail.credit)
+        </th>
+        <th>
+            Balance
+        </th>
+    </tr>
+    @foreach (var item in ViewBag.vouchers as List<voucherViewModel>)
+    {
+        <tr class="Search">
+            <td>
+                @Html.DisplayFor(m => item.voucher.voucherDate)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.voucher.voucherNo)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.voucherDetail.accountName)
+            </td>
+
+            <td>
+                @Html.DisplayFor(m => item.voucherDetail.description)
+            </td>
+
+            <td>
+                @Html.DisplayFor(m => item.voucherDetail.debit)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.voucherDetail.credit)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.balance)
+            </td>
+        </tr>
+    }
+</table>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
+<script>
+   $(document).ready(function () {
+        function Contains(text_one, text_two) {
+            if (text_one.indexOf(text_two) != -1)
+                return true;
+        }
+        $("#Search").keyup(function () {
+            var searchtext = $("#Search").val().toLowerCase();
+            $(".Search").each(function () {
+                if (!Contains($(this).text().toLowerCase(), searchtext)) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>

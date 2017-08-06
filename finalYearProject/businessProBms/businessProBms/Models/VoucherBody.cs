@@ -17,6 +17,7 @@ namespace businessProBms.Models
         public int code { get; set; }
         public int voucherNo { get; set; }
         public int accountNo { get; set; }
+        public string accountName { get; set; }
         public string description { get; set; }
         public decimal debit { get; set; }
         public decimal credit { get; set; }

@@ -121,9 +121,10 @@
     <Key>
       <PropertyRef Name="code" />
     </Key>
-    <Property Name="code" Type="int" Nullable="false" />
+    <Property Name="code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="voucherNo" Type="int" Nullable="false" />
     <Property Name="accountNo" Type="int" Nullable="false" />
+    <Property Name="accountName" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="description" Type="varchar" MaxLength="100" Nullable="false" />
     <Property Name="debit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
     <Property Name="credit" Type="decimal" Precision="18" Scale="0" Nullable="false" />

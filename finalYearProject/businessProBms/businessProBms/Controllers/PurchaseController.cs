@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using businessProBms.Models;
 using Rotativa;
+using System.Net;
 namespace businessProBms.Controllers
 {
     public class PurchaseController : Controller
@@ -13,150 +14,116 @@ namespace businessProBms.Controllers
         public ActionResult Purchases()
         {
             ViewBag.vendors = db.Vendors.ToList();
-            Purchase p = new Purchase();
-            p.purchaseId = db.Purchases.Max(pur => pur.purchaseId) + 1;
-            p.purchaseDate = DateTime.Now.Date;
-            return View(p);
+            ViewBag.products = db.Products.ToList();
+            ViewBag.purchases = db.Purchases.ToList();
+            purchaseViewModel pvm = new purchaseViewModel();
+            pvm.purchases = new Purchase();
+            pvm.purchaseDetails = new PurchaseDetail();
+            pvm.purchases.purchaseId = db.Purchases.Max(pur => pur.purchaseId) + 1;
+            pvm.purchases.purchaseDate = DateTime.Now.Date;
+            return View(pvm);
         }
         [HttpPost]
-        public ActionResult Add([Bind(Include="purchaseId, purchaseDate,vendorCode,vendorName")] Purchase pur)
+        public JsonResult Purchases(purchaseViewModel pu)
         {
-            bool result=false;
-            if(ModelState.IsValid)
+            decimal total = 0;
+            if (pu != null)
             {
-                Purchase pr = db.Purchases.SingleOrDefault(s => s.purchaseId == pur.purchaseId);
-                if(pr==null)
+                int count = db.Purchases.Count(r => r.purchaseId == pu.purchaseId);
+                if (count == 0)
                 {
-                    db.Purchases.Add(pur);
+                    Purchase purchase = new Purchase();
+                    purchase.purchaseId = pu.purchaseId;
+                    purchase.purchaseDate = pu.purchaseDate;
+                    purchase.vendorCode = pu.vendorCode;
+                    purchase.vendorName = pu.vendorName;
+                    db.Purchases.Add(purchase);
+                    db.SaveChanges();
+                    PurchaseDetail purchasedetail = new PurchaseDetail();
+                    purchasedetail.serialNo = db.Purchases.Sum(r => r.purchaseId).ToString();
+                    Product uom = db.Products.Single(s => s.code == pu.productCode);
+                    if (uom != null)
+                    {
+                        purchasedetail.unitOfMeasure = uom.UOM;
+                    }
+                    purchasedetail.purchaseDetailsId = pu.purchaseId;
+                    purchasedetail.productCode = pu.productCode;
+                    purchasedetail.productName = pu.productName;
+                    purchasedetail.quantity = pu.quantity;
+                    purchasedetail.purchasePrice = pu.purchasePrice;
+                    purchasedetail.amount = pu.purchasePrice * pu.quantity;
+                    db.PurchaseDetails.Add(purchasedetail);
+                    db.SaveChanges();
+                    total = db.PurchaseDetails.Where(r => r.purchaseDetailsId == pu.purchaseId).Sum(r => r.amount);
                 }
                 else
                 {
-                    var prD = db.Purchases.Single(s => s.purchaseId == pur.purchaseId);
-                    prD.purchaseId = pur.purchaseId;
-                    prD.purchaseDate = pur.purchaseDate;
-                    prD.vendorCode = pur.vendorCode;
-                    prD.vendorName = pur.vendorName;
+                    PurchaseDetail purchasedetail = new PurchaseDetail();
+                    purchasedetail.serialNo = db.Purchases.Sum(r => r.purchaseId).ToString();
+                    Product uom = db.Products.Single(s => s.code == pu.productCode);
+                    if (uom != null)
+                    {
+                        purchasedetail.unitOfMeasure = uom.UOM;
+                    }
+                    purchasedetail.purchaseDetailsId = pu.purchaseId;
+                    purchasedetail.productCode = pu.productCode;
+                    purchasedetail.productName = pu.productName;
+                    purchasedetail.quantity = pu.quantity;
+                    purchasedetail.purchasePrice = pu.purchasePrice;
+                    purchasedetail.amount = pu.purchasePrice * pu.quantity;
+                    db.PurchaseDetails.Add(purchasedetail);
+                    db.SaveChanges();
+                    total = db.PurchaseDetails.Where(r => r.purchaseDetailsId == pu.purchaseId).Sum(r => r.amount);
                 }
-                db.SaveChanges();
-                result=true;
             }
-            return Json(result,JsonRequestBehavior.AllowGet);
+            return Json(total, JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
-        public ActionResult AddDetails([Bind(Include = "purchaseDetailsId,serialNo,productCode,productName,unitOfMeasure,quantity,purchasePrice")] PurchaseDetail purD)
+        public ActionResult getPurchaseDetails(int? id)
         {
-            bool result = false;
-            purD.serialNo = db.Purchases.Sum(s => s.purchaseId).ToString();
-            purD.amount = purD.quantity * purD.purchasePrice;
-            Product uom = db.Products.First(s => s.code == purD.productCode);
-            if (uom != null)
-            {
-                purD.unitOfMeasure = uom.UOM;
-            }
-            TryUpdateModel(purD);
-            if(ModelState.IsValid)
-            {
-
-                db.PurchaseDetails.Add(purD);
-                db.SaveChanges();
-                result = true;
-            }
+            decimal total = 0;
+            db.Configuration.ProxyCreationEnabled = false;
+            total = db.PurchaseDetails.Where(r => r.purchaseDetailsId == id).Sum(r => r.amount);
+            var purchase = db.PurchaseDetails.Where(r => r.purchaseDetailsId == id);
+            var result = new { Purchase = purchase, Total = total };
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
-        public ActionResult AddEditedDetails([Bind(Include = "code,purchaseDetailsId,serialNo,productCode,productName,unitOfMeasure,quantity,purchasePrice,amount")] PurchaseDetail purD)
-        {
-            bool result = false;
-            if(ModelState.IsValid)
-            {
-                var pr = db.PurchaseDetails.Single(s => s.code == purD.code);
-                Product uom = db.Products.First(s => s.code == purD.code);
-                if (uom != null)
-                {
-                    purD.unitOfMeasure = uom.UOM;
-                }
-                //TryUpdateModel(purD);
-                pr.code = purD.code;
-                pr.purchaseDetailsId = purD.purchaseDetailsId;
-                pr.serialNo = purD.serialNo;
-                pr.productCode = purD.productCode;
-                pr.productName = purD.productName;
-                pr.unitOfMeasure = purD.unitOfMeasure;
-                pr.quantity = purD.quantity;
-                pr.purchasePrice = purD.purchasePrice;
-                pr.amount = purD.amount;
-                db.SaveChanges();
-                result = true;
-            }
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult getPurchaseIds() 
-        {
-            var Ids = db.Purchases.Select(r => new { value = r.purchaseId, text = r.purchaseId });
-            return new JsonResult { Data = Ids, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        }
-        public JsonResult getProducts()
-        {
-            var product = db.Products.Select(r => new { value = r.code, text = r.name });
-            return new JsonResult { Data = product, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        }
-        public ActionResult showAll()
-        {
-            ViewBag.purchase = db.Purchases.ToList();
-            ViewBag.vendors = db.Vendors.ToList();
-            return View();
-        }
-        [HttpPost]
         public JsonResult DeleteConfirmed(int? id)
         {
             bool result = false;
-            Purchase pr = db.Purchases.SingleOrDefault(s => s.purchaseId == id);
-            if (pr != null)
+            Purchase p = db.Purchases.SingleOrDefault(f => f.purchaseId == id);
+            if (p != null)
             {
-                db.Purchases.Remove(pr);
-                db.PurchaseDetails.RemoveRange(db.PurchaseDetails.Where(s => s.purchaseDetailsId == id));
+                db.Purchases.Remove(p);
+                db.PurchaseDetails.RemoveRange(db.PurchaseDetails.Where(f => f.purchaseDetailsId == id));
+                db.SaveChanges();
+                result = true;
+            }
+            else
+            {
+                PurchaseDetail pd = db.PurchaseDetails.Single(r => r.code == id);
+                db.PurchaseDetails.Remove(pd);
                 db.SaveChanges();
                 result = true;
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        [HttpPost]
-        public JsonResult detailDeleteConfirmed(int? id)
+        public ActionResult Edit(int? id)
         {
-            bool result = false;
-            PurchaseDetail pur = db.PurchaseDetails.SingleOrDefault(s => s.code == id);
-            if(pur!=null)
+            ViewBag.vendors = db.Vendors.ToList();
+            ViewBag.products = db.Products.ToList();
+            ViewBag.purchases = db.Purchases.ToList();
+            purchaseViewModel pu = new purchaseViewModel();
+            pu.purchases = new Purchase();
+            if (id == null)
             {
-                db.PurchaseDetails.Remove(pur);
-                db.SaveChanges();
-                result = true;
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult getPurchaseDetail(int id)
-        {
-            db.Configuration.ProxyCreationEnabled = false;
-            PurchaseDetail pur = db.PurchaseDetails.ToList().Find(s => s.code == id);
-            return Json(pur, JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult getPurchase(int id)
-        {
-            //For Avoidinig a Circuler Loop
-            db.Configuration.ProxyCreationEnabled = false;
-            Purchase pr = db.Purchases.ToList().Find(s => s.purchaseId==id);
-            return Json(pr, JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult getAllPurchase()
-        {
-            db.Configuration.ProxyCreationEnabled = false;
-            var Pur = db.Purchases.ToList();
-            return Json(Pur, JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult getPurchaseDetails(int id)
-        {
-            db.Configuration.ProxyCreationEnabled = false;
-            var data = db.PurchaseDetails.Where(s => s.purchaseDetailsId == id).ToList();
-            return Json(data, JsonRequestBehavior.AllowGet);
+            pu.purchases = db.Purchases.Find(id);
+            if (pu == null)
+            {
+                return HttpNotFound();
+            }
+            return View("Purchases", pu);
         }
         public ActionResult printPurchaseInvoice(int id)
         {
@@ -164,5 +131,5 @@ namespace businessProBms.Controllers
             ViewBag.purchase = db.PurchaseDetails.Where(x => x.purchaseDetailsId == id).ToList();
             return new ViewAsPdf(pa);
         }
-	}
+    }
 }

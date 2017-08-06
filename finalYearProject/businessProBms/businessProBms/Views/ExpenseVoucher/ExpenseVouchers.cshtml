@@ -5,78 +5,80 @@
 }
 <h2>Expense Vouchers</h2>
 <hr />
+<form>
 <div class="container">
-    <table class="table-responsive">
+    <table class="table table-responsive">
         <tr>
-            <td><b>@Html.LabelFor(m=>m.voucher.voucherNo)</b></td>
+            <td><b>@Html.LabelFor(m => m.voucher.voucherNo)</b></td>
             <td><b>@Html.LabelFor(m => m.voucher.voucherDate)</b></td>
         </tr>
         <tr>
             <td>
-                @Html.TextBoxFor(m => m.voucher.voucherNo, new { @class="form-control"})
-                @Html.ValidationMessageFor(m=>m.voucher.voucherNo)
+                @Html.TextBoxFor(m => m.voucher.voucherNo, new { @class = "form-control", @readonly = "readonly", id="vno" })
+                @Html.ValidationMessageFor(m => m.voucher.voucherNo)
             </td>
             <td>
-                @Html.TextBoxFor(m => m.voucher.voucherDate, new { @class="form-control"})
+                @Html.TextBoxFor(m => m.voucher.voucherDate, new { @class = "form-control", id="vdate"})
                 @Html.ValidationMessageFor(m => m.voucher.voucherDate)
             </td>
+            <td></td>
         </tr>
     </table>
 </div>
-<hr />
+</form> 
+<hr />  
 <div class="row">
     <div class="col-md-4">
-        <div class="form-horizontal">
-            <div class="form-group">
-                @Html.LabelFor(m => m.voucherDetail.code, new {@class="label-control" })
-                @Html.TextBoxFor(m => m.voucherDetail.code, new { @class="form-control", placeholder="Enter Code Here.."})
-                @Html.ValidationMessageFor(m=>m.voucherDetail.code)
-            </div>
-            <div class="form-group">
-                @Html.HiddenFor(m => m.voucherDetail.voucherNo, new { @class = "form-gruop", placeholder = "Enter Code Here.." })
-                @Html.LabelFor(m=>m.voucherDetail.accountNo)
-                @Html.DropDownListFor(m => m.voucherDetail.accountNo, new SelectList(ViewBag.accounts, "code","name"),
-                         "--Select Account--", new { @class="form-control"})
-                @Html.ValidationMessageFor(m=>m.voucherDetail.accountNo)
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(m => m.voucherDetail.description, new { @class = "label-control" })
-                @Html.TextAreaFor(m => m.voucherDetail.description, new { @class = "form-control", placeholder = "Enter Description Here.." })
-                @Html.ValidationMessageFor(m => m.voucherDetail.description)
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(m => m.voucherDetail.debit, new { @class = "label-control" })
-                @Html.TextBoxFor(m => m.voucherDetail.debit, new { @class = "form-control", placeholder = "Enter Debit Here.." })
-                @Html.ValidationMessageFor(m => m.voucherDetail.debit)
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(m => m.voucherDetail.credit, new { @class = "label-control" })
-                @Html.TextBoxFor(m => m.voucherDetail.credit, new { @class = "form-control", placeholder = "Enter Credit Here.." })
-                @Html.ValidationMessageFor(m => m.voucherDetail.credit)
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Save" class="btn btn-success" aria-hidden="true" />
+        <form>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    @*@Html.HiddenFor(m => m.voucherDetail.voucherNo, new { @class = "form-gruop", id="vbno" })*@
+                    @Html.LabelFor(m => m.voucherDetail.accountNo)
+                    @Html.DropDownListFor(m => m.voucherDetail.accountNo, new SelectList(ViewBag.accounts, "code", "name"),
+                         "--Select Account--", new { @class = "form-control", id="vacc" })
+                    @Html.ValidationMessageFor(m => m.voucherDetail.accountNo)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.voucherDetail.description, new { @class = "label-control" })
+                    @Html.TextAreaFor(m => m.voucherDetail.description, new { @class = "form-control", placeholder = "Enter Description Here..", id="vdesc" })
+                    @Html.ValidationMessageFor(m => m.voucherDetail.description)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.voucherDetail.debit, new { @class = "label-control" })
+                    @Html.TextBoxFor(m => m.voucherDetail.debit, new { @class = "form-control", placeholder = "Enter Debit Here.." , id="debit"})
+                    @Html.ValidationMessageFor(m => m.voucherDetail.debit)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.voucherDetail.credit, new { @class = "label-control" })
+                    @Html.TextBoxFor(m => m.voucherDetail.credit, new { @class = "form-control", placeholder = "Enter Credit Here..", id="credit" })
+                    @Html.ValidationMessageFor(m => m.voucherDetail.credit)
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="button" value="Save" id="addbtn" class="btn btn-success" aria-hidden="true" />
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
     <br />
     <div class="col-md-8">
         <table id="listExpenses" class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>Code</th>
                     <th>Voucher No</th>
-                    <th>Account No</th>
+                    <th>Account Name</th>
                     <th>Description</th>
-                    <th>Debit</th>
-                    <th>Credit</th>
+                    <th>Debit(RS)</th>
+                    <th>Credit(RS)</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
+        <div style="padding:10px 0; text-align:right">
+            <a href="@Url.Action("printExpInvoice", "ExpenseVoucher", new {id= @Model.voucher.voucherNo})"><input id="submit" type="button" value="Print" class="btn btn-warning" style="padding:10px 20px" /></a>
+        </div>
     </div>
 </div>
 <div class="input-group" style=" margin-left: 800px;">
@@ -108,8 +110,10 @@
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "Edit", new { id = item.voucherNo }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
-                    @Html.ActionLink("Details", "Edit", new { id = item.voucherNo }, htmlAttributes: new { @class = "glyphicon glyphicon-book" }) |
-                    <a href="#" onclick="ConfirmDelete(@item.voucherNo)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+                    @*@Html.ActionLink("Details", null, new { id = item.voucherNo }, htmlAttributes: new { @class = "glyphicon glyphicon-book", onclick ="getDetails(@item.voucherNo)" })*@
+                    <a href="#" onclick="getDetails(@item.voucherNo)"><span class="glyphicon glyphicon-book"></span>&nbsp; Details</a> |
+                    <a href="#" onclick="ConfirmDelete(@item.voucherNo)"><span class="glyphicon glyphicon-trash"></span>&nbsp; Delete</a> | 
+                    @Html.ActionLink("Print", "printExpInvoice", new { id = item.voucherNo }, htmlAttributes: new { @class = "glyphicon glyphicon-print" })
                 </td>
             </tr>
         }
@@ -133,16 +137,37 @@
         </div>
     </div>
 </div>
+<div class="modal" id="delModalDetails">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Are you Sure you want to delete this?</h4>
+
+                <div class="modal-body">
+                    <p>This item will be deleted permanently. </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                    <a href="#" class="btn btn-danger" onclick="DeleteVoucher()">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
-<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
 <script>
     var ConfirmDelete = function (code) {
         $("#hiddenCode").val(code);
         $("#delModal").modal('show');
     }
-
+    var ConfirmDeleteDetail = function (code) {
+        $("#hiddenCode").val(code);
+        $("#delModalDetails").modal('show');
+    }
     var DeleteVoucher = function () {
         var mid = $("#hiddenCode").val();
         $.ajax({
@@ -177,4 +202,52 @@
             });
         });
     });
+    $("#addbtn").click(function () {
+        var val = {};
+        val.voucherNo = $("#vno").val();
+        val.voucherDate = $("#vdate").val();
+        val.accountNo = $("#vacc").val();
+        val.accountName=$("#vacc :selected").text();
+        val.description = $("#vdesc").val();
+        val.debit = $("#debit").val();
+        val.credit = $("#credit").val();
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: "/ExpenseVoucher/ExpenseVouchers/",
+            data: val,
+            success: function (result) {
+                getDetails($("#vno").val());
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('There is an error ');
+            }
+        });
+    })
+    function getDetails(element) {
+            $.ajax({
+                url: "/ExpenseVoucher/getExpDetails",
+                type: "GET",
+                data: { id: element },
+                dataType: "json",
+                success: function (data) {
+                    var rows = '';
+                    $.each(data, function (i, item) {
+                        rows += "<tr class='Search' id='_row(" + item.code + ")'>"
+                        rows += "<td>" + item.voucherNo + "</td>"
+                        rows += "<td>" + item.accountName + "</td>"
+                        rows += "<td>" + item.description + "</td>"
+                        rows += "<td>" + item.debit + "</td>"
+                        rows += "<td>" + item.credit + "</td>"
+                        rows += "<td><a href='#' onclick='return getPurchaseById(" + item.code + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a> |<a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
+                        rows += "</tr>";
+                        $("#listExpenses tbody").html(rows);
+                        //Show Model
+                    });
+                },
+                eror: function (err) {
+                    alert("Error : " + err.responseText);
+                }
+            });
+    }
 </script>

@@ -135,6 +135,7 @@
           <ScalarProperty Name="credit" ColumnName="credit" />
           <ScalarProperty Name="debit" ColumnName="debit" />
           <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="accountName" ColumnName="accountName" />
           <ScalarProperty Name="accountNo" ColumnName="accountNo" />
           <ScalarProperty Name="voucherNo" ColumnName="voucherNo" />
           <ScalarProperty Name="code" ColumnName="code" />

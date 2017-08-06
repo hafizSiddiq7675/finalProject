@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using businessProBms.Models;
 using Rotativa;
+using System.Net;
 namespace businessProBms.Controllers
 {
     public class SaleController : Controller
@@ -12,52 +13,78 @@ namespace businessProBms.Controllers
         // GET: /Sales/
         public ActionResult Sales()
         {
-            Sale s = new Sale();
-            s.saleId = db.Sales.Max(pur => pur.saleId) + 1;
-            s.saleDate = DateTime.Now.Date;
+            saleViewModel svm = new saleViewModel();
+            svm.sales = new Sale();
+            svm.saleDetails = new SaleDetail();
+            svm.sales.saleId = db.Sales.Max(pur => pur.saleId) + 1;
+            svm.sales.saleDate = DateTime.Now.Date;
             ViewBag.customers = db.Customers.ToList();
-            return View(s);
-        }
-       [HttpPost]
-        public ActionResult Add([Bind(Include = "saleId,saleDate,customerCode,customerName")] Sale sale)
-        {
-            bool result = false;
-            if(ModelState.IsValid)
-            {
-                db.Sales.Add(sale);
-                db.SaveChanges();
-                result = true;
-            }
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult getSaleIds()
-        {
-            var Ids = db.Sales.Select(r => new { value = r.saleId, text = r.saleId });
-            return new JsonResult { Data = Ids, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        }
-        public JsonResult getProducts()
-        {
-            var product = db.Products.Select(r => new { value = r.code, text = r.name });
-            return new JsonResult { Data = product, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            ViewBag.products = db.Products.ToList();
+            ViewBag.sales = db.Sales.ToList();
+            return View(svm);
         }
         [HttpPost]
-        public ActionResult AddDetails([Bind(Include="saleDetailsId,serialNo,productCode,productName,unitOfMeasure,quantity,salePrice,amount")] SaleDetail saleD)
+        public JsonResult Sales(saleViewModel sa)
+            {
+            decimal total=0;
+            if (sa != null)
+            {
+                int count = db.Sales.Count(r => r.saleId == sa.saleId);
+                if (count == 0)
+                {
+                    Sale sale = new Sale();
+                    sale.saleId = sa.saleId;
+                    sale.saleDate = sa.saleDate;
+                    sale.customerCode = sa.customerCode;
+                    sale.customerName = sa.customerName;
+                    db.Sales.Add(sale);
+                    db.SaveChanges();
+                    SaleDetail saledetail = new SaleDetail();
+                    saledetail.serialNo = db.Sales.Sum(r => r.saleId).ToString();
+                    Product uom = db.Products.Single(s => s.code == sa.productCode);
+                    if (uom != null)
+                    {
+                        saledetail.unitOfMeasure = uom.UOM;
+                    }
+                    saledetail.saleDetailsId = sa.saleId;
+                    saledetail.productCode = sa.productCode;
+                    saledetail.productName = sa.productName;
+                    saledetail.quantity = sa.quantity;
+                    saledetail.salePrice = sa.salePrice;
+                    saledetail.amount = sa.quantity * sa.salePrice;
+                    db.SaleDetails.Add(saledetail);
+                    db.SaveChanges();
+                    total = db.SaleDetails.Where(r => r.saleDetailsId==sa.saleId).Sum(r=>r.amount);
+                }
+                else
+                {
+                    SaleDetail saledetail = new SaleDetail();
+                    saledetail.serialNo = db.Sales.Sum(r => r.saleId).ToString();
+                    Product uom = db.Products.Single(s => s.code == sa.productCode);
+                    if (uom != null)
+                    {
+                        saledetail.unitOfMeasure = uom.UOM;
+                    }
+                    saledetail.saleDetailsId = sa.saleId;
+                    saledetail.productCode = sa.productCode;
+                    saledetail.productName = sa.productName;
+                    saledetail.quantity = sa.quantity;
+                    saledetail.salePrice = sa.salePrice;
+                    saledetail.amount = sa.quantity * sa.salePrice;
+                    db.SaleDetails.Add(saledetail);
+                    db.SaveChanges();
+                    total = db.SaleDetails.Where(r => r.saleDetailsId == sa.saleId).Sum(r => r.amount);
+                }
+            }
+            return Json(total, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult getSaleDetails(int? id)
         {
-            bool result = false;
-            saleD.amount = saleD.quantity * saleD.salePrice;
-            saleD.serialNo = db.Sales.Sum(r => r.saleId).ToString();
-            Product uom = db.Products.First(s => s.code == saleD.productCode);
-            if(uom!=null)
-            {
-                saleD.unitOfMeasure = uom.UOM;
-            }
-            TryUpdateModel(saleD);
-            if(ModelState.IsValid)
-            {
-                db.SaleDetails.Add(saleD);
-                db.SaveChanges();
-                result = true;
-            }
+            decimal total = 0;
+            db.Configuration.ProxyCreationEnabled = false;
+            total = db.SaleDetails.Where(r => r.saleDetailsId == id).Sum(r => r.amount);
+            var sales = db.SaleDetails.Where(r => r.saleDetailsId == id);
+            var result = new { Sales = sales, Total = total };
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         public JsonResult DeleteConfirmed(int? id)
@@ -71,13 +98,14 @@ namespace businessProBms.Controllers
                 db.SaveChanges();
                 result = true;
             }
+            else
+            {
+                SaleDetail sd = db.SaleDetails.Single(r => r.code == id);
+                db.SaleDetails.Remove(sd);
+                db.SaveChanges();
+                result = true;
+            }
             return Json(result, JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult getAllSales()
-        {
-            db.Configuration.ProxyCreationEnabled = false;
-            var sal = db.Sales.ToList();
-            return Json(sal, JsonRequestBehavior.AllowGet);
         }
         public ActionResult printSaleInvoice(int? id)
         {
@@ -87,7 +115,21 @@ namespace businessProBms.Controllers
         }
         public ActionResult Edit(int? id)
         {
-            return View("Purchases");
+            ViewBag.customers = db.Customers.ToList();
+            ViewBag.products = db.Products.ToList();
+            ViewBag.sales = db.Sales.ToList();
+            saleViewModel sa = new saleViewModel();
+            sa.sales = new Sale();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            sa.sales = db.Sales.Find(id);
+            if (sa == null)
+            {
+                return HttpNotFound();
+            }
+            return View("Sales", sa);
         }
 	}
 }

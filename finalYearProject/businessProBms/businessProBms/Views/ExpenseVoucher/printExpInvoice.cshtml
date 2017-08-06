@@ -1,0 +1,62 @@
+﻿@using businessProBms.Models
+@model voucherViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Expense Voucher</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <h2>Voucher # : @Model.voucher.voucherNo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date: @Model.voucher.voucherDate</h2>
+        <table class="table table-bordered table-condensed table-striped">
+            <tr>
+                <td><b>Details : </b></td>
+            </tr>
+        </table>
+        <table class="table table-bordered table-condensed table-striped">
+            <tr>
+                <th>
+                    Account  
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Debit
+                </th>
+                <th>
+                    Credit
+                </th>
+            </tr>
+            @foreach (var item in ViewBag.vouchers as List<VoucherBody>)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.accountName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.debit)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.credit)
+                    </td>
+                </tr>
+            }
+        </table>
+        <table>
+            <tr>
+                <td><b>Totals : RS  </b></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

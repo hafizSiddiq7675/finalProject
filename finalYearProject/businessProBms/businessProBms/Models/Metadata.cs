@@ -186,7 +186,7 @@ namespace businessProBms.Models
         [Display(Name="Voucher Number")]
         [Required]
         public int voucherNo { get; set; }
-        [Display(Name="Account Number")]
+        [Display(Name="Account")]
         [Required]
         public int accountNo { get; set; }
         [Display(Name="Description")]
@@ -194,7 +194,7 @@ namespace businessProBms.Models
         [Display(Name="Debit")]
         [Required]
         public decimal debit { get; set; }
-        [Display(Name="Creditt")]
+        [Display(Name="Credit")]
         [Required]
         public decimal credit { get; set; }
     }
