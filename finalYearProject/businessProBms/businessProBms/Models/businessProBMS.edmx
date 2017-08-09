@@ -31,7 +31,7 @@
           <Property Name="name" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="description" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="parentCode" Type="int" Nullable="false" />
-          <Property Name="isGroup" Type="bit" />
+          <Property Name="isGroup" Type="bit" Nullable="false" />
           <Property Name="openingDebit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="openingCredit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
         </EntityType>
@@ -121,6 +121,7 @@
           </Key>
           <Property Name="voucherNo" Type="int" Nullable="false" />
           <Property Name="voucherDate" Type="date" Nullable="false" />
+          <Property Name="voucherType" Type="int" />
         </EntityType>
         <EntityType Name="VoucherBody">
           <Key>
@@ -394,7 +395,7 @@
           <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="parentCode" Type="Int32" Nullable="false" />
-          <Property Name="isGroup" Type="Boolean" />
+          <Property Name="isGroup" Type="Boolean" Nullable="false" />
           <Property Name="openingDebit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <Property Name="openingCredit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
         </EntityType>
@@ -404,6 +405,7 @@
           </Key>
           <Property Name="voucherNo" Type="Int32" Nullable="false" />
           <Property Name="voucherDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="voucherType" Type="Int32" />
           <NavigationProperty Name="VoucherBodies" Relationship="businessProBmsModel.FK_VoucherBody_Voucher" FromRole="Voucher" ToRole="VoucherBody" />
         </EntityType>
         <EntityType Name="VoucherBody">
@@ -560,6 +562,7 @@
           <EntitySetMapping Name="Vouchers">
             <EntityTypeMapping TypeName="businessProBmsModel.Voucher">
               <MappingFragment StoreEntitySet="Voucher">
+                <ScalarProperty Name="voucherType" ColumnName="voucherType" />
                 <ScalarProperty Name="voucherDate" ColumnName="voucherDate" />
                 <ScalarProperty Name="voucherNo" ColumnName="voucherNo" />
               </MappingFragment>

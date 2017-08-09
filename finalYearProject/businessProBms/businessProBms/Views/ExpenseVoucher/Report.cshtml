@@ -3,71 +3,69 @@
 @{
     ViewBag.Title = "Report";
 }
-<h2>Expense Report</h2>
+<h2>Ledger Report</h2>
+<script src="~/Scripts/moment.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootstrap-datetimepicker.js"></script>
 <hr />
+<form>
+    <div class="container" style="position:relative">
+        <table class="table table-responsive">
+            <tr>
+                <td><b>Account</b></td>
+                <td><b>From Date</b></td>
+                <td><b>To Date</b></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DropDownListFor(m => m.voucherDetail.accountNo, new SelectList(ViewBag.accounts, "code", "name"),
+                    "--Select Account--", new { @class = "form-control", id = "vacc" })
+                    @Html.ValidationMessageFor(m => m.voucherDetail.accountNo)
+                </td>
+                <td>
+                    <div class='col-xs-11 input-group date'>
+                        <input type="text" id="sdate" class="form-control" />    
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class='col-xs-11 input-group date'>
+                        <input type="text" id="edate" class="form-control" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <input type="button" value="Search" class="btn btn-primary" onclick="srcbtn()" />
+                </td>
+                <td>
+                    <input type="button" value="Print" class="btn btn-success disabled" id="btnprint" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
 <div class="input-group" style=" margin-left: 800px;">
     <span class="input-group-addon">
         <i class="glyphicon glyphicon-search">
         </i>
     </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
-</div><br />
-<table class="table table-bordered table-striped table-responsive">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(m => m.voucher.voucherDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(m => m.voucher.voucherNo)
-        </th>
-        <th>
-                Account
-        </th>
-        <th>
-            @Html.DisplayNameFor(m => m.voucherDetail.description)
-        </th>
-        <th>
-            @Html.DisplayNameFor(m => m.voucherDetail.debit)
-        </th>
-        <th>
-            @Html.DisplayNameFor(m => m.voucherDetail.credit)
-        </th>
-        <th>
-            Balance
-        </th>
-    </tr>
-    @foreach (var item in ViewBag.vouchers as List<voucherViewModel>)
-    {
-        <tr class="Search">
-            <td>
-                @Html.DisplayFor(m => item.voucher.voucherDate)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.voucher.voucherNo)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.voucherDetail.accountName)
-            </td>
-
-            <td>
-                @Html.DisplayFor(m => item.voucherDetail.description)
-            </td>
-
-            <td>
-                @Html.DisplayFor(m => item.voucherDetail.debit)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.voucherDetail.credit)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.balance)
-            </td>
-        </tr>
-    }
+</div>
+<br />
+<table class="table table-bordered table-striped table-responsive" id="tblResult">
+<thead></thead>
+    <tbody></tbody>
 </table>
+<br />
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
-<script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
 <script>
    $(document).ready(function () {
         function Contains(text_one, text_two) {
@@ -85,5 +83,76 @@
                 }
             });
         });
-    });
+   });
+   $.noConflict();
+   jQuery(document).ready(function ($) {
+       $(function () {
+           $('#sdate').datetimepicker({ format: 'YYYY-MM-DD' });
+           $("#edate").datetimepicker({ format: 'YYYY-MM-DD' });
+       });
+   });
+   function srcbtn() {
+           var val = {};
+           val.acc = $("#vacc").val();
+           val.startDate = $("#sdate").val();
+           val.endDate = $("#edate").val();
+           $.ajax({
+               cashe: false,
+               type: "POST",
+               url: "/ExpenseVoucher/srcData",
+               data: val,
+               success: function (data) {
+                   var head = '';
+                   head += "<tr>"
+                   head += "<th>Date</th>"
+                   head += "<th>Voucher No</th>"
+                   head += "<th>Account No</th>"
+                   head += "<th>Account Name</th>"
+                   head += "<th>Debit(RS)</th>"
+                   head += "<th>Credit(RS)</th>"
+                   head += "<th>Balance(RS)</th>"
+                   head += "<th>History</th>"
+                   head += "</tr>";
+                   $("#tblResult thead").html(head);
+                   var rows = '';
+                   var total = 0;
+                   $.each(data.Result, function (i, item) {
+                       var date = ToJavaScriptDate(item.vdate);
+                       rows += "<tr class='Search'>"
+                       rows += "<td>" + date + "</td>"
+                       rows += "<td>" + item.vno + "</td>"
+                       rows += "<td>" + item.accountno + "</td>"
+                       rows += "<td>" + item.accountname + "</td>"
+                       rows += "<td>" + item.debit + "</td>"
+                       rows += "<td>" + item.credit + "</td>"
+                       rows += "<td>" + item.balance + "</td>"
+                       rows += "<td>" + item.total + "</td>"
+                       rows += "</tr>";
+                       total = item.total;
+                       $("#tblResult tbody").html(rows);
+                   });
+                   rows += "<tr>"
+                   rows += "<td><b>Total : </b></td>"
+                   rows += "<td>&nbsp;</td>"
+                   rows += "<td>&nbsp;</td>"
+                   rows += "<td>&nbsp;</td>"
+                   rows += "<td>&nbsp;</td>"
+                   rows += "<td>&nbsp;</td>"
+                   rows += "<td>" + total + "</td>"
+                   rows += "</tr>";
+                   $("#tblResult tbody").html(rows);
+                   $("#btnprint").removeClass('disabled');
+               },
+               error: function (xhr, ajaxOptions, thrownError) {
+                   alert('There is an error ');
+               }
+           });
+   }
+   function ToJavaScriptDate(value) {
+       var pattern = /Date\(([^)]+)\)/;
+       var results = pattern.exec(value);
+       var dt = new Date(parseFloat(results[1]));
+       // return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+       return dt.getFullYear() + "/" + (dt.getMonth() + 1) + "/" + dt.getDate();
+   }
 </script>

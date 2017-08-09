@@ -156,7 +156,7 @@ namespace businessProBms.Models
         [Display(Name = "Description")]
         [Required]
         public string description { get; set; }
-        [Display(Name = "Parent Account Code")]
+        [Display(Name = "Parent Account")]
         [Required]
         public int parentCode { get; set; }
         [Display(Name = "Is Group?")]

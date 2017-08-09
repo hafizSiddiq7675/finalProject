@@ -15,14 +15,14 @@
     <div>
         <h2>Voucher # : @Model.voucher.voucherNo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date: @Model.voucher.voucherDate</h2>
         <table class="table table-bordered table-condensed table-striped">
-            <tr>
-                <td><b>Details : </b></td>
-            </tr>
         </table>
         <table class="table table-bordered table-condensed table-striped">
             <tr>
                 <th>
-                    Account  
+                    Account No
+                </th>
+                <th>
+                    Account Name
                 </th>
                 <th>
                     Description
@@ -37,6 +37,9 @@
             @foreach (var item in ViewBag.vouchers as List<VoucherBody>)
             {
                 <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.accountNo)
+                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.accountName)
                     </td>
@@ -54,7 +57,10 @@
         </table>
         <table>
             <tr>
-                <td><b>Totals : RS  </b></td>
+                <td><b>@ViewBag.totalInWord Rupees Only</b></td>
+            </tr>
+            <tr>
+                <td><b>Total RS: @ViewBag.total</b></td>
             </tr>
         </table>
     </div>

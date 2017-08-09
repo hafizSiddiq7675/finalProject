@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Purchase";
 }
+<link href="~/Content/Site.css" rel="stylesheet" />
 <h2>Purchases</h2>
 <hr />
 <div class="well well-sm"><b>Purchase Order</b></div>
@@ -67,7 +68,7 @@
     </div>
     <br />
     <div class="col-md-8">
-        <table id="listPurchase" class="table table-bordered">
+        <table id="listPurchase" class="table table-condensed">
             <thead>
                 <tr>
                     <th>Product Code</th>
@@ -75,61 +76,61 @@
                     <th>Quantity</th>
                     <th>Price(RS)</th>
                     <th>Amount</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
-        <table id="total">
-            <tr>@ViewBag.total</tr>
-        </table>
         <hr />
         <div style="padding:10px 0; text-align:right">
-            <a href="@Url.Action("printPurchaseInvoice", "Purchase", new { id = @Model.purchases.purchaseId })"><input id="submit" type="button" value="Print" class="btn btn-warning" style="padding:10px 20px" /></a>
+            <a href="@Url.Action("printPurchaseInvoice", "Purchase", new { id = @Model.purchases.purchaseId })"><input id="submit" type="button" value="Print" class="btn btn-warning disabled" style="padding:10px 20px" /></a>
         </div>
     </div>
 </div>
-<div class="input-group" style="margin-left:820px">
-    <span class="input-group-addon">
-        <i class="glyphicon glyphicon-search">
-        </i>
-    </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
-</div>
-<br />
-<table class="table table-bordered table-responsive table-striped">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.purchases.purchaseId)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.purchases.purchaseDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.purchases.vendorName)
-        </th>
-        <th>Action</th>
-    </tr>
-
-    @foreach (var item in ViewBag.purchases as List<Purchase>)
-    {
-        <tr class="Search" id="_row@item.saleId">
-            <td>
-                @Html.DisplayFor(modelItem => item.purchaseId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.purchaseDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.vendorName)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.purchaseId }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
-                <a href="#" onclick="getPurchaseDetails(@item.purchaseId)"><span class="glyphicon glyphicon-book"></span>&nbsp; Details</a> |
-                <a href="#" onclick="ConfirmDelete(@item.purchaseId)"><span class="glyphicon glyphicon-trash"></span>&nbsp; Delete</a> |
-                @Html.ActionLink("Print", "printPurchaseInvoice", new { id = item.purchaseId }, htmlAttributes: new { @class = "glyphicon glyphicon-print" })
-            </td>
+<button id="flip" style="margin-left:500px" onclick="myFunction()">Click To Show Purchase Table</button>
+<div id="panel">
+    <div class="search" style="margin-left:390px">
+        <input type="text" id="Search" class="form-control input-sm" maxlength="64" placeholder="Search Here.." />
+        <button type="button" class="xyz btn-primary btn-sm">Search</button>
+    </div>
+    <br />
+    <br />
+    <table class="table table-bordered table-responsive table-striped">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.purchases.purchaseId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.purchases.purchaseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.purchases.vendorName)
+            </th>
+            <th>Action</th>
         </tr>
-    }
-</table>
+
+        @foreach (var item in ViewBag.purchases as List<Purchase>)
+        {
+            <tr class="Search" id="_row@item.saleId">
+                <td>
+                    @Html.DisplayFor(modelItem => item.purchaseId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.purchaseDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.vendorName)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.purchaseId }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
+                    <a href="#" onclick="getPurchaseDetails(@item.purchaseId)"><span class="glyphicon glyphicon-book"></span>&nbsp; Details</a> |
+                    <a href="#" onclick="ConfirmDelete(@item.purchaseId)"><span class="glyphicon glyphicon-trash"></span>&nbsp; Delete</a> |
+                    @Html.ActionLink("Print", "printPurchaseInvoice", new { id = item.purchaseId }, htmlAttributes: new { @class = "glyphicon glyphicon-print" })
+                </td>
+            </tr>
+        }
+    </table>
+</div>
 <input type="hidden" id="hiddenCode" />
 <div class="modal" id="delModal">
     <div class="modal-dialog">
@@ -182,6 +183,15 @@
     }
 </style>
 <script>
+    function myFunction() {
+        var x = document.getElementById("panel")
+        if (x.style.display === 'none') {
+            x.style.display = 'block';
+
+        } else {
+            x.style.display = 'none';
+        }
+    }
     var ConfirmDelete = function (code) {
         $("#hiddenCode").val(code);
         $("#delModal").modal('show');
@@ -258,7 +268,7 @@
                 data: val,
                 success: function (result) {
                     getPurchaseDetails($("#pid").val());
-                    $("#total tr").html("<b>Total(RS): </b> " + result);
+                    $("#submit").removeClass('disabled');
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     alert('There is an error ');
@@ -287,7 +297,15 @@
                     $("#listPurchase tbody").html(rows);
                     //Show Model
                 });
-                $("#total tr").html("<b>Total(RS): </b> " + data.Total);
+                rows += "<tr>"
+                rows += "<td><b>Totals(RS) : </b></td>"
+                rows += "<td>&nbsp;</td>"
+                rows += "<td>&nbsp;</td>"
+                rows += "<td>&nbsp;</td>"
+                rows += "<td>" + data.Total + "</td>"
+                rows += "<td>&nbsp;</td>"
+                rows += "</tr>";
+                $("#listPurchase tbody").html(rows);
             },
             eror: function (err) {
                 alert("Error : " + err.responseText);

@@ -21,6 +21,7 @@ namespace businessProBms.Models
     
         public int voucherNo { get; set; }
         public System.DateTime voucherDate { get; set; }
+        public Nullable<int> voucherType { get; set; }
     
         public virtual ICollection<VoucherBody> VoucherBodies { get; set; }
     }

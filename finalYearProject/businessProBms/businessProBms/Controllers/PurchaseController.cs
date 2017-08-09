@@ -26,7 +26,7 @@ namespace businessProBms.Controllers
         [HttpPost]
         public JsonResult Purchases(purchaseViewModel pu)
         {
-            decimal total = 0;
+            bool result = false;
             if (pu != null)
             {
                 int count = db.Purchases.Count(r => r.purchaseId == pu.purchaseId);
@@ -54,7 +54,7 @@ namespace businessProBms.Controllers
                     purchasedetail.amount = pu.purchasePrice * pu.quantity;
                     db.PurchaseDetails.Add(purchasedetail);
                     db.SaveChanges();
-                    total = db.PurchaseDetails.Where(r => r.purchaseDetailsId == pu.purchaseId).Sum(r => r.amount);
+                    result = true;
                 }
                 else
                 {
@@ -73,10 +73,10 @@ namespace businessProBms.Controllers
                     purchasedetail.amount = pu.purchasePrice * pu.quantity;
                     db.PurchaseDetails.Add(purchasedetail);
                     db.SaveChanges();
-                    total = db.PurchaseDetails.Where(r => r.purchaseDetailsId == pu.purchaseId).Sum(r => r.amount);
+                    result = true;
                 }
             }
-            return Json(total, JsonRequestBehavior.AllowGet);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
         public ActionResult getPurchaseDetails(int? id)
         {
@@ -127,8 +127,12 @@ namespace businessProBms.Controllers
         }
         public ActionResult printPurchaseInvoice(int id)
         {
+            int total = 0;
             Purchase pa = db.Purchases.SingleOrDefault(x => x.purchaseId == id);
             ViewBag.purchase = db.PurchaseDetails.Where(x => x.purchaseDetailsId == id).ToList();
+            total = (int)db.PurchaseDetails.Where(r => r.purchaseDetailsId == id).Sum(c => c.amount);
+            convertToNumeral convert= new convertToNumeral();
+            ViewBag.total = convert.convertNumber(total);
             return new ViewAsPdf(pa);
         }
     }

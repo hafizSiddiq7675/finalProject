@@ -14,5 +14,6 @@ namespace businessProBms.Models
         public string description { get; set; }
         public decimal debit { get; set; }
         public decimal credit { get; set; }
+        public int voucherType { get; set; }
     }
 }

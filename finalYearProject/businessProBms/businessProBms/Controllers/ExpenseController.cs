@@ -12,6 +12,7 @@ namespace businessProBms.Controllers
         {
             ExpenseAccount ex = new ExpenseAccount();
             ex.code = db.ExpenseAccounts.Max(x => x.code) + 1;
+            ViewBag.parentAcc = db.ExpenseAccounts.Where(r => r.isGroup == true).ToList();
             ViewBag.expenses = db.ExpenseAccounts.ToList();
             return View(ex);
         }

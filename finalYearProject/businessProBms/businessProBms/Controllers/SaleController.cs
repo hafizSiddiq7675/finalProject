@@ -26,7 +26,7 @@ namespace businessProBms.Controllers
         [HttpPost]
         public JsonResult Sales(saleViewModel sa)
             {
-            decimal total=0;
+                bool result = false;
             if (sa != null)
             {
                 int count = db.Sales.Count(r => r.saleId == sa.saleId);
@@ -54,7 +54,7 @@ namespace businessProBms.Controllers
                     saledetail.amount = sa.quantity * sa.salePrice;
                     db.SaleDetails.Add(saledetail);
                     db.SaveChanges();
-                    total = db.SaleDetails.Where(r => r.saleDetailsId==sa.saleId).Sum(r=>r.amount);
+                    result = true;
                 }
                 else
                 {
@@ -73,10 +73,10 @@ namespace businessProBms.Controllers
                     saledetail.amount = sa.quantity * sa.salePrice;
                     db.SaleDetails.Add(saledetail);
                     db.SaveChanges();
-                    total = db.SaleDetails.Where(r => r.saleDetailsId == sa.saleId).Sum(r => r.amount);
+                    result = true;
                 }
             }
-            return Json(total, JsonRequestBehavior.AllowGet);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
         public ActionResult getSaleDetails(int? id)
         {
@@ -109,9 +109,13 @@ namespace businessProBms.Controllers
         }
         public ActionResult printSaleInvoice(int? id)
         {
+            int total = 0;
             Sale sa = db.Sales.SingleOrDefault(x => x.saleId == id);
             ViewBag.sale = db.SaleDetails.Where(x => x.saleDetailsId == id).ToList();
-            return new ViewAsPdf(sa);
+            total = (int)db.SaleDetails.Where(r => r.saleDetailsId == id).Sum(c => c.amount);
+            convertToNumeral convert = new convertToNumeral();
+            ViewBag.total = convert.convertNumber(total);
+            return new ViewAsPdf(sa);  
         }
         public ActionResult Edit(int? id)
         {

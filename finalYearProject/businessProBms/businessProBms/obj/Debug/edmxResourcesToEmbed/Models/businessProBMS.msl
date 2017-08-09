@@ -124,6 +124,7 @@
     <EntitySetMapping Name="Vouchers">
       <EntityTypeMapping TypeName="businessProBmsModel.Voucher">
         <MappingFragment StoreEntitySet="Voucher">
+          <ScalarProperty Name="voucherType" ColumnName="voucherType" />
           <ScalarProperty Name="voucherDate" ColumnName="voucherDate" />
           <ScalarProperty Name="voucherNo" ColumnName="voucherNo" />
         </MappingFragment>

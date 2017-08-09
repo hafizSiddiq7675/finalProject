@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = "Sales";
 }
+<link href="~/Content/Site.css" rel="stylesheet" />
 <h2>Sales</h2>
 <hr />
 <div class="well well-sm"><b>Sale Order</b></div>
@@ -67,7 +68,7 @@
     </div>
     <br />
     <div class="col-md-8">
-        <table id="listSale" class="table table-bordered">
+        <table id="listSale" class="table table-condensed">
             <thead>
                 <tr>
                     <th>Product Code</th>
@@ -79,23 +80,21 @@
             </thead>
             <tbody></tbody>
         </table>
-        <table id="total">
-            <tr></tr>
-        </table>
         <hr />
         <div style="padding:10px 0; text-align:right">
-            <a href="@Url.Action("printSaleInvoice", "Sale", new { id = @Model.sales.saleId })"><input id="submit" type="button" value="Print" class="btn btn-warning" style="padding:10px 20px" /></a>
+            <a href="@Url.Action("printSaleInvoice", "Sale", new { id = @Model.sales.saleId })"><input id="submit" type="button" value="Print" class="btn btn-warning disabled" style="padding:10px 20px" /></a>
         </div>
     </div>
 </div>
-<div class="input-group" style="margin-left:820px">
-    <span class="input-group-addon">
-        <i class="glyphicon glyphicon-search">
-        </i>
-    </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
-</div>
-<br />
-<table class="table table-bordered table-responsive table-striped">
+<button id="flip" style="margin-left:500px" onclick="myFunction()">Click To Show Sales Table</button>
+<div id="panel">
+    <div class="search" style="margin-left:390px">
+        <input type="text" id="Search" class="form-control input-sm" maxlength="64" placeholder="Search Here.." />
+        <button type="button" class="xyz btn-primary btn-sm">Search</button>
+    </div>
+    <br />
+    <br />
+    <table class="table table-bordered table-responsive table-striped">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.sales.saleId)
@@ -130,168 +129,186 @@
             </tr>
         }
     </table>
-<input type="hidden" id="hiddenCode" />
-<div class="modal" id="delModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Are you Sure you want to delete this?</h4>
+</div>
+    <input type="hidden" id="hiddenCode" />
+    <div class="modal" id="delModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Are you Sure you want to delete this?</h4>
 
-                <div class="modal-body">
-                    <p>This item <strong>And Its Details</strong> will be deleted permanently. </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
-                    <a href="#" class="btn btn-danger" onclick="DeleteSale()">Delete</a>
+                    <div class="modal-body">
+                        <p>This item <strong>And Its Details</strong> will be deleted permanently. </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                        <a href="#" class="btn btn-danger" onclick="DeleteSale()">Delete</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="modal" id="delModalDetails">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Are you Sure you want to delete this?</h4>
+    <div class="modal" id="delModalDetails">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Are you Sure you want to delete this?</h4>
 
-                <div class="modal-body">
-                    <p>This item will be deleted permanently. </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
-                    <a href="#" class="btn btn-danger" onclick="DeleteSale()">Delete</a>
+                    <div class="modal-body">
+                        <p>This item will be deleted permanently. </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" id="close">Close</button>
+                        <a href="#" class="btn btn-danger" onclick="DeleteSale()">Delete</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
-<script src='@Url.Content("~/Scripts/jquery.validate.js")'></script>
-<script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
-<script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
-<style>
-    span.error {
-        display: block;
-        visibility: hidden;
-        color: red;
-        font-size: 90%;
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
     }
-</style>
-<script>
-    var ConfirmDelete = function (code) {
-        $("#hiddenCode").val(code);
-        $("#delModal").modal('show');
-    }
-    var ConfirmDeleteDetail = function (code) {
-        $("#hiddenCode").val(code);
-        $("#delModalDetails").modal('show');
-    }
-    var DeleteSale = function () {
-        var mid = $("#hiddenCode").val();
-        $.ajax({
-            type: "POST",
-            url: "/Sale/DeleteConfirmed",
-            data: { id: mid },
-            success: function (result) {
-                $("#myModal").modal("hide");
-                $("#_row_" + mid).remove;
-                window.location = "/Sale/Sales"
-            },
-            error: function (result) {
-                alert('OOps,Something bad happened');
-            }
-
-        })
-    }
-    $(document).ready(function () {
-        function Contains(text_one, text_two) {
-            if (text_one.indexOf(text_two) != -1)
-                return true;
+    <script src='@Url.Content("~/Scripts/jquery.validate.js")'></script>
+    <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
+    <script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
+    <style>
+        span.error {
+            display: block;
+            visibility: hidden;
+            color: red;
+            font-size: 90%;
         }
-        $("#Search").keyup(function () {
-            var searchtext = $("#Search").val().toLowerCase();
-            $(".Search").each(function () {
-                if (!Contains($(this).text().toLowerCase(), searchtext)) {
-                    $(this).hide();
+    </style>
+    <script>
+        function myFunction() {
+            var x = document.getElementById("panel")
+            if (x.style.display === 'none') {
+                x.style.display = 'block';
+
+            } else {
+                x.style.display = 'none';
+            }
+        }
+        var ConfirmDelete = function (code) {
+            $("#hiddenCode").val(code);
+            $("#delModal").modal('show');
+        }
+        var ConfirmDeleteDetail = function (code) {
+            $("#hiddenCode").val(code);
+            $("#delModalDetails").modal('show');
+        }
+        var DeleteSale = function () {
+            var mid = $("#hiddenCode").val();
+            $.ajax({
+                type: "POST",
+                url: "/Sale/DeleteConfirmed",
+                data: { id: mid },
+                success: function (result) {
+                    $("#myModal").modal("hide");
+                    $("#_row_" + mid).remove;
+                    window.location = "/Sale/Sales"
+                },
+                error: function (result) {
+                    alert('OOps,Something bad happened');
                 }
-                else {
-                    $(this).show();
-                }
+
+            })
+        }
+        $(document).ready(function () {
+            function Contains(text_one, text_two) {
+                if (text_one.indexOf(text_two) != -1)
+                    return true;
+            }
+            $("#Search").keyup(function () {
+                var searchtext = $("#Search").val().toLowerCase();
+                $(".Search").each(function () {
+                    if (!Contains($(this).text().toLowerCase(), searchtext)) {
+                        $(this).hide();
+                    }
+                    else {
+                        $(this).show();
+                    }
+                });
             });
         });
-    });
-    $("#addbtn").click(function () {
-        var isAllValid = true;
-        if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
-            isAllValid = false;
-            $('#quantity').siblings('span.error').css('visibility', 'visible');
-        }
-        else {
-            $('#quantity').siblings('span.error').css('visibility', 'hidden');
-        }
+        $("#addbtn").click(function () {
+            var isAllValid = true;
+            if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+                isAllValid = false;
+                $('#quantity').siblings('span.error').css('visibility', 'visible');
+            }
+            else {
+                $('#quantity').siblings('span.error').css('visibility', 'hidden');
+            }
 
-        if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
-            isAllValid = false;
-            $('#price').siblings('span.error').css('visibility', 'visible');
-        }
-        else {
-            $('#price').siblings('span.error').css('visibility', 'hidden');
-        }
-        if (isAllValid) {
-            var val = {};
-            val.saleId = $("#sid").val();
-            val.saleDate = $("#sdate").val();
-            val.customerCode = $("#ccode").val();
-            val.customerName = $("#ccode :selected").text();
-            val.productCode = $("#pcode").val();
-            val.productName = $("#pcode :selected").text();
-            val.quantity = parseInt($("#quantity").val(), 10);
-            val.salePrice = parseFloat($("#price").val(), 10);
+            if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+                isAllValid = false;
+                $('#price').siblings('span.error').css('visibility', 'visible');
+            }
+            else {
+                $('#price').siblings('span.error').css('visibility', 'hidden');
+            }
+            if (isAllValid) {
+                var val = {};
+                val.saleId = $("#sid").val();
+                val.saleDate = $("#sdate").val();
+                val.customerCode = $("#ccode").val();
+                val.customerName = $("#ccode :selected").text();
+                val.productCode = $("#pcode").val();
+                val.productName = $("#pcode :selected").text();
+                val.quantity = parseInt($("#quantity").val(), 10);
+                val.salePrice = parseFloat($("#price").val(), 10);
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "/Sale/Sales/",
+                    data: val,
+                    success: function (result) {
+                        getSaleDetails($("#sid").val());
+                        $("#submit").removeClass('disabled');
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert('There is an error ');
+                    }
+                });
+
+            }
+        })
+        function getSaleDetails(element) {
             $.ajax({
-                cache: false,
-                type: "POST",
-                url: "/Sale/Sales/",
-                data: val,
-                success: function (result) {
-                    getSaleDetails($("#sid").val());
-                    $("#total tr").html("<b>Total(RS): </b> " + result);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert('There is an error ');
-                }
-            });
-
-        }
-    })
-    function getSaleDetails(element) {
-        $.ajax({
-            url: "/Sale/getSaleDetails",
-            type: "GET",
-            data: { id: element },
-            dataType: "json",
-            success: function (data) {
-                var rows = '';
-                $.each(data.Sales, function (i, item) {
-                    rows += "<tr class='Search' id='_row(" + item.code + ")'>"
-                    rows += "<td>" + item.productCode + "</td>"
-                    rows += "<td>" + item.productName + "</td>"
-                    rows += "<td>" + item.quantity + "</td>"
-                    rows += "<td>" + item.salePrice + "</td>"
-                    rows += "<td>" + item.amount + "</td>"
-                    rows += "<td><a href='#' onclick='return getPurchaseById(" + item.code + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a> |<a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
+                url: "/Sale/getSaleDetails",
+                type: "GET",
+                data: { id: element },
+                dataType: "json",
+                success: function (data) {
+                    var rows = '';
+                    $.each(data.Sales, function (i, item) {
+                        rows += "<tr class='Search' id='_row(" + item.code + ")'>"
+                        rows += "<td>" + item.productCode + "</td>"
+                        rows += "<td>" + item.productName + "</td>"
+                        rows += "<td>" + item.quantity + "</td>"
+                        rows += "<td>" + item.salePrice + "</td>"
+                        rows += "<td>" + item.amount + "</td>"
+                        rows += "<td><a href='#' onclick='return getPurchaseById(" + item.code + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a> |<a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
+                        rows += "</tr>";
+                        $("#listSale tbody").html(rows);
+                        //Show Model
+                    });
+                    rows += "<tr>"
+                    rows += "<td><b>Totals(RS) : </b></td>"
+                    rows += "<td>&nbsp;</td>"
+                    rows += "<td>&nbsp;</td>"
+                    rows += "<td>&nbsp;</td>"
+                    rows += "<td>" + data.Total + "</td>"
+                    rows += "<td>&nbsp;</td>"
                     rows += "</tr>";
                     $("#listSale tbody").html(rows);
-                    //Show Model
-                });
-                $("#total tr").html("<b>Total(RS): </b> " + data.Total);
-            },
-            eror: function (err) {
-                alert("Error : " + err.responseText);
-            }
-        });
-    }
-</script>
+                },
+                eror: function (err) {
+                    alert("Error : " + err.responseText);
+                }
+            });
+        }
+    </script>

@@ -68,10 +68,18 @@
                     </td>
                 </tr>
             }
+            <tr>
+                <td><b>Total(RS)</b></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td><b>@Model.SaleDetails.Sum(o => o.amount) </b></td>
+            </tr>
         </table>
         <table>
             <tr>
-                <td><b>Total : RS @Model.SaleDetails.Sum(o => o.amount) </b></td>
+                <td><b> @ViewBag.total Rupees Only </b></td>
             </tr>
         </table>
     </div>

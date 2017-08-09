@@ -2,13 +2,13 @@
 @using System.Web.UI.WebControls
 @model ExpenseAccount
 @{
-    ViewBag.Title = "Expenses";
+    ViewBag.Title = "Accounts";
 }
-
-<h2>Expense Accounts</h2>
+<link href="~/Content/Site.css" rel="stylesheet" />
+<h2>Chart Of Accounts</h2>
 <hr />
 <div class="row">
-    <div class="col-md-4" style="padding-top:28px">
+    <div class="col-md-4" style="padding-top:13px">
         @using (Html.BeginForm("Expenses", "Expense", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
@@ -16,14 +16,21 @@
                 @Html.ValidationSummary(true)
 
                 <div class="form-group">
+                    @Html.LabelFor(m => m.parentCode, new { @class = "label-control" })
+                    @Html.DropDownListFor(m => m.parentCode, new SelectList(ViewBag.parentAcc, "code", "name"), 
+                    "--Select Parent Account--", new { @class="form-control", id="pc"})
+                    @Html.ValidationMessageFor(m => m.parentCode)
+                </div>
+
+                <div class="form-group">
                     @Html.LabelFor(m => m.code, new { @class = "label-control" })
-                    @Html.TextBoxFor(m => m.code, new { @class = "form-control", @readonly="readonly" })
+                    @Html.TextBoxFor(m => m.code, new { @class = "form-control", @readonly="readonly"})
                     @Html.ValidationMessageFor(m => m.code)
                 </div>
 
                 <div class="form-group">
                     @Html.LabelFor(m=>m.name, new {@class="label-control"})
-                    @Html.TextBoxFor(m => m.name, new { @class="form-control", placeholder="Enter Expense Account Name Here.."})
+                    @Html.TextBoxFor(m => m.name, new { @class="form-control", placeholder="Enter Account Name Here.."})
                     @Html.ValidationMessageFor(m=>m.name)
                 </div>
 
@@ -31,18 +38,6 @@
                     @Html.LabelFor(m => m.description, new { @class="label-control"})
                     @Html.TextAreaFor(m => m.description, new {@class="form-control", placeholder="Enter Description Here.." })
                     @Html.ValidationMessageFor(m=>m.description)
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(m => m.parentCode, new { @class="label-control"})
-                    @Html.TextBoxFor(m => m.parentCode, new { @class="form-control", placeholder="Enter Parent Code Here.."})
-                    @Html.ValidationMessageFor(m=>m.parentCode)
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(m => m.isGroup, new { @class="label-control"})
-                    @Html.DropDownListFor(m => m.isGroup, new SelectList(new[] { new { Value = "", Text = "--Select Option--" }, new { Value = "true", Text = "Yes" }, new { Value = "false", Text = "No" }, }, "Value", "Text", Model),new {@class="form-control"})
-                    @Html.ValidationMessageFor(m=>m.isGroup)
                 </div>
 
                 <div class="form-group">
@@ -56,6 +51,13 @@
                     @Html.TextBoxFor(m=>m.openingCredit, new {@class="form-control", placeholder="Enter Opening Debit Here.." })
                     @Html.ValidationMessageFor(m=>m.openingCredit)
                 </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.isGroup, new { @class = "label-control" })
+                    @Html.CheckBoxFor(m=>m.isGroup)
+                    @Html.ValidationMessageFor(m => m.isGroup)
+                </div>
+
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         <input type="submit" value="Save" class="btn btn-success" aria-hidden="true" />
@@ -65,12 +67,12 @@
         }
     </div>
     <div class="col-md-8">
-        <div class="input-group" style=" margin-left: 510px;">
-            <span class="input-group-addon">
-                <i class="glyphicon glyphicon-search">
-                </i>
-            </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
-        </div><br />
+<div class="search">
+    <input type="text" id="Search" class="form-control input-sm" maxlength="64" placeholder="Search Here.." />
+    <button type="button" class="xyz btn-primary btn-sm">Search</button>
+</div>
+        <br />
+        <br />
         <table class="table table-bordered table-striped table-responsive">
             <tr>
                 <th>
