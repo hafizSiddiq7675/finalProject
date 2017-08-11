@@ -4,6 +4,15 @@
 @{
     ViewBag.Title = "Accounts";
 }
+@{
+    var accType = new List<ListItem>{
+        new ListItem{Text="Assets", Value="Assets"},
+        new ListItem{Text="Liability", Value="Liability"},
+        new ListItem{Text="Capital", Value="Capital"},
+        new ListItem{Text="Revenue", Value="Revenue"},
+        new ListItem{Text="Expense", Value="Expense"}
+    };
+}
 <link href="~/Content/Site.css" rel="stylesheet" />
 <h2>Chart Of Accounts</h2>
 <hr />
@@ -14,6 +23,12 @@
             @Html.AntiForgeryToken()
             <div class="form-horizontal">
                 @Html.ValidationSummary(true)
+
+                <div class="form-group">
+                    <label>Account Type</label>
+                    @Html.DropDownListFor(m => m.accountType, new SelectList(accType), "--Select Account Type--", new { @class="form-control"})
+                    @Html.ValidationMessageFor(m => m.accountType)
+                </div>
 
                 <div class="form-group">
                     @Html.LabelFor(m => m.parentCode, new { @class = "label-control" })
@@ -76,6 +91,9 @@
         <table class="table table-bordered table-striped table-responsive">
             <tr>
                 <th>
+                    Account Type
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.code)
                 </th>
                 <th>
@@ -99,6 +117,9 @@
             @foreach (var item in ViewBag.expenses as List<ExpenseAccount>)
             {
                 <tr class="Search" id="_row@item.code">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.accountType)
+                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.code)
                     </td>

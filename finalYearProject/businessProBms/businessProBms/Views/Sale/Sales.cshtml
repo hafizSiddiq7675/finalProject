@@ -4,6 +4,15 @@
     ViewBag.Title = "Sales";
 }
 <link href="~/Content/Site.css" rel="stylesheet" />
+<style>
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+</style>
+
 <h2>Sales</h2>
 <hr />
 <div class="well well-sm"><b>Sale Order</b></div>
@@ -173,14 +182,6 @@
     <script src='@Url.Content("~/Scripts/jquery.validate.js")'></script>
     <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
     <script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
-    <style>
-        span.error {
-            display: block;
-            visibility: hidden;
-            color: red;
-            font-size: 90%;
-        }
-    </style>
     <script>
         function myFunction() {
             var x = document.getElementById("panel")

@@ -147,6 +147,8 @@ namespace businessProBms.Models
     }
     public class expenseAccountMetadata
     {
+        [Required]
+        public string accountType { get; set; }
         [Display(Name="Account Code")]
         [Required]
         public int code { get; set; }

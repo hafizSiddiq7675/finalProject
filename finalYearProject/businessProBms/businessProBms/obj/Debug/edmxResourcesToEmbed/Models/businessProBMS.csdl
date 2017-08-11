@@ -88,13 +88,13 @@
       <End Role="Sale" EntitySet="Sales" />
       <End Role="SaleDetail" EntitySet="SaleDetails" />
     </AssociationSet>
-    <EntitySet Name="ExpenseAccounts" EntityType="businessProBmsModel.ExpenseAccount" />
     <EntitySet Name="Vouchers" EntityType="businessProBmsModel.Voucher" />
     <EntitySet Name="VoucherBodies" EntityType="businessProBmsModel.VoucherBody" />
     <AssociationSet Name="FK_VoucherBody_Voucher" Association="businessProBmsModel.FK_VoucherBody_Voucher">
       <End Role="Voucher" EntitySet="Vouchers" />
       <End Role="VoucherBody" EntitySet="VoucherBodies" />
     </AssociationSet>
+    <EntitySet Name="ExpenseAccounts" EntityType="businessProBmsModel.ExpenseAccount" />
   </EntityContainer>
   <EntityType Name="Purchase">
     <Key>
@@ -170,18 +170,6 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <EntityType Name="ExpenseAccount">
-    <Key>
-      <PropertyRef Name="code" />
-    </Key>
-    <Property Name="code" Type="Int32" Nullable="false" />
-    <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-    <Property Name="description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-    <Property Name="parentCode" Type="Int32" Nullable="false" />
-    <Property Name="isGroup" Type="Boolean" Nullable="false" />
-    <Property Name="openingDebit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-    <Property Name="openingCredit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-  </EntityType>
   <EntityType Name="Voucher">
     <Key>
       <PropertyRef Name="voucherNo" />
@@ -216,4 +204,17 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <EntityType Name="ExpenseAccount">
+    <Key>
+      <PropertyRef Name="code" />
+    </Key>
+    <Property Name="code" Type="Int32" Nullable="false" />
+    <Property Name="accountType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="parentCode" Type="Int32" Nullable="false" />
+    <Property Name="isGroup" Type="Boolean" Nullable="false" />
+    <Property Name="openingDebit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="openingCredit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+  </EntityType>
 </Schema>

@@ -76,6 +76,7 @@
             </thead>
             <tbody></tbody>
         </table>
+        <input type="button" class="btn btn-info disabled" value="Save" id="save" />
         <div style="padding:10px 0; text-align:right">
             <a href="@Url.Action("printExpInvoice", "ExpenseVoucher", new {id= @Model.voucher.voucherNo})"><input id="submit" type="button" value="Print" class="btn btn-warning disabled" style="padding:10px 20px" /></a>
         </div>
@@ -233,6 +234,7 @@
             data: val,
             success: function (result) {
                 getDetails($("#vno").val());
+                $("#submit").removeClass('disabled');
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert('There is an error ');
@@ -293,10 +295,20 @@
                 rows += "<td>&nbsp;</td>"
                 rows += "</tr>";
                 $("#listExpenses tbody").html(rows);
+                if (data.DrTot == data.CrTot) {
+                    $("#save").removeClass('disabled');
+                }
+                else
+                {
+                    $("#save").addClass('disabled');
+                }
             },
             eror: function (err) {
                 alert("Error : " + err.responseText);
             }
         });
     }
+    $("#save").click(function () {
+        location.reload();
+    })
 </script>

@@ -429,6 +429,9 @@
     <Content Include="Views\ExpenseVoucher\printExpInvoice.cshtml" />
     <Content Include="Views\ExpenseVoucher\Report.cshtml" />
     <Content Include="Views\Home\Slider.cshtml" />
+    <Content Include="Views\ExpenseVoucher\trailBalance.cshtml" />
+    <Content Include="Views\ExpenseVoucher\incomeStatement.cshtml" />
+    <Content Include="Views\ExpenseVoucher\balanceSheet.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -18,7 +18,7 @@ namespace businessProBms.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Expenses([Bind(Include="code,name,description,parentCode,isGroup,openingDebit,openingCredit")] ExpenseAccount exp)
+        public ActionResult Expenses([Bind(Include="accountType,code,name,description,parentCode,isGroup,openingDebit,openingCredit")] ExpenseAccount exp)
         {
             if(ModelState.IsValid)
             {
@@ -30,6 +30,7 @@ namespace businessProBms.Controllers
                 else
                 {
                     var exDb = db.ExpenseAccounts.Single(x => x.code == exp.code);
+                    exDb.accountType = exp.accountType;
                     exDb.code = exp.code;
                     exDb.name = exp.name;
                     exDb.parentCode = exp.parentCode;
@@ -45,6 +46,7 @@ namespace businessProBms.Controllers
         public ActionResult Edit(int? id)
         { 
             ViewBag.expenses = db.ExpenseAccounts.ToList();
+            ViewBag.parentAcc = db.ExpenseAccounts.Where(r => r.isGroup == true).ToList();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

@@ -1,0 +1,85 @@
+﻿@using businessProBms.Models
+@{
+    ViewBag.Title = "BalanceSheet";
+}
+<h2>Balance Sheet</h2>
+<hr />
+<script src="~/Scripts/moment.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+<form>
+    <div class="container" style="position:relative">
+        <table class="table table-responsive">
+            <tr>
+                <th>
+                    From Date
+                </th>
+                <th>
+                    To Date
+                </th>
+                <th>
+                    &nbsp;
+                </th>
+                <th>
+                    &nbsp;
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <div class='col-xs-8 input-group date'>
+                        <input type="text" id="sdate" class="form-control" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class='col-xs-8 input-group date'>
+                        <input type="text" id="edate" class="form-control" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <input type="button" value="Show" class="btn btn-primary" onclick="result()" />
+                </td>
+                <td>
+                    <input type="button" value="Print" class="btn btn-success disabled" id="btnprint" onclick="CallPrint('divPrint')" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<br />
+<div id="divPrint">
+    <center><h1 id="heading" style="background-color:blue; color:black"></h1></center>
+    <table class="table table-responsive" id="tblResult">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+</div>
+<br />
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+    $.noConflict();
+    jQuery(document).ready(function ($) {
+        $(function () {
+            $('#sdate').datetimepicker({ format: 'YYYY-MM-DD' });
+            $("#edate").datetimepicker({ format: 'YYYY-MM-DD' });
+        });
+    });
+    function CallPrint(strid) {
+        var prtContent = document.getElementById(strid);
+        var WinPrint = window.open('PrintDiv', 'Print-Window', 'width=920,height=750,top=100,left=100');
+        WinPrint.document.write(prtContent.innerHTML);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
+        prtContent.innerHTML = strOldOne;
+    }
+</script>

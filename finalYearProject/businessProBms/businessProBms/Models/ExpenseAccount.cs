@@ -15,6 +15,7 @@ namespace businessProBms.Models
     public partial class ExpenseAccount
     {
         public int code { get; set; }
+        public string accountType { get; set; }
         public string name { get; set; }
         public string description { get; set; }
         public int parentCode { get; set; }

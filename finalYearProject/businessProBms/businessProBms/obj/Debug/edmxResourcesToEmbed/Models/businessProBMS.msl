@@ -108,19 +108,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="ExpenseAccounts">
-      <EntityTypeMapping TypeName="businessProBmsModel.ExpenseAccount">
-        <MappingFragment StoreEntitySet="ExpenseAccount">
-          <ScalarProperty Name="openingCredit" ColumnName="openingCredit" />
-          <ScalarProperty Name="openingDebit" ColumnName="openingDebit" />
-          <ScalarProperty Name="isGroup" ColumnName="isGroup" />
-          <ScalarProperty Name="parentCode" ColumnName="parentCode" />
-          <ScalarProperty Name="description" ColumnName="description" />
-          <ScalarProperty Name="name" ColumnName="name" />
-          <ScalarProperty Name="code" ColumnName="code" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="Vouchers">
       <EntityTypeMapping TypeName="businessProBmsModel.Voucher">
         <MappingFragment StoreEntitySet="Voucher">
@@ -139,6 +126,20 @@
           <ScalarProperty Name="accountName" ColumnName="accountName" />
           <ScalarProperty Name="accountNo" ColumnName="accountNo" />
           <ScalarProperty Name="voucherNo" ColumnName="voucherNo" />
+          <ScalarProperty Name="code" ColumnName="code" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ExpenseAccounts">
+      <EntityTypeMapping TypeName="businessProBmsModel.ExpenseAccount">
+        <MappingFragment StoreEntitySet="ExpenseAccount">
+          <ScalarProperty Name="openingCredit" ColumnName="openingCredit" />
+          <ScalarProperty Name="openingDebit" ColumnName="openingDebit" />
+          <ScalarProperty Name="isGroup" ColumnName="isGroup" />
+          <ScalarProperty Name="parentCode" ColumnName="parentCode" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="accountType" ColumnName="accountType" />
           <ScalarProperty Name="code" ColumnName="code" />
         </MappingFragment>
       </EntityTypeMapping>

@@ -45,7 +45,7 @@
                     <input type="button" value="Search" class="btn btn-primary" onclick="srcbtn()" />
                 </td>
                 <td>
-                    <input type="button" value="Print" class="btn btn-success disabled" id="btnprint" />
+                    <input type="button" value="Print" class="btn btn-success disabled" id="btnprint" onclick="CallPrint('divPrint')" />
                 </td>
             </tr>
         </table>
@@ -58,15 +58,29 @@
     </span><input type="text" id="Search" class="form-control" placeholder="Search Here.." />
 </div>
 <br />
-<table class="table table-bordered table-striped table-responsive" id="tblResult">
-<thead></thead>
-    <tbody></tbody>
-</table>
+<div id="divPrint">
+    <center><h1 id="heading" style="color:black; background-color:green"></h1></center>
+    <table class="table table-bordered table-striped table-responsive" id="tblResult">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+</div>
 <br />
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
 <script>
+    function CallPrint(strid) {
+        var prtContent = document.getElementById(strid);
+        var WinPrint = window.open('PrintDiv', 'Print-Window', 'width=920,height=750,top=100,left=100');
+        WinPrint.document.write(prtContent.innerHTML);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
+        prtContent.innerHTML = strOldOne;
+    }
+
    $(document).ready(function () {
         function Contains(text_one, text_two) {
             if (text_one.indexOf(text_two) != -1)
@@ -111,11 +125,14 @@
                    head += "<th>Debit(RS)</th>"
                    head += "<th>Credit(RS)</th>"
                    head += "<th>Balance(RS)</th>"
-                   head += "<th>History</th>"
                    head += "</tr>";
+                   var heading = "Ledger Report for Account: " + $("#vacc :selected").text() + ",<br> From: " + val.startDate + " To: " + val.endDate;
+                   $("#heading").html(heading);
                    $("#tblResult thead").html(head);
                    var rows = '';
-                   var total = 0;
+                   var drTotal = 0;
+                   var crTotal = 0;
+                   var balance = 0;
                    $.each(data.Result, function (i, item) {
                        var date = ToJavaScriptDate(item.vdate);
                        rows += "<tr class='Search'>"
@@ -126,9 +143,10 @@
                        rows += "<td>" + item.debit + "</td>"
                        rows += "<td>" + item.credit + "</td>"
                        rows += "<td>" + item.balance + "</td>"
-                       rows += "<td>" + item.total + "</td>"
                        rows += "</tr>";
-                       total = item.total;
+                       drTotal = item.drTot;
+                       crTotal = item.crTot;
+                       balance = item.drTot - item.crTot;
                        $("#tblResult tbody").html(rows);
                    });
                    rows += "<tr>"
@@ -136,9 +154,9 @@
                    rows += "<td>&nbsp;</td>"
                    rows += "<td>&nbsp;</td>"
                    rows += "<td>&nbsp;</td>"
-                   rows += "<td>&nbsp;</td>"
-                   rows += "<td>&nbsp;</td>"
-                   rows += "<td>" + total + "</td>"
+                   rows += "<td>" + drTotal + "</td>"
+                   rows += "<td>" + crTotal + "</td>"
+                   rows += "<td>" + balance + "</td>"
                    rows += "</tr>";
                    $("#tblResult tbody").html(rows);
                    $("#btnprint").removeClass('disabled');

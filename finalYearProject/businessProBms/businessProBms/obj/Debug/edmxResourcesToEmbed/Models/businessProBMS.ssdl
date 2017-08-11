@@ -23,6 +23,7 @@
       <PropertyRef Name="code" />
     </Key>
     <Property Name="code" Type="int" Nullable="false" />
+    <Property Name="accountType" Type="varchar" MaxLength="20" />
     <Property Name="name" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="description" Type="varchar" MaxLength="100" Nullable="false" />
     <Property Name="parentCode" Type="int" Nullable="false" />

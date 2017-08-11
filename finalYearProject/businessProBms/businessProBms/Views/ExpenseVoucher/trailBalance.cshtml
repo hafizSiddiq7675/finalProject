@@ -1,0 +1,140 @@
+﻿@using businessProBms.Models
+@{
+    ViewBag.Title = "TrailBalance";
+}
+
+<h2>Trail Balance</h2>
+<script src="~/Scripts/moment.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+<hr />
+<form>
+    <div class="container" style="position:relative">
+        <table class="table table-responsive">
+            <tr>
+                <th>
+                    From Date
+                </th>
+                <th>
+                    To Date
+                </th>
+                <th>
+                    &nbsp;
+                </th>
+                <th>
+                    &nbsp;
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <div class='col-xs-8 input-group date'>
+                        <input type="text" id="sdate" class="form-control" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class='col-xs-8 input-group date'>
+                        <input type="text" id="edate" class="form-control" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <input type="button" value="Show" class="btn btn-primary" onclick="result()" />
+                </td>
+                <td>
+                    <input type="button" value="Print" class="btn btn-success disabled" id="btnprint" onclick="CallPrint('divPrint')" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<br />
+<div id="divPrint">
+    <center><h1 id="heading" style="background-color:red; color:black"></h1></center>
+    <table class="table table-bordered table-striped table-responsive" id="tblResult">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+</div>
+<br />
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script>
+    $.noConflict();
+    jQuery(document).ready(function ($) {
+        $(function () {
+            $('#sdate').datetimepicker({ format: 'YYYY-MM-DD' });
+            $("#edate").datetimepicker({ format: 'YYYY-MM-DD' });
+        });
+    });
+    function CallPrint(strid) {
+        var prtContent = document.getElementById(strid);
+        var WinPrint = window.open('PrintDiv', 'Print-Window', 'width=920,height=750,top=100,left=100');
+        WinPrint.document.write(prtContent.innerHTML);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
+        prtContent.innerHTML = strOldOne;
+    }
+    function result() {
+        var val = {};
+        val.startDate = $("#sdate").val();
+        val.endDate = $("#edate").val();
+        $.ajax({
+            cashe: false,
+            url: "/ExpenseVoucher/Result",
+            data: val,
+            success: function (data) {
+                var head = '';
+                head += "<tr>"
+                head += "<th>Account Title</th>"
+                head += "<th>Debit(RS)</th>"
+                head += "<th>Credit(RS)</th>"
+                head += "</tr>";
+                var heading = "Trail Balance for the Business <br>From " + val.startDate + " To " + val.endDate;
+                $("#heading").html(heading);
+                $("#tblResult thead").html(head);
+                var rows = '';
+                var drtotal = 0;
+                var crtotal = 0;
+                $.each(data, function (i, item) {
+                    if (item.balance > 0 || item.balance == 0) {
+                        drtotal = drtotal + item.balance;
+                        rows += "<tr class='Search'>"
+                        rows += "<td>" + item.accountname + "</td>"
+                        rows += "<td>" + item.balance + "</td>"
+                        rows += "<td>&nbsp</td>"
+                        rows += "</tr>";
+                        $("#tblResult tbody").html(rows);
+                    }
+                    else {
+                        crtotal = crtotal + item.balance;
+                        rows += "<tr class='Search'>"
+                        rows += "<td>" + item.accountname + "</td>"
+                        rows += "<td>&nbsp</td>"
+                        rows += "<td>" + item.balance + "</td>"
+                        rows += "</tr>";
+                        $("#tblResult tbody").html(rows);
+                    }
+                });
+                rows += "<tr>"
+                rows += "<td><b>Total : </b></td>"
+                rows += "<td>" + drtotal + "</td>"
+                rows += "<td>"+ crtotal +"</td>"
+                rows += "</tr>";
+                $("#tblResult tbody").html(rows);
+                $("#btnprint").removeClass('disabled');
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('There is an error ');
+            }
+        })
+    }
+</script>
