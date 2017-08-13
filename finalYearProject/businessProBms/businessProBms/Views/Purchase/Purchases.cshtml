@@ -28,7 +28,7 @@
                         @Html.ValidationMessageFor(m => m.purchases.purchaseDate)
                     </td>
                     <td>
-                        @Html.DropDownListFor(m => m.purchases.vendorCode, new SelectList(ViewBag.vendors, "code", "name"),
+                        @Html.DropDownListFor(m => m.purchases.vendorCode, new SelectList(ViewBag.vendors, "vendorCode", "name"),
             "--Select Vendor Here--", new { @class = "form-control", id = "vcode" })
                         @Html.ValidationMessageFor(m => m.purchases.vendorCode)
                     </td>
@@ -43,8 +43,13 @@
             <div class="form-horizontal">
                 <div class="form-group">
                     <label>Product</label>
-                    @Html.DropDownListFor(m => m.purchaseDetails.productCode, new SelectList(ViewBag.products, "code", "name"),
-            "--Select Product Here--", new { @class = "form-control", id = "pcode" })
+                    @Html.DropDownListFor(m => m.purchaseDetails.productCode, new SelectList(ViewBag.products, "productCode", "name"),
+                     "--Select Product Here--", new { @class = "form-control", id = "pcode", onchange = "getquantity()" })
+                </div>
+                <div class="form-group">
+                    <label>Unit Of Measure </label>
+                    <input type="text" id="uom" class="form-control" readonly="readonly" />
+                    <input type="hidden" id="curQuantity" />
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.purchaseDetails.quantity, new { @class = "label-control" })
@@ -183,6 +188,22 @@
     }
 </style>
 <script>
+    function getquantity() {
+        var id = $("#pcode").val();
+        $.ajax({
+            url: "/Purchase/getProduct",
+            data: {id: id},
+            dataType: "json",
+            success: function(data) {
+                $("#uom").val(data.UOM);
+                var q = data.currentQuantity;
+                $("#curQuantity").val(q);
+            },
+            error: function(err) {
+                alert("Error : " + err.responseText);
+            }
+        });
+    }
     function myFunction() {
         var x = document.getElementById("panel")
         if (x.style.display === 'none') {

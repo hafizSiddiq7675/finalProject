@@ -2,18 +2,21 @@
 using System.Web.Mvc;
 using businessProBms.Models;
 using System.Net;
+using PagedList;
+using PagedList.Mvc;
 namespace businessProBms.Controllers
 {
     public class ExpenseController : Controller
     {
         businessProBmsEntities db = new businessProBmsEntities();
         // GET: /Expense/Expenses
-        public ActionResult Expenses()
+        public ActionResult Expenses(int? page)
         {
             ExpenseAccount ex = new ExpenseAccount();
-            ex.code = db.ExpenseAccounts.Max(x => x.code) + 1;
+            var maxId = db.ExpenseAccounts.ToList().OrderByDescending(r => r.code).FirstOrDefault();
+            ex.code = maxId == null ? 1 : (maxId.code) + 1;
             ViewBag.parentAcc = db.ExpenseAccounts.Where(r => r.isGroup == true).ToList();
-            ViewBag.expenses = db.ExpenseAccounts.ToList();
+            ViewBag.expenses = (db.ExpenseAccounts.ToList().ToPagedList(page ?? 1, 8));
             return View(ex);
         }
         [HttpPost]
@@ -43,9 +46,9 @@ namespace businessProBms.Controllers
             }
             return View(exp);
         }
-        public ActionResult Edit(int? id)
-        { 
-            ViewBag.expenses = db.ExpenseAccounts.ToList();
+        public ActionResult Edit(int? id, int? page)
+        {
+            ViewBag.expenses = (db.ExpenseAccounts.ToList().ToPagedList(page ?? 1, 8));
             ViewBag.parentAcc = db.ExpenseAccounts.Where(r => r.isGroup == true).ToList();
             if (id == null)
             {

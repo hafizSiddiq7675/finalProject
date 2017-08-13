@@ -14,10 +14,11 @@ namespace businessProBms.Models
     
     public partial class Customer
     {
-        public int code { get; set; }
+        public int customerCode { get; set; }
         public string name { get; set; }
         public string contact { get; set; }
         public string address { get; set; }
         public decimal creditLimit { get; set; }
+        public int chartOfAccCode { get; set; }
     }
 }

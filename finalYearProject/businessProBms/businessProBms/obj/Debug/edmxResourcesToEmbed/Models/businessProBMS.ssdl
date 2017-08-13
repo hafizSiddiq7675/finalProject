@@ -4,19 +4,20 @@
     <Key>
       <PropertyRef Name="code" />
     </Key>
-    <Property Name="code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="code" Type="int" Nullable="false" />
     <Property Name="categoryName" Type="nvarchar" MaxLength="30" Nullable="false" />
     <Property Name="discription" Type="nvarchar" MaxLength="50" Nullable="false" />
   </EntityType>
   <EntityType Name="Customer">
     <Key>
-      <PropertyRef Name="code" />
+      <PropertyRef Name="customerCode" />
     </Key>
-    <Property Name="code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="customerCode" Type="int" Nullable="false" />
     <Property Name="name" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="contact" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="address" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="creditLimit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="chartOfAccCode" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="ExpenseAccount">
     <Key>
@@ -33,9 +34,9 @@
   </EntityType>
   <EntityType Name="Product">
     <Key>
-      <PropertyRef Name="code" />
+      <PropertyRef Name="productCode" />
     </Key>
-    <Property Name="code" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="productCode" Type="int" Nullable="false" />
     <Property Name="name" Type="nvarchar" MaxLength="30" Nullable="false" />
     <Property Name="UOM" Type="varchar" MaxLength="20" Nullable="false" />
     <Property Name="price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
@@ -44,6 +45,7 @@
     <Property Name="currentQuantity" Type="int" />
     <Property Name="categoryCode" Type="int" Nullable="false" />
     <Property Name="categoryName" Type="varchar" MaxLength="30" Nullable="false" />
+    <Property Name="chartOfAccCode" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="Purchase">
     <Key>
@@ -103,13 +105,14 @@
   </EntityType>
   <EntityType Name="Vendor">
     <Key>
-      <PropertyRef Name="code" />
+      <PropertyRef Name="vendorCode" />
     </Key>
-    <Property Name="code" Type="int" Nullable="false" />
+    <Property Name="vendorCode" Type="int" Nullable="false" />
     <Property Name="name" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="contact" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="address" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="debitLimit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+    <Property Name="chartOfAccCode" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="Voucher">
     <Key>

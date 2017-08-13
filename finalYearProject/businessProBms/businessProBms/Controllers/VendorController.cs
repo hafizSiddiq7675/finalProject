@@ -12,24 +12,40 @@ namespace businessProBms.Controllers
         // GET: /Vendor/Vendors
         public ActionResult Vendors(int? page)
         {
+            Vendor v = new Vendor();
+            var maxId = db.Vendors.ToList().OrderByDescending(r => r.vendorCode).FirstOrDefault();
+            v.vendorCode = maxId == null ? 1 : (maxId.vendorCode) + 1;
             ViewBag.vendors = (db.Vendors.ToList().ToPagedList(page?? 1,8));
-            return View();
+            return View(v);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Vendors([Bind(Include="code,name,contact,address,debitLimit")] Vendor vendor)
+        public ActionResult Vendors([Bind(Include="vendorCode,name,contact,address,debitLimit")] Vendor vendor)
         {
             if(ModelState.IsValid)
             {
-                Vendor v = db.Vendors.Find(vendor.code);
+                Vendor v = db.Vendors.Find(vendor.vendorCode);
+                ExpenseAccount ex = new ExpenseAccount();
                 if(v==null)
                 {
+                    var maxCode = db.ExpenseAccounts.ToList().OrderByDescending(r => r.code).FirstOrDefault();
+                    ex.code = maxCode == null ? 1 : (maxCode.code) + 1;
+                    ex.accountType = "Liability";
+                    ex.description = "Vendors Accounts";
+                    ex.name = vendor.name;
+                    ex.parentCode = 5;
+                    ex.isGroup = false;
+                    ex.openingDebit = 0;
+                    ex.openingCredit = 0;
+                    db.ExpenseAccounts.Add(ex);
+                    db.SaveChanges();
+                    vendor.chartOfAccCode = ex.code;
                     db.Vendors.Add(vendor);
                 }
                 else
                 {
-                    var vDb = db.Vendors.SingleOrDefault(m => m.code == vendor.code);
-                    vDb.code = vendor.code;
+                    var vDb = db.Vendors.SingleOrDefault(m => m.vendorCode == vendor.vendorCode);
+                    vDb.vendorCode = vendor.vendorCode;
                     vDb.name = vendor.name;
                     vDb.contact = vendor.contact;
                     vDb.address = vendor.address;
@@ -58,7 +74,7 @@ namespace businessProBms.Controllers
         public JsonResult DeleteConfirmed(int? id)
         {
             bool result = false;
-            Vendor v = db.Vendors.SingleOrDefault(m => m.code == id);
+            Vendor v = db.Vendors.SingleOrDefault(m => m.vendorCode == id);
             if(v!=null)
             {
                 db.Vendors.Remove(v);

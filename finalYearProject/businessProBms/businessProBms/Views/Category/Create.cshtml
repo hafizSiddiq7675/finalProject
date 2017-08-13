@@ -19,7 +19,7 @@
 
                     <div class="form-group">
                         @Html.LabelFor(model => model.code, new { @class = "control-label" })
-                        @Html.TextBoxFor(model => model.code, htmlAttributes: new { PlaceHolder = "Enter Category Code Here..", @class = "form-control" })
+                        @Html.TextBoxFor(model => model.code, htmlAttributes: new { @readonly="readonly", @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.code)
                     </div>
 

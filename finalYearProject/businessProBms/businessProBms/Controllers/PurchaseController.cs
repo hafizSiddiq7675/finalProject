@@ -19,7 +19,8 @@ namespace businessProBms.Controllers
             purchaseViewModel pvm = new purchaseViewModel();
             pvm.purchases = new Purchase();
             pvm.purchaseDetails = new PurchaseDetail();
-            pvm.purchases.purchaseId = db.Purchases.Max(pur => pur.purchaseId) + 1;
+            var maxId = db.Purchases.ToList().OrderByDescending(r => r.purchaseId).FirstOrDefault();
+            pvm.purchases.purchaseId = maxId == null ? 1 : (maxId.purchaseId) + 1;
             pvm.purchases.purchaseDate = DateTime.Now.Date;
             return View(pvm);
         }
@@ -39,12 +40,20 @@ namespace businessProBms.Controllers
                     purchase.vendorName = pu.vendorName;
                     db.Purchases.Add(purchase);
                     db.SaveChanges();
+                    Voucher v = new Voucher();
+                    var max = db.Vouchers.ToList().OrderByDescending(r => r.voucherNo).FirstOrDefault();
+                    v.voucherNo = max == null ? 1 : (max.voucherNo) + 1;
+                    v.voucherDate = pu.purchaseDate;
+                    v.voucherType = 10;
+                    db.Vouchers.Add(v);
+                    db.SaveChanges();
                     PurchaseDetail purchasedetail = new PurchaseDetail();
                     purchasedetail.serialNo = db.Purchases.Sum(r => r.purchaseId).ToString();
-                    Product uom = db.Products.Single(s => s.code == pu.productCode);
+                    Product uom = db.Products.Single(s => s.productCode == pu.productCode);
                     if (uom != null)
                     {
                         purchasedetail.unitOfMeasure = uom.UOM;
+                        uom.currentQuantity += pu.quantity;
                     }
                     purchasedetail.purchaseDetailsId = pu.purchaseId;
                     purchasedetail.productCode = pu.productCode;
@@ -54,16 +63,37 @@ namespace businessProBms.Controllers
                     purchasedetail.amount = pu.purchasePrice * pu.quantity;
                     db.PurchaseDetails.Add(purchasedetail);
                     db.SaveChanges();
+                    VoucherBody vbc = new VoucherBody();
+                    vbc.accountNo = pu.vendorCode;
+                    vbc.accountName = pu.vendorName;
+                    vbc.credit = pu.quantity * pu.purchasePrice;
+                    vbc.debit = 0;
+                    vbc.description = "Item Purchased";
+                    vbc.voucherNo = db.Vouchers.Max(r => r.voucherNo);
+                    db.VoucherBodies.Add(vbc);
+                    db.SaveChanges();
+                    VoucherBody vbd = new VoucherBody();
+                    ExpenseAccount ex = new ExpenseAccount();
+                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode);
+                    vbd.accountNo = ex.code;
+                    vbd.accountName = ex.name;
+                    vbd.debit = pu.quantity * pu.purchasePrice;
+                    vbd.credit = 0;
+                    vbd.description = "Item Purchased";
+                    vbd.voucherNo = db.Vouchers.Max(r => r.voucherNo);
+                    db.VoucherBodies.Add(vbd);
+                    db.SaveChanges();
                     result = true;
                 }
                 else
                 {
                     PurchaseDetail purchasedetail = new PurchaseDetail();
                     purchasedetail.serialNo = db.Purchases.Sum(r => r.purchaseId).ToString();
-                    Product uom = db.Products.Single(s => s.code == pu.productCode);
+                    Product uom = db.Products.Single(s => s.productCode == pu.productCode);
                     if (uom != null)
                     {
                         purchasedetail.unitOfMeasure = uom.UOM;
+                        uom.currentQuantity += pu.quantity;
                     }
                     purchasedetail.purchaseDetailsId = pu.purchaseId;
                     purchasedetail.productCode = pu.productCode;
@@ -72,6 +102,26 @@ namespace businessProBms.Controllers
                     purchasedetail.purchasePrice = pu.purchasePrice;
                     purchasedetail.amount = pu.purchasePrice * pu.quantity;
                     db.PurchaseDetails.Add(purchasedetail);
+                    db.SaveChanges();
+                    VoucherBody vbc = new VoucherBody();
+                    vbc.accountNo = pu.vendorCode;
+                    vbc.accountName = pu.vendorName;
+                    vbc.credit = pu.quantity * pu.purchasePrice;
+                    vbc.debit = 0;
+                    vbc.description = "Item Purchased";
+                    vbc.voucherNo = db.Vouchers.Max(r => r.voucherNo);
+                    db.VoucherBodies.Add(vbc);
+                    db.SaveChanges();
+                    VoucherBody vbd = new VoucherBody();
+                    ExpenseAccount ex = new ExpenseAccount();
+                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode);
+                    vbd.accountNo = ex.code;
+                    vbd.accountName = ex.name;
+                    vbd.debit = pu.quantity * pu.purchasePrice;
+                    vbd.credit = 0;
+                    vbd.description = "Item Purchased";
+                    vbd.voucherNo = db.Vouchers.Max(r => r.voucherNo);
+                    db.VoucherBodies.Add(vbd);
                     db.SaveChanges();
                     result = true;
                 }
@@ -134,6 +184,12 @@ namespace businessProBms.Controllers
             convertToNumeral convert= new convertToNumeral();
             ViewBag.total = convert.convertNumber(total);
             return new ViewAsPdf(pa);
+        }
+        public JsonResult getProduct(int? id)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            Product p = db.Products.Single(r => r.productCode == id);
+            return Json(p, JsonRequestBehavior.AllowGet);
         }
     }
 }

@@ -24,9 +24,9 @@
                 @Html.ValidationSummary(true)
 
                 <div class="form-group">
-                    @Html.LabelFor(m => m.code, new { @class="label-control"})
-                    @Html.TextBoxFor(m => m.code, new {placeholder="Enter Product Code Here.." ,@class="form-control"})
-                    @Html.ValidationMessageFor(m=>m.code)
+                    @Html.LabelFor(m => m.productCode, new { @class="label-control"})
+                    @Html.TextBoxFor(m => m.productCode, new {@readonly="readonly" ,@class="form-control"})
+                    @Html.ValidationMessageFor(m=>m.productCode)
                 </div>
 
                 <div class="form-group">
@@ -82,7 +82,7 @@
         <table class="table table-bordered table-responsive">
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.code)
+                    @Html.DisplayNameFor(model => model.productCode)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.categoryCode)
@@ -106,7 +106,7 @@
             {
                 <tr class="Search" id="_row@item.code">
                     <td>
-                        @Html.DisplayFor(modelItem => item.code)
+                        @Html.DisplayFor(modelItem => item.productCode)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.categoryCode)
@@ -124,8 +124,8 @@
                         @Html.DisplayFor(modelItem => item.price)
                     </td>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.code }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
-                        <a href="#" onclick="ConfirmDelete(@item.code)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.productCode }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
+                        <a href="#" onclick="ConfirmDelete(@item.productCode)"><span class="glyphicon glyphicon-trash"></span>Delete</a>
                     </td>
                 </tr>
             }

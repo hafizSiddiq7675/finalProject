@@ -55,7 +55,7 @@
 </form>
 <br />
 <div id="divPrint">
-    <center><h1 id="heading" style="background-color:red; color:black"></h1></center>
+    <center><h1 id="heading" style="background-color:aqua; color:black"></h1></center>
     <table class="table table-bordered table-striped table-responsive" id="tblResult">
         <thead></thead>
         <tbody></tbody>
@@ -115,6 +115,7 @@
                         $("#tblResult tbody").html(rows);
                     }
                     else {
+                       item.balance =  Math.abs(item.balance);
                         crtotal = crtotal + item.balance;
                         rows += "<tr class='Search'>"
                         rows += "<td>" + item.accountname + "</td>"

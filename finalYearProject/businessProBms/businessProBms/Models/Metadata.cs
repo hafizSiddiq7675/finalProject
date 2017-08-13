@@ -21,7 +21,7 @@ namespace businessProBms.Models
         [Key]
         [Required]
         [Display(Name="Product Code")]
-        public int code { get; set; }
+        public int productCode { get; set; }
         [Required]
         [Display(Name="Product Name")]
         public string name { get; set; }
@@ -43,7 +43,7 @@ namespace businessProBms.Models
         [Key]
         [Display(Name="Vendor Code")]
         [Required]
-        public int code { get; set; }
+        public int vendorCode { get; set; }
         [Display(Name="Vendor Name")]
         [Required]
         public string name { get; set; }
@@ -61,7 +61,7 @@ namespace businessProBms.Models
         [Key]
         [Display(Name="Customer Code")]
         [Required]
-        public int code { get; set; }
+        public int customerCode { get; set; }
         [Display(Name="Customer Name")]
         [Required]
         public string name { get; set; }

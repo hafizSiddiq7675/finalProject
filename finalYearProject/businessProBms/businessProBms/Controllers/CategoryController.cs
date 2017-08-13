@@ -12,9 +12,12 @@ namespace businessProBms.Controllers
         // GET: /Category/Create
         public ActionResult Create(int? page)
         {
+            Category ca = new Category();
+            var maxId = db.Categories.ToList().OrderByDescending(r => r.code).FirstOrDefault();
+            ca.code = maxId == null ? 1 : (maxId.code) + 1;
             //Giving all the list of Categories to ViewBag.Categories
             ViewBag.Categories = (db.Categories.ToList().ToPagedList(page ??1, 8));
-            return View();
+            return View(ca);
         }
 
         // POST: /Category/Create

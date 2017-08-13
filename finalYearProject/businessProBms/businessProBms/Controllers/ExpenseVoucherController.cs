@@ -11,13 +11,13 @@ namespace businessProBms.Controllers
     public class ExpenseVoucherController : Controller
     {
         businessProBmsEntities db = new businessProBmsEntities();
-
         // GET: /ExpenseVoucher/ExpenseVouchers
         public ActionResult ExpenseVouchers()
         {
             voucherViewModel vm = new voucherViewModel();
             vm.voucher = new Voucher();
-            vm.voucher.voucherNo = db.Vouchers.Max(x => x.voucherNo) + 1;
+            var maxId = db.Vouchers.ToList().OrderByDescending(r => r.voucherNo).FirstOrDefault();
+            vm.voucher.voucherNo = maxId == null ? 1 : (maxId.voucherNo) + 1;
             vm.voucher.voucherDate = DateTime.Now.Date;
             ViewBag.vouchers = db.Vouchers.ToList();
             ViewBag.accounts = db.ExpenseAccounts.Where(r=>r.isGroup==false).ToList();
@@ -213,6 +213,7 @@ namespace businessProBms.Controllers
                                debit = vb.debit,
                                credit = vb.credit
                            }).ToList();
+
             var revenue = data.Where(r=>r.accounttype=="Revenue").GroupBy(i => new { i.accountname }).Select(s =>
             {
                 return new { accountname = s.Select(c => c.accountname).Distinct(), balance = (s.Sum(c => c.debit) - s.Sum(c => c.credit)) };
@@ -227,6 +228,46 @@ namespace businessProBms.Controllers
         public ActionResult balanceSheet()
         {
             return View();
+        }
+        public JsonResult balSheet(DateTime startDate, DateTime endDate)
+        {
+            decimal revenueTot = 0;
+            decimal expenseTot = 0;
+            var data = (from e in db.ExpenseAccounts
+                        where (e.accountType == "Assets" || e.accountType == "Liability" || e.accountType == "Capital" || e.accountType == "Revenue" || e.accountType == "Expense") && (e.isGroup == false)
+                       join vb in db.VoucherBodies on e.code equals vb.accountNo
+                       join v in db.Vouchers on vb.voucherNo equals v.voucherNo where (v.voucherDate>=startDate) && (v.voucherDate<=endDate)
+                       select new
+                       {
+                           accounttype=e.accountType,
+                           accountname=e.name,
+                           debit=vb.debit,
+                           credit=vb.credit
+                       }).ToList();
+            var assets = data.Where(r => r.accounttype == "Assets").GroupBy(i => new { i.accountname }).Select(s =>
+            {
+                return new { accountname = s.Select(c => c.accountname).Distinct(), balance = (s.Sum(c => c.debit) - s.Sum(c => c.credit)) };
+            });
+            var liability = data.Where(r => r.accounttype == "Liability").GroupBy(i => new { i.accountname }).Select(s =>
+            {
+                return new { accountname = s.Select(c => c.accountname).Distinct(), balance = (s.Sum(c => c.debit) - s.Sum(c => c.credit)) };
+            });
+            var capital = data.Where(r => r.accounttype == "Capital").GroupBy(i => new { i.accountname }).Select(s =>
+            {
+                return new { accountname = s.Select(c => c.accountname).Distinct(), balance = (s.Sum(c => c.debit) - s.Sum(c => c.credit)) };
+            });
+            var revenue = data.Where(r => r.accounttype == "Revenue").GroupBy(i => new { i.accountname }).Select(s =>
+            {
+                revenueTot += (s.Sum(c => c.debit) - s.Sum(c => c.credit));
+                return new { revenueTot };
+            });
+            var expense = data.Where(r => r.accounttype == "Expense").GroupBy(i => new { i.accountname }).Select(s =>
+            {
+                expenseTot += (s.Sum(c => c.debit) - s.Sum(c => c.credit));
+                return new { expenseTot };
+            });
+            var result = new { Assets = assets, Liability = liability, Capital = capital, Revenue=revenue, Expense=expense };
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

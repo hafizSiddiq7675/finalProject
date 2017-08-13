@@ -4,24 +4,24 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="c24b6c8faf44467ba12671a77915c5a8" Name="Diagram1">
-        <EntityTypeShape EntityType="businessProBmsModel.Category" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="businessProBmsModel.Customer" Width="1.5" PointX="4.75" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="businessProBmsModel.Product" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="businessProBmsModel.sysdiagram" Width="1.5" PointX="6.5" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="businessProBmsModel.Vendor" Width="1.5" PointX="8.5" PointY="1" IsExpanded="true" />
-        <AssociationConnector Association="businessProBmsModel.FK_Product_Category1" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="businessProBmsModel.Purchase" Width="1.5" PointX="5.75" PointY="4.5" />
-        <EntityTypeShape EntityType="businessProBmsModel.PurchaseDetail" Width="1.5" PointX="8" PointY="4" />
-        <EntityTypeShape EntityType="businessProBmsModel.Sale" Width="1.5" PointX="0.75" PointY="5.5" />
-        <EntityTypeShape EntityType="businessProBmsModel.SaleDetail" Width="1.5" PointX="3" PointY="5" />
+      <Diagram DiagramId="c24b6c8faf44467ba12671a77915c5a8" Name="Diagram1" ZoomLevel="94">
+        <EntityTypeShape EntityType="businessProBmsModel.Purchase" Width="1.5" PointX="6.25" PointY="0.875" />
+        <EntityTypeShape EntityType="businessProBmsModel.PurchaseDetail" Width="1.5" PointX="8" PointY="0.625" />
+        <EntityTypeShape EntityType="businessProBmsModel.Sale" Width="1.5" PointX="2.375" PointY="0.75" />
+        <EntityTypeShape EntityType="businessProBmsModel.SaleDetail" Width="1.5" PointX="4.375" PointY="0.5" />
         <AssociationConnector Association="businessProBmsModel.FK_PurchaseDetail_Purchase" />
         <AssociationConnector Association="businessProBmsModel.FK_Table_Sale" />
-        <EntityTypeShape EntityType="businessProBmsModel.Voucher" Width="1.5" PointX="7.375" PointY="8.375" />
-        <EntityTypeShape EntityType="businessProBmsModel.VoucherBody" Width="1.5" PointX="9.625" PointY="8" />
+        <EntityTypeShape EntityType="businessProBmsModel.Voucher" Width="1.5" PointX="9.75" PointY="1.375" />
+        <EntityTypeShape EntityType="businessProBmsModel.VoucherBody" Width="1.5" PointX="11.5" PointY="1.375" />
         <AssociationConnector Association="businessProBmsModel.FK_VoucherBody_Voucher" />
-        <EntityTypeShape EntityType="businessProBmsModel.ExpenseAccount" Width="1.5" PointX="5.375" PointY="8.25" />
-      </Diagram>
+        <EntityTypeShape EntityType="businessProBmsModel.Category" Width="1.5" PointX="0.75" PointY="5.625" />
+        <EntityTypeShape EntityType="businessProBmsModel.Customer" Width="1.5" PointX="5.75" PointY="4.75" />
+        <EntityTypeShape EntityType="businessProBmsModel.ExpenseAccount" Width="1.5" PointX="7.75" PointY="4.75" />
+        <EntityTypeShape EntityType="businessProBmsModel.Product" Width="1.5" PointX="3" PointY="5" />
+        <EntityTypeShape EntityType="businessProBmsModel.sysdiagram" Width="1.5" PointX="5.75" PointY="8.75" />
+        <EntityTypeShape EntityType="businessProBmsModel.Vendor" Width="1.5" PointX="7.75" PointY="8.75" />
+        <AssociationConnector Association="businessProBmsModel.FK_Product_Category1" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

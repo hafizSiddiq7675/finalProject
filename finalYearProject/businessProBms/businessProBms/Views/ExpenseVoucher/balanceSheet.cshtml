@@ -54,7 +54,7 @@
 </form>
 <br />
 <div id="divPrint">
-    <center><h1 id="heading" style="background-color:blue; color:black"></h1></center>
+    <center><h1 id="heading" style="color:black; background-color:aqua"></h1></center>
     <table class="table table-responsive" id="tblResult">
         <thead></thead>
         <tbody></tbody>
@@ -81,5 +81,114 @@
         WinPrint.print();
         WinPrint.close();
         prtContent.innerHTML = strOldOne;
+    }
+    function result() {
+        var val = {};
+        val.startDate = $("#sdate").val();
+        val.endDate = $("#edate").val();
+        $.ajax({
+            cashe: false,
+            url: "/ExpenseVoucher/balSheet",
+            data: val,
+            success: function (data) {
+                var head = '';
+                var aTot = 0;
+                var lTot = 0;
+                var cTot = 0;
+                var revenue = 0;
+                var expense = 0;
+                head += "<tr>"
+                head += "<th><center>Assets<center></th>"
+                head += "<th>&nbsp</th>"
+                head += "</tr>";
+                var heading = "Balance Sheet for the Business <br>From " + val.startDate + " To " + val.endDate;
+                $("#heading").html(heading);
+                $("#tblResult thead").html(head);
+                var rows = '';
+                $.each(data.Assets, function (i, item) {
+                    item.balance = Math.abs(item.balance);
+                    aTot = aTot + item.balance;
+                    rows += "<tr class='Search'>"
+                    rows += "<td>" + item.accountname + "</td>"
+                    rows += "<td> RS " + item.balance + "</td>"
+                    rows += "</tr>";
+                    $("#tblResult tbody").html(rows);
+                });
+                rows += "<tr>"
+                rows += "<td><b>Total Assets: </b></td>"
+                rows += "<td> RS <b>" + aTot + "</b></td>"
+                rows += "</tr>";
+                rows += "<tr>"
+                rows += "<td><center><b>Liabilities </b></center></td>"
+                rows += "<td>&nbsp</td>"
+                rows += "</tr>";
+                $("#tblResult tbody").html(rows);
+                $.each(data.Liability, function (i, item) {
+                    item.balance = Math.abs(item.balance);
+                    lTot = lTot + item.balance;
+                    rows += "<tr class='Search'>"
+                    rows += "<td>" + item.accountname + "</td>"
+                    rows += "<td> RS " + item.balance + "</td>"
+                    rows += "</tr>";
+                    $("#tblResult tbody").html(rows);
+                });
+                rows += "<tr>"
+                rows += "<td><b>Total Laibilities : </b></td>"
+                rows += "<td> RS <b>" + lTot + "</b></td>"
+                rows += "</tr>";
+                rows += "<tr>"
+                rows += "<td><center><b>Capital </b></center></td>"
+                rows += "<td>&nbsp</td>"
+                rows += "</tr>";
+                $("#tblResult tbody").html(rows);
+                $.each(data.Capital, function (i, item) {
+                    item.balance = Math.abs(item.balance);
+                    cTot = cTot + item.balance;
+                    rows += "<tr class='Search'>"
+                    rows += "<td>" + item.accountname + "</td>"
+                    rows += "<td> RS " + item.balance + "</td>"
+                    rows += "</tr>";
+                    $("#tblResult tbody").html(rows);
+                });
+                rows += "<tr>"
+                rows += "<td><b>Total Capital : </b></td>"
+                rows += "<td> RS <b>" + cTot + "</b></td>"
+                rows += "</tr>";
+                $("#tblResult tbody").html(rows);
+                $.each(data.Revenue, function (i, item) {
+                    item.revenueTot = Math.abs(item.revenueTot);
+                    revenue = item.revenueTot;
+                });
+                $.each(data.Expense, function (i, item) {
+                    item.expenseTot = Math.abs(item.expenseTot);
+                    expense = item.expenseTot;
+                });
+                var net = 0;
+                net = revenue - expense;
+                if ( net > 0) {
+                    cTot = cTot + net;
+                    rows += "<tr>"
+                    rows += "<td><b>Profit (Add) : </b></td>"
+                    rows += "<td style='color:blue'><b> RS " + net + "</td>"
+                    rows += "</tr>";
+                }
+                else {
+                    cTot = cTot - net;
+                    rows += "<tr>"
+                    rows += "<td><b>Loss (Sub) : </b></td>"
+                    rows += "<td style='color:red'><b> RS " + net + "</td>"
+                    rows += "</tr>";
+                }
+                rows += "<tr>"
+                rows += "<td><b>Assets = Liablity + Capital => </b></td>"
+                rows += "<td><b>" + aTot + " = " + ( lTot + cTot ) + "</b></td>"
+                rows += "</tr>";
+                $("#tblResult tbody").html(rows);
+                $("#btnprint").removeClass('disabled');
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('There is an error ');
+            }
+        })
     }
 </script>

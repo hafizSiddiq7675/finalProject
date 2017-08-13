@@ -37,7 +37,7 @@
                         @Html.ValidationMessageFor(m => m.sales.saleDate)
                     </td>
                     <td>
-                        @Html.DropDownListFor(m => m.sales.customerCode, new SelectList(ViewBag.customers, "code", "name"),
+                        @Html.DropDownListFor(m => m.sales.customerCode, new SelectList(ViewBag.customers, "customerCode", "name"),
             "--Select Customer Here--", new { @class = "form-control", id = "ccode" })
                         @Html.ValidationMessageFor(m => m.sales.customerCode)
                     </td>
@@ -52,8 +52,13 @@
             <div class="form-horizontal">
                 <div class="form-group">
                     <label>Product</label>
-                    @Html.DropDownListFor(m => m.saleDetails.productCode, new SelectList(ViewBag.products, "code", "name"),
-            "--Select Product Here--", new { @class = "form-control", id = "pcode" })
+                    @Html.DropDownListFor(m => m.saleDetails.productCode, new SelectList(ViewBag.products, "productCode", "name"),
+                              "--Select Product Here--", new { @class = "form-control", id = "pcode", onchange="getquantity()" })
+                </div>
+                <div class="form-group">
+                    <label>Unit Of Measure </label>
+                    <input type="text" id="uom" class="form-control" readonly="readonly" />
+                    <input type="hidden" id="curQuantity" />
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.saleDetails.quantity, new { @class="label-control"})
@@ -183,6 +188,22 @@
     <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
     <script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
     <script>
+        function getquantity() {
+            var id = $("#pcode").val();
+            $.ajax({
+                url: "/Sale/getProduct",
+                data: {id: id},
+                dataType: "json",
+                success: function(data) {
+                    $("#uom").val(data.UOM);
+                    var q = data.currentQuantity;
+                    $("#curQuantity").val(q);
+                },
+                error: function(err) {
+                    alert("Error : " + err.responseText);
+                }
+            });
+        }
         function myFunction() {
             var x = document.getElementById("panel")
             if (x.style.display === 'none') {
@@ -235,18 +256,26 @@
             });
         });
         $("#addbtn").click(function () {
+            var nq = $("#curQuantity").val();
+            var uom = $("#uom").val();
             var isAllValid = true;
             if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
                 isAllValid = false;
-                $('#quantity').siblings('span.error').css('visibility', 'visible');
+                $('#quantity').siblings('span.error').css('visibility', 'visible').text("Qunatity Can not be Zero");
             }
             else {
                 $('#quantity').siblings('span.error').css('visibility', 'hidden');
             }
-
+            if ((parseInt($('#quantity').val(), 10) > nq) || (parseInt($('#quantity').val(), 10) < nq)) {
+                isAllValid = false;
+                $('#quantity').siblings('span.error').css('visibility', 'visible').text("Available Quantity in Stock is " + nq + " " + uom);
+            }
+            else {
+                $('#quantity').siblings('span.error').css('visibility', 'hidden');
+            }
             if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
                 isAllValid = false;
-                $('#price').siblings('span.error').css('visibility', 'visible');
+                $('#price').siblings('span.error').css('visibility', 'visible').text("Price Must be Greater Than Zero");
             }
             else {
                 $('#price').siblings('span.error').css('visibility', 'hidden');
@@ -307,9 +336,9 @@
                     rows += "</tr>";
                     $("#listSale tbody").html(rows);
                 },
-                eror: function (err) {
+                error: function (err) {
                     alert("Error : " + err.responseText);
                 }
             });
         }
-    </script>
+ </script>

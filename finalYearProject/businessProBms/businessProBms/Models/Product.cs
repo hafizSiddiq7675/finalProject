@@ -14,15 +14,16 @@ namespace businessProBms.Models
     
     public partial class Product
     {
-        public int code { get; set; }
+        public int productCode { get; set; }
         public string name { get; set; }
         public string UOM { get; set; }
         public decimal price { get; set; }
-        public int categoryCode { get; set; }
         public Nullable<decimal> averagePrice { get; set; }
         public Nullable<decimal> lastPurchasePrice { get; set; }
         public Nullable<int> currentQuantity { get; set; }
+        public int categoryCode { get; set; }
         public string categoryName { get; set; }
+        public int chartOfAccCode { get; set; }
     
         public virtual Category Category { get; set; }
     }

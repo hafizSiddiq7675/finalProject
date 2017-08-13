@@ -1,4 +1,6 @@
-﻿@using businessProBms.Models
+﻿@using PagedList;
+@using PagedList.Mvc;
+@using businessProBms.Models
 @using System.Web.UI.WebControls
 @model ExpenseAccount
 @{
@@ -114,7 +116,7 @@
                 <th>Action</th>
             </tr>
 
-            @foreach (var item in ViewBag.expenses as List<ExpenseAccount>)
+            @foreach (var item in ViewBag.expenses as PagedList<ExpenseAccount>)
             {
                 <tr class="Search" id="_row@item.code">
                     <td>
@@ -145,6 +147,8 @@
                 </tr>
             }
         </table>
+        @Html.PagedListPager(ViewBag.expenses as PagedList<ExpenseAccount>, page => Url.Action("Expenses", new { page }),
+                     new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
         <input type="hidden" id="hiddenCode" />
         <div class="modal" id="delModal">
             <div class="modal-dialog">

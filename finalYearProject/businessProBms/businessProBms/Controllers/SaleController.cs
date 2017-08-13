@@ -16,7 +16,8 @@ namespace businessProBms.Controllers
             saleViewModel svm = new saleViewModel();
             svm.sales = new Sale();
             svm.saleDetails = new SaleDetail();
-            svm.sales.saleId = db.Sales.Max(pur => pur.saleId) + 1;
+            var MaxId = db.Sales.ToList().OrderByDescending(r => r.saleId).FirstOrDefault();
+            svm.sales.saleId = MaxId == null ? 1 : (MaxId.saleId) + 1;
             svm.sales.saleDate = DateTime.Now.Date;
             ViewBag.customers = db.Customers.ToList();
             ViewBag.products = db.Products.ToList();
@@ -39,12 +40,20 @@ namespace businessProBms.Controllers
                     sale.customerName = sa.customerName;
                     db.Sales.Add(sale);
                     db.SaveChanges();
+                    Voucher v = new Voucher();
+                    var max = db.Vouchers.ToList().OrderByDescending(r => r.voucherNo).FirstOrDefault();
+                    v.voucherNo = max == null ? 1 : (max.voucherNo) + 1;
+                    v.voucherDate = sa.saleDate;
+                    v.voucherType = 11;
+                    db.Vouchers.Add(v);
+                    db.SaveChanges();
                     SaleDetail saledetail = new SaleDetail();
                     saledetail.serialNo = db.Sales.Sum(r => r.saleId).ToString();
-                    Product uom = db.Products.Single(s => s.code == sa.productCode);
+                    Product uom = db.Products.Single(s => s.productCode == sa.productCode);
                     if (uom != null)
                     {
                         saledetail.unitOfMeasure = uom.UOM;
+                        uom.currentQuantity -= sa.quantity;
                     }
                     saledetail.saleDetailsId = sa.saleId;
                     saledetail.productCode = sa.productCode;
@@ -54,16 +63,37 @@ namespace businessProBms.Controllers
                     saledetail.amount = sa.quantity * sa.salePrice;
                     db.SaleDetails.Add(saledetail);
                     db.SaveChanges();
+                    VoucherBody vbd = new VoucherBody();
+                    vbd.accountNo = sa.customerCode;
+                    vbd.accountName = sa.customerName;
+                    vbd.voucherNo = db.Vouchers.Max(r => r.voucherNo);
+                    vbd.debit = sa.quantity * sa.salePrice;
+                    vbd.credit = 0;
+                    vbd.description = "Item Sold";
+                    db.VoucherBodies.Add(vbd);
+                    db.SaveChanges();
+                    VoucherBody vbc = new VoucherBody();
+                    ExpenseAccount ex = new ExpenseAccount();
+                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode);
+                    vbc.accountNo = ex.code;
+                    vbc.accountName = ex.name;
+                    vbc.credit = sa.quantity * sa.salePrice;
+                    vbc.debit = 0;
+                    vbc.description = "Item Sold";
+                    vbc.voucherNo = db.Vouchers.Max(r => r.voucherNo);
+                    db.VoucherBodies.Add(vbc);
+                    db.SaveChanges();
                     result = true;
                 }
                 else
                 {
                     SaleDetail saledetail = new SaleDetail();
                     saledetail.serialNo = db.Sales.Sum(r => r.saleId).ToString();
-                    Product uom = db.Products.Single(s => s.code == sa.productCode);
+                    Product uom = db.Products.Single(s => s.productCode == sa.productCode);
                     if (uom != null)
                     {
                         saledetail.unitOfMeasure = uom.UOM;
+                        uom.currentQuantity -= sa.quantity;
                     }
                     saledetail.saleDetailsId = sa.saleId;
                     saledetail.productCode = sa.productCode;
@@ -72,6 +102,26 @@ namespace businessProBms.Controllers
                     saledetail.salePrice = sa.salePrice;
                     saledetail.amount = sa.quantity * sa.salePrice;
                     db.SaleDetails.Add(saledetail);
+                    db.SaveChanges();
+                    VoucherBody vbd = new VoucherBody();
+                    vbd.accountNo = sa.customerCode;
+                    vbd.accountName = sa.customerName;
+                    vbd.voucherNo = db.Vouchers.Max(r => r.voucherNo);
+                    vbd.debit = sa.quantity * sa.salePrice;
+                    vbd.credit = 0;
+                    vbd.description = "Item Sold";
+                    db.VoucherBodies.Add(vbd);
+                    db.SaveChanges();
+                    VoucherBody vbc = new VoucherBody();
+                    ExpenseAccount ex = new ExpenseAccount();
+                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode);
+                    vbc.accountNo = ex.code;
+                    vbc.accountName = ex.name;
+                    vbc.credit = sa.quantity * sa.salePrice;
+                    vbc.debit = 0;
+                    vbc.description = "Item Sold";
+                    vbc.voucherNo = db.Vouchers.Max(r => r.voucherNo);
+                    db.VoucherBodies.Add(vbc);
                     db.SaveChanges();
                     result = true;
                 }
@@ -134,6 +184,12 @@ namespace businessProBms.Controllers
                 return HttpNotFound();
             }
             return View("Sales", sa);
+        }
+        public JsonResult getProduct(int? id)
+        {
+            db.Configuration.ProxyCreationEnabled = false;
+            Product p = db.Products.Single(r => r.productCode == id);
+            return Json(p, JsonRequestBehavior.AllowGet);
         }
 	}
 }

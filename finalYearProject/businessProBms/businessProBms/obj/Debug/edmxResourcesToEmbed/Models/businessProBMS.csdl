@@ -1,81 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Schema Namespace="businessProBmsModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-  <EntityType Name="Category">
-    <Key>
-      <PropertyRef Name="code" />
-    </Key>
-    <Property Name="code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="categoryName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
-    <Property Name="discription" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-    <NavigationProperty Name="Products" Relationship="Self.FK_Product_Category1" FromRole="Category" ToRole="Product" />
-  </EntityType>
-  <EntityType Name="Customer">
-    <Key>
-      <PropertyRef Name="code" />
-    </Key>
-    <Property Name="code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="contact" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="address" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="creditLimit" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-  </EntityType>
-  <EntityType Name="Product">
-    <Key>
-      <PropertyRef Name="code" />
-    </Key>
-    <Property Name="code" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
-    <Property Name="UOM" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="price" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-    <Property Name="categoryCode" Type="Int32" Nullable="false" />
-    <NavigationProperty Name="Category" Relationship="Self.FK_Product_Category1" FromRole="Product" ToRole="Category" />
-    <Property Name="averagePrice" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="lastPurchasePrice" Type="Decimal" Precision="18" Scale="0" />
-    <Property Name="currentQuantity" Type="Int32" />
-    <Property Name="categoryName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-  </EntityType>
-  <EntityType Name="sysdiagram">
-    <Key>
-      <PropertyRef Name="diagram_id" />
-    </Key>
-    <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-    <Property Name="principal_id" Type="Int32" Nullable="false" />
-    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="version" Type="Int32" />
-    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
-  </EntityType>
-  <EntityType Name="Vendor">
-    <Key>
-      <PropertyRef Name="code" />
-    </Key>
-    <Property Name="code" Type="Int32" Nullable="false" />
-    <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="contact" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="address" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="debitLimit" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
-  </EntityType>
-  <Association Name="FK_Product_Category1">
-    <End Role="Category" Type="Self.Category" Multiplicity="1" />
-    <End Role="Product" Type="Self.Product" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="Category">
-        <PropertyRef Name="code" />
-      </Principal>
-      <Dependent Role="Product">
-        <PropertyRef Name="categoryCode" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <EntityContainer Name="businessProBmsEntities" annotation:LazyLoadingEnabled="true">
-    <EntitySet Name="Categories" EntityType="Self.Category" />
-    <EntitySet Name="Customers" EntityType="Self.Customer" />
-    <EntitySet Name="Products" EntityType="Self.Product" />
-    <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
-    <EntitySet Name="Vendors" EntityType="Self.Vendor" />
-    <AssociationSet Name="FK_Product_Category1" Association="Self.FK_Product_Category1">
-      <End Role="Category" EntitySet="Categories" />
-      <End Role="Product" EntitySet="Products" />
-    </AssociationSet>
     <EntitySet Name="Purchases" EntityType="businessProBmsModel.Purchase" />
     <EntitySet Name="PurchaseDetails" EntityType="businessProBmsModel.PurchaseDetail" />
     <EntitySet Name="Sales" EntityType="businessProBmsModel.Sale" />
@@ -94,7 +19,16 @@
       <End Role="Voucher" EntitySet="Vouchers" />
       <End Role="VoucherBody" EntitySet="VoucherBodies" />
     </AssociationSet>
+    <EntitySet Name="Categories" EntityType="businessProBmsModel.Category" />
+    <EntitySet Name="Customers" EntityType="businessProBmsModel.Customer" />
     <EntitySet Name="ExpenseAccounts" EntityType="businessProBmsModel.ExpenseAccount" />
+    <EntitySet Name="Products" EntityType="businessProBmsModel.Product" />
+    <EntitySet Name="sysdiagrams" EntityType="businessProBmsModel.sysdiagram" />
+    <EntitySet Name="Vendors" EntityType="businessProBmsModel.Vendor" />
+    <AssociationSet Name="FK_Product_Category1" Association="businessProBmsModel.FK_Product_Category1">
+      <End Role="Category" EntitySet="Categories" />
+      <End Role="Product" EntitySet="Products" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="Purchase">
     <Key>
@@ -204,6 +138,26 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <EntityType Name="Category">
+    <Key>
+      <PropertyRef Name="code" />
+    </Key>
+    <Property Name="code" Type="Int32" Nullable="false" />
+    <Property Name="categoryName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="discription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Products" Relationship="businessProBmsModel.FK_Product_Category1" FromRole="Category" ToRole="Product" />
+  </EntityType>
+  <EntityType Name="Customer">
+    <Key>
+      <PropertyRef Name="customerCode" />
+    </Key>
+    <Property Name="customerCode" Type="Int32" Nullable="false" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="contact" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="address" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="creditLimit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="chartOfAccCode" Type="Int32" Nullable="false" />
+  </EntityType>
   <EntityType Name="ExpenseAccount">
     <Key>
       <PropertyRef Name="code" />
@@ -217,4 +171,53 @@
     <Property Name="openingDebit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
     <Property Name="openingCredit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
   </EntityType>
+  <EntityType Name="Product">
+    <Key>
+      <PropertyRef Name="productCode" />
+    </Key>
+    <Property Name="productCode" Type="Int32" Nullable="false" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="UOM" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="price" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="averagePrice" Type="Decimal" Precision="18" Scale="0" />
+    <Property Name="lastPurchasePrice" Type="Decimal" Precision="18" Scale="0" />
+    <Property Name="currentQuantity" Type="Int32" />
+    <Property Name="categoryCode" Type="Int32" Nullable="false" />
+    <Property Name="categoryName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="chartOfAccCode" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Category" Relationship="businessProBmsModel.FK_Product_Category1" FromRole="Product" ToRole="Category" />
+  </EntityType>
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="Vendor">
+    <Key>
+      <PropertyRef Name="vendorCode" />
+    </Key>
+    <Property Name="vendorCode" Type="Int32" Nullable="false" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="contact" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="address" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="debitLimit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+    <Property Name="chartOfAccCode" Type="Int32" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_Product_Category1">
+    <End Type="businessProBmsModel.Category" Role="Category" Multiplicity="1" />
+    <End Type="businessProBmsModel.Product" Role="Product" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Category">
+        <PropertyRef Name="code" />
+      </Principal>
+      <Dependent Role="Product">
+        <PropertyRef Name="categoryCode" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema>

@@ -16,24 +16,40 @@ namespace businessProBms.Controllers
         // GET: /Customer/Customers
         public ActionResult Customers(int?page)
         {
+            Customer c = new Customer();
+            var maxId = db.Customers.ToList().OrderByDescending(r => r.customerCode).FirstOrDefault();
+            c.customerCode = maxId == null ? 1 : (maxId.customerCode) + 1;
             ViewBag.customers = (db.Customers.ToList().ToPagedList(page ?? 1, 8));
-            return View();
+            return View(c);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Customers([Bind(Include="code,name,contact,address,creditLimit")] Customer customer)
+        public ActionResult Customers([Bind(Include="customerCode,name,contact,address,creditLimit")] Customer customer)
         {
             if(ModelState.IsValid)
             {
-                Customer c = db.Customers.Find(customer.code);
+                Customer c = db.Customers.Find(customer.customerCode);
+                ExpenseAccount ex = new ExpenseAccount();
                 if(c==null)
                 {
+                    var maxCode = db.ExpenseAccounts.ToList().OrderByDescending(r => r.code).FirstOrDefault();
+                    ex.code = maxCode == null ? 1 : (maxCode.code) + 1;
+                    ex.accountType = "Assets";
+                    ex.description = "Customers Accounts";
+                    ex.isGroup = false;
+                    ex.name = customer.name;
+                    ex.parentCode = 4; // This is Manual entry 
+                    ex.openingCredit = 0;
+                    ex.openingCredit = 0;
+                    db.ExpenseAccounts.Add(ex);
+                    db.SaveChanges();
+                    customer.chartOfAccCode = ex.code;
                     db.Customers.Add(customer);
                 }
                 else
                 {
-                    var cDB = db.Customers.SingleOrDefault(m => m.code == customer.code);
-                    cDB.code = customer.code;
+                    var cDB = db.Customers.SingleOrDefault(m => m.customerCode == customer.customerCode);
+                    cDB.customerCode = customer.customerCode;
                     cDB.name = customer.name;
                     cDB.contact = customer.contact;
                     cDB.address = customer.address;
@@ -62,10 +78,10 @@ namespace businessProBms.Controllers
         public JsonResult DeleteConfirmed(int? id)
         {
             bool result = false;
-            Vendor v = db.Vendors.SingleOrDefault(m => m.code == id);
-            if (v != null)
+            Customer c = db.Customers.SingleOrDefault(m => m.customerCode == id);
+            if (c != null)
             {
-                db.Vendors.Remove(v);
+                db.Customers.Remove(c);
                 db.SaveChanges();
                 result = true;
             }
