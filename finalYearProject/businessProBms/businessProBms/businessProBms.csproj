@@ -181,6 +181,7 @@
     <Compile Include="Controllers\ExpenseController.cs" />
     <Compile Include="Controllers\ExpenseVoucherController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\PurchaseController.cs" />
     <Compile Include="Controllers\SaleController.cs" />
@@ -268,6 +269,7 @@
     <Content Include="images\bms1.png" />
     <Content Include="images\new slider.jpg" />
     <Content Include="images\shutterstock_633192002.jpg" />
+    <Content Include="images\Siddiq.jpg" />
     <Content Include="images\slider2.jpg" />
     <Content Include="Rotativa\wkhtmltopdf.exe" />
     <EntityDeploy Include="Models\businessProBMS.edmx">
@@ -435,6 +437,9 @@
     <Content Include="Views\ExpenseVoucher\trailBalance.cshtml" />
     <Content Include="Views\ExpenseVoucher\incomeStatement.cshtml" />
     <Content Include="Views\ExpenseVoucher\balanceSheet.cshtml" />
+    <Content Include="Views\ExpenseVoucher\saleReport.cshtml" />
+    <Content Include="Views\ExpenseVoucher\purchaseReport.cshtml" />
+    <Content Include="Views\Inventory\Inventory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

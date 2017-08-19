@@ -5,8 +5,6 @@
 }
 <h2>Ledger Report</h2>
 <script src="~/Scripts/moment.js"></script>
-<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-<script src="~/Scripts/bootstrap.min.js"></script>
 <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
 <hr />
 <form>
@@ -66,9 +64,6 @@
     </table>
 </div>
 <br />
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
 <script>
     function CallPrint(strid) {
         var prtContent = document.getElementById(strid);
@@ -142,7 +137,7 @@
                        rows += "<td>" + item.accountname + "</td>"
                        rows += "<td>" + item.debit + "</td>"
                        rows += "<td>" + item.credit + "</td>"
-                       rows += "<td>" + item.balance + "</td>"
+                       rows += "<td>" + Math.abs(item.balance) + "</td>"
                        rows += "</tr>";
                        drTotal = item.drTot;
                        crTotal = item.crTot;
@@ -156,7 +151,7 @@
                    rows += "<td>&nbsp;</td>"
                    rows += "<td>" + drTotal + "</td>"
                    rows += "<td>" + crTotal + "</td>"
-                   rows += "<td>" + balance + "</td>"
+                   rows += "<td>" + Math.abs(balance) + "</td>"
                    rows += "</tr>";
                    $("#tblResult tbody").html(rows);
                    $("#btnprint").removeClass('disabled');

@@ -24,7 +24,7 @@ namespace businessProBms.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Customers([Bind(Include="customerCode,name,contact,address,creditLimit")] Customer customer)
+        public ActionResult Customers([Bind(Include="customerCode,name,contact,address,creditLimit,chartOfAccCode,openingDebit")] Customer customer)
         {
             if(ModelState.IsValid)
             {
@@ -37,10 +37,11 @@ namespace businessProBms.Controllers
                     ex.accountType = "Assets";
                     ex.description = "Customers Accounts";
                     ex.isGroup = false;
+                    ex.isActive = true;
                     ex.name = customer.name;
                     ex.parentCode = 4; // This is Manual entry 
                     ex.openingCredit = 0;
-                    ex.openingCredit = 0;
+                    ex.openingDebit = customer.openingDebit;
                     db.ExpenseAccounts.Add(ex);
                     db.SaveChanges();
                     customer.chartOfAccCode = ex.code;
@@ -49,11 +50,14 @@ namespace businessProBms.Controllers
                 else
                 {
                     var cDB = db.Customers.SingleOrDefault(m => m.customerCode == customer.customerCode);
+                    var eDB = db.ExpenseAccounts.SingleOrDefault(m => m.code == customer.chartOfAccCode);
                     cDB.customerCode = customer.customerCode;
                     cDB.name = customer.name;
                     cDB.contact = customer.contact;
                     cDB.address = customer.address;
                     cDB.creditLimit = customer.creditLimit;
+                    eDB.name = customer.name;
+                    eDB.openingDebit = customer.openingDebit;
                 }
                 db.SaveChanges();
                 return RedirectToAction("Customers");
@@ -68,6 +72,8 @@ namespace businessProBms.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Customer c = db.Customers.Find(id);
+            var exp = db.ExpenseAccounts.SingleOrDefault(m => m.code == c.chartOfAccCode);
+            c.openingDebit = exp.openingDebit;
             if(id==null)
             {
                 return HttpNotFound();
@@ -79,8 +85,10 @@ namespace businessProBms.Controllers
         {
             bool result = false;
             Customer c = db.Customers.SingleOrDefault(m => m.customerCode == id);
+            var exp = db.ExpenseAccounts.SingleOrDefault(m => m.code == c.chartOfAccCode);
             if (c != null)
             {
+                exp.isActive = false;
                 db.Customers.Remove(c);
                 db.SaveChanges();
                 result = true;

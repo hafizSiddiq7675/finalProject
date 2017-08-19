@@ -53,7 +53,10 @@ namespace businessProBms.Controllers
                     if (uom != null)
                     {
                         saledetail.unitOfMeasure = uom.UOM;
-                        uom.currentQuantity -= sa.quantity;
+                        if (uom.currentQuantity > 0)
+                        {
+                            uom.currentQuantity -= sa.quantity;
+                        }
                     }
                     saledetail.saleDetailsId = sa.saleId;
                     saledetail.productCode = sa.productCode;
@@ -64,8 +67,9 @@ namespace businessProBms.Controllers
                     db.SaleDetails.Add(saledetail);
                     db.SaveChanges();
                     VoucherBody vbd = new VoucherBody();
-                    vbd.accountNo = sa.customerCode;
-                    vbd.accountName = sa.customerName;
+                    var cus = db.Customers.SingleOrDefault(r => r.customerCode == sa.customerCode);
+                    vbd.accountNo = cus.chartOfAccCode;
+                    vbd.accountName = cus.name;
                     vbd.voucherNo = db.Vouchers.Max(r => r.voucherNo);
                     vbd.debit = sa.quantity * sa.salePrice;
                     vbd.credit = 0;
@@ -74,7 +78,7 @@ namespace businessProBms.Controllers
                     db.SaveChanges();
                     VoucherBody vbc = new VoucherBody();
                     ExpenseAccount ex = new ExpenseAccount();
-                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode);
+                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode + 1);
                     vbc.accountNo = ex.code;
                     vbc.accountName = ex.name;
                     vbc.credit = sa.quantity * sa.salePrice;
@@ -93,7 +97,10 @@ namespace businessProBms.Controllers
                     if (uom != null)
                     {
                         saledetail.unitOfMeasure = uom.UOM;
-                        uom.currentQuantity -= sa.quantity;
+                        if (uom.currentQuantity > 0)
+                        {
+                            uom.currentQuantity -= sa.quantity;
+                        }
                     }
                     saledetail.saleDetailsId = sa.saleId;
                     saledetail.productCode = sa.productCode;
@@ -104,8 +111,9 @@ namespace businessProBms.Controllers
                     db.SaleDetails.Add(saledetail);
                     db.SaveChanges();
                     VoucherBody vbd = new VoucherBody();
-                    vbd.accountNo = sa.customerCode;
-                    vbd.accountName = sa.customerName;
+                    var cus = db.Customers.SingleOrDefault(r => r.customerCode == sa.customerCode);
+                    vbd.accountNo = cus.chartOfAccCode;
+                    vbd.accountName = cus.name;
                     vbd.voucherNo = db.Vouchers.Max(r => r.voucherNo);
                     vbd.debit = sa.quantity * sa.salePrice;
                     vbd.credit = 0;
@@ -114,7 +122,7 @@ namespace businessProBms.Controllers
                     db.SaveChanges();
                     VoucherBody vbc = new VoucherBody();
                     ExpenseAccount ex = new ExpenseAccount();
-                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode);
+                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode +1);
                     vbc.accountNo = ex.code;
                     vbc.accountName = ex.name;
                     vbc.credit = sa.quantity * sa.salePrice;

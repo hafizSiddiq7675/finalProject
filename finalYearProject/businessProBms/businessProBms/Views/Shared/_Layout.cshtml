@@ -7,14 +7,18 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        .navbar {
-            background-color: black;
+     .nav.navbar-nav li a {
+            color: white;
+        }
+        .nav.navbar-nav li a:hover {
+            color: black;
         }
     </style>
 </head>
 <body>
-    <div class="navbar .navbar-inverse navbar-fixed-top">
+    <div class="navbar .navbar-inverse navbar-fixed-top" style="background-color:#0094ff">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -24,20 +28,57 @@
                 </button>
                 @Html.ActionLink("BMS", "Index", "Home", null, new { @class = "navbar-brand" })
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav" >
-                    <li>@Html.ActionLink("Category","Create","Category")</li>
-                    <li>@Html.ActionLink("Products", "Add", "Product")</li>
-                    <li>@Html.ActionLink("Vendors", "Vendors", "Vendor")</li>
-                    <li>@Html.ActionLink("Customers", "Customers", "Customer")</li>
-                    <li>@Html.ActionLink("Purchases", "Purchases", "Purchase")</li>
-                    <li>@Html.ActionLink("Sales","Sales","Sale")</li>
-                    <li>@Html.ActionLink("Chart Of Accounts", "Expenses", "Expense")</li>
-                    <li>@Html.ActionLink("Voucher Entry", "ExpenseVouchers", "ExpenseVoucher")</li>
-                    <li>@Html.ActionLink("Reports", "Report", "ExpenseVoucher")</li>
-                </ul>
-                @Html.Partial("_LoginPartial")
-            </div>
+              <div class="navbar-collapse collapse">
+                      <ul class="nav navbar-nav">
+                          <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown"role="button" aria-expanded="false"><i class="fa fa-wrench"></i> <b>Inventory Control</b><span class="caret"></span></a>
+                              <ul class="dropdown-menu"role="menu" style="background-color:#0094ff">
+                                  <li>@Html.ActionLink(" Category", "Create", "Category", null , new { @class = "fa fa-list-alt"})</li>
+                                  <li>@Html.ActionLink(" Products", "Add", "Product", null ,new { @class = "fa fa-product-hunt" })</li>
+                                  <li>@Html.ActionLink(" Inventory Control Panel", "Inventory", "Inventory", null ,new { @class = "fa fa-cogs" })</li>
+                              </ul>
+                          </li>
+                          <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-link"></i> <b>Purchases</b><span class="caret"></span></a>
+                              <ul class="dropdown-menu" role="menu" style="background-color:#0094ff">
+                                  <li>@Html.ActionLink(" Purchase Invoice", "Purchases", "Purchase", null , new { @class="fa fa-file"})</li>
+                                  <li>@Html.ActionLink(" Purchase Report" , "purchaseReport","ExpenseVoucher", null , new {@class="fa-bar-chart"})</li>
+                                  <li>@Html.ActionLink(" Vendors", "Vendors", "Vendor", null , new { @class = "fa fa-user" })</li>
+                              </ul>
+                          </li>
+                          <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-industry"></i> <b>Sales</b><span class="caret"></span></a>
+                              <ul class="dropdown-menu" role="menu" style="background-color:#0094ff">
+                                  <li>@Html.ActionLink(" Sale Invoice", "Sales", "Sale", null, new { @class = "fa fa-file" })</li>
+                                  <li>@Html.ActionLink(" Sale Report", "saleReport", "ExpenseVoucher", null, new { @class = "fa-bar-chart" })</li>
+                                  <li>@Html.ActionLink(" Customers", "Customers", "Customer", null, new { @class = "fa fa-user" })</li>
+                              </ul>
+                          </li>
+
+                          <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-bank"></i> <b>Financials</b><span class="caret"></span></a>
+                              <ul class="dropdown-menu" role="menu" style="background-color:#0094ff">
+                                  <li>@Html.ActionLink(" Chart Of Accounts", "Expenses", "Expense", null, new { @class = "fa fa-book" })</li>
+                                  <li>@Html.ActionLink(" Ledger", "Report", "ExpenseVoucher", null, new { @class = "fa fa-diamond" })</li>
+                              </ul>
+                          </li>
+                          <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-database" aria-hidden="true"></i> <b>Vouchers</b><span class="caret"></span></a>
+                              <ul class="dropdown-menu" role="menu" style="background-color:#0094ff">
+                                  <li>@Html.ActionLink(" Voucher Entry", "ExpenseVouchers", "ExpenseVoucher", null, new { @class = "fa fa-registered" })</li>
+                              </ul>
+                          </li>
+                          <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-line-chart" aria-hidden="true"></i> <b>Reports</b><span class="caret"></span></a>
+                              <ul class="dropdown-menu" role="menu" style="background-color:#0094ff">
+                                  <li>@Html.ActionLink(" Trail Balance", "trailBalance", "ExpenseVoucher", null, new { @class = "fa fa-object-group" })</li>
+                                  <li>@Html.ActionLink(" Income Statement", "incomeStatement", "ExpenseVoucher", null, new { @class = "fa fa-money" })</li>
+                                  <li>@Html.ActionLink(" Balance Sheet", "balanceSheet", "ExpenseVoucher", null, new { @class = "fa fa-balance-scale" })</li>
+                              </ul>
+                          </li>
+                      </ul>
+                      @Html.Partial("_LoginPartial")
+                  </div>
         </div>
     </div>
     <div class="container body-content">

@@ -46,8 +46,12 @@
                     @Html.LabelFor(model => model.creditLimit, new { @class = "control-label" })
                     @Html.TextBoxFor(model => model.creditLimit, htmlAttributes: new { PlaceHolder = "Enter Debit Limit(RS) Here..", @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.creditLimit)
+                    @Html.HiddenFor(m=>m.chartOfAccCode)
                 </div>
-
+                <div class="form-group">
+                    <label>Opening Debit</label>
+                    @Html.TextBoxFor(m => m.openingDebit, new { @class="form-control", PlaceHolder="Enter Opening Debit Here.."})
+                </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         <input type="submit" value="Save" class="btn btn-success" aria-hidden="true" />

@@ -8,81 +8,168 @@
 <head>
     <title>Slider</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="~/Content/bootstrap.css" rel="stylesheet" />
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: "Lato", sans-serif;
+            transition: background-color .5s;
+        }
+
+        /*For sidenav that how it will display*/
+
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+            /*sidenav links*/
+
+            .sidenav a {
+                padding: 8px 8px 8px 32px;
+                text-decoration: none;
+                font-size: 25px;
+                color: #818181;
+                display: block;
+                transition: 0.3s;
+            }
+
+                /*sidenave when you hover mouse this effect will ocure*/
+
+                .sidenav a:hover, .offcanvas a:focus {
+                    color: #f1f1f1;
+                }
+            /*sidenav close button effect*/
+
+            .sidenav .closebtn {
+                position: absolute;
+                top: 30px;
+                right: 0px;
+                font-size: 36px;
+                margin-left: 50px;
+            }
+
+        /*sidenave main window content*/
+
+        #main {
+            transition: margin-left .5s;
+            padding: 16px;
+        }
+
+        /*Responsiveness*/
+
+        @@media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+                .sidenav a {
+                    font-size: 18px;
+                }
+        }
+
+        /*Content in Drop-down*/
+        ul, li {
+            list-style: none;
+        }
+    </style>
 </head>
 <body>
     <center>
         <h1 style="background-color:aqua">~~ Hafiz Siddiq Umer ~~</h1>
         <h2 style="background-color:#ffd800">Slider</h2>
     </center>
+    <div id="mySidenav" class="sidenav">
+        @*javascript:void(0): Prevent from unwanted loading of the page*@
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <ul>
+            <li>
+                @Html.ActionLink(" Dashboard", "Index", "Dashboard", "Dashboard", new { @class = "fa fa-dashboard" })
+                @*<a href=""><i class="fa fa-dashboard"><span> Dashboard</span></i></a></li>*@
+                @*Drop-Down*@
 
-    <h2 style="background-color: Yellow;color: Blue; text-align: center; font-style: oblique">Satyaprakash's Image Carousel</h2>
-    <fieldset>
-        <legend style="font-family:Arial Black;color:blue">Company Founder Using Image Carousel</legend>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div id="imageCarousel" class="carousel slide" data-interval="2000"
-                         data-ride="carousel" data-pause="hover" data-wrap="true">
+            <li class="dropdown">
 
-                        <ol class="carousel-indicators">
-                            <li data-target="#imageCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#imageCarousel" data-slide-to="1"></li>
-                            <li data-target="#imageCarousel" data-slide-to="2"></li>
-                            <li data-target="#imageCarousel" data-slide-to="3"></li>
-                        </ol>
+                <a class="dropdown-toggle" data-toggle="collapse" data-target="#demo" href="#"><i class="fa fa-link"></i><span> Account Payables</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="collapse" id="demo" style="text-align:left">
+                    <li><a href="#">Purchase Orders</a></li>
+                    <li><a href="#">Purchase Invoices</a></li>
+                    <li><a href="#">Payments</a></li>
+                    <li><a href="#">Vendors</a></li>
+                </ul>
 
-                        <div class="carousel-inner">
-                            <div class="item active">
-                                <img src="~/images/bms1.png" class="img-responsive"/>
-                                <div class="carousel-caption">
-                                    <h3></h3>
-                                    <p style="font-weight: bold; color:yellow;font-size:small">Mahesh Chand's S/W Developer Community</p>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <img src="~/images/new%20slider.jpg" class="img-responsive" />
-                                <div class="carousel-caption">
-                                    <h3></h3>
-                                    <p style="font-weight: bold; color:yellow;font-size:small">Bill Gates's Software Company</p>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <img src="~/images/shutterstock_633192002.jpg" class="img-responsive" />
-                                <div class="carousel-caption">
-                                    <h3></h3>
-                                    <p style="font-weight: bold; color:yellow;font-size:small">Larry Page's Search Engine Company</p>
-                                </div>
-                            </div>
-                            <div class="item">
-                                <img src="~/images/slider2.jpg" class="img-responsive"/>
-                                <div class="carousel-caption">
-                                    <h3></h3>
-                                    <p style="font-weight: bold; color:yellow;font-size:small">Jack Dorsey's Social Networking Company</p>
-                                </div>
-                            </div>
-                        </div>
+                <a class="dropdown-toggle" data-toggle="collapse" data-target="#demo1" href="#"><i class="fa fa-industry"></i><span> Account Receiveables</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="collapse" id="demo1" style="text-align:left">
+                    <li><a href="#">Sales Qoutations</a></li>
+                    <li><a href="#">Sales Orders</a></li>
+                    <li><a href="#">Sales Receipts</a></li>
+                    <li><a href="#">Customers</a></li>
+                </ul>
 
-                        <a href="#imageCarousel" class="carousel-control left" data-slide="prev">
-                            <span class="glyphicon glyphicon-hand-left"></span>
-                        </a>
-                        <a href="#imageCarousel" class="carousel-control right" data-slide="next">
-                            <span class="glyphicon glyphicon-hand-right"></span>
-                        </a>
-                    </div>
+                <a class="dropdown-toggle" data-toggle="collapse" data-target="#demo2" href="#"><i class="fa fa-wrench"></i><span> Inventory Control</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="collapse" id="demo2" style="text-align:left">
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">Inventory Control Journal</a></li>
+                </ul>
 
-                </div>
-            </div>
+                <a class="dropdown-toggle" data-toggle="collapse" data-target="#demo3" href="#"><i class="fa fa-bank"></i><span> Financials</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="collapse" id="demo3" style="text-align:left">
+                    <li><a href="#">Journal Entries</a></li>
+                    <li><a href="#">General Ladger</a></li>
+                    <li><a href="#">Banks</a></li>
+                    <li><a href="#">Acounts</a></li>
+                </ul>
+
+                <a class="dropdown-toggle" data-toggle="collapse" data-target="#demo4" href="#"><i class="fa fa-line-chart"></i><span> Reports</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="collapse" id="demo4" style="text-align:left">
+                    <li><a href="#">Balance Sheet</a></li>
+                    <li><a href="#">Income Statement</a></li>
+                    <li><a href="#">Trail Balance</a></li>
+                </ul>
+
+                <a class="dropdown-toggle" data-toggle="collapse" data-target="#demo5" href="#"><i class="fa fa-desktop"></i><span> System Administration</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="collapse" id="demo5" style="text-align:left">
+                    <li><a href="#">Users</a></li>
+                    <li><a href="#">Roles</a></li>
+                </ul>
+
+                <a class="dropdown-toggle" data-toggle="collapse" data-target="#demo6" href="#"><i class="fa fa-envelope"></i><span> SMS Alert</span><i class="fa fa-angle-left pull-right"></i></a>
+                <ul class="collapse" id="demo6" style="text-align:left">
+                    <li><a href="#">Email To Customers</a></li>
+                    <li><a href="#">Email To Vendors</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div id="main">
+        <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;<b style="text-decoration-color:red;">&nbsp;Our Services</b></span>
+        <div class="container body-content">
         </div>
-    </fieldset>
-    <footer>
-        <p style="background-color: Yellow; font-weight: bold; color:blue; text-align: center; font-style: oblique">© @DateTime.Now.ToLocalTime()</p> @*Add Date Time*@
-    </footer>
+        </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
-
-    </script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>  
 </body>
 </html>
+<script>
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "400px";
+        document.getElementById("main").style.marginLeft = "400px";
+        document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+    }
+
+    //Executed when we click closebtn
+
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+        document.body.style.backgroundColor = "white";
+    }
+</script>

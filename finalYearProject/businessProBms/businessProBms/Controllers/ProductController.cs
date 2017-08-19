@@ -23,7 +23,7 @@ namespace businessProBms.Controllers
         //POST:Product/Add
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Add([Bind(Include="productCode,categoryCode,categoryName,name,UOM,price")] Product product, int? page)
+        public ActionResult Add([Bind(Include="productCode,categoryCode,categoryName,name,UOM,price,currentQuantity,lastPurchasePrice,averagePrice")] Product product, int? page)
         {
             if(ModelState.IsValid)
             {
@@ -37,6 +37,7 @@ namespace businessProBms.Controllers
                     exPurchase.accountType = "Expense";
                     exPurchase.description = "Purchase Account";
                     exPurchase.isGroup = false;
+                    exPurchase.isActive = true;
                     exPurchase.name = product.name + " Purchase";
                     exPurchase.openingCredit = 0;
                     exPurchase.openingDebit = 0;
@@ -48,6 +49,7 @@ namespace businessProBms.Controllers
                     exSale.accountType = "Revenue";
                     exSale.description = "Sale Account";
                     exSale.isGroup = false;
+                    exSale.isActive = true;
                     exSale.name = product.name + " Sale";
                     exSale.openingCredit = 0;
                     exSale.openingDebit = 0;
@@ -60,12 +62,16 @@ namespace businessProBms.Controllers
                 else
                 {
                     var prDb = db.Products.Single(m => m.productCode == pr.productCode);
+                    var exDBP = db.ExpenseAccounts.Single(m => m.code == pr.chartOfAccCode);
                     prDb.productCode = product.productCode;
                     prDb.name = product.name;
                     prDb.UOM = product.UOM;
                     prDb.categoryCode = product.categoryCode;
                     prDb.categoryName = product.categoryName;
                     prDb.price = product.price;
+                    exDBP.name = product.name + " Purchase";
+                    var exDBS = db.ExpenseAccounts.SingleOrDefault(m => m.code == pr.chartOfAccCode + 1);
+                    exDBS.name = product.name + " Sale";
                 }
                 db.SaveChanges();
                 return RedirectToAction("Add");
@@ -83,8 +89,7 @@ namespace businessProBms.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var pr = db.Products.SingleOrDefault(m => m.productCode == id);
-            
+            var pr = db.Products.SingleOrDefault(m => m.productCode == id);     
             if(pr==null)
             {
                 return HttpNotFound();
@@ -97,8 +102,12 @@ namespace businessProBms.Controllers
         {
             bool result = false;
             Product pr = db.Products.SingleOrDefault(m => m.productCode == id);
+            var expP = db.ExpenseAccounts.SingleOrDefault(m => m.code == pr.chartOfAccCode);
+            var expS = db.ExpenseAccounts.SingleOrDefault(m => m.code == pr.chartOfAccCode + 1);
             if(pr!=null)
             {
+                expP.isActive = false;
+                expS.isActive = false;
                 db.Products.Remove(pr);
                 db.SaveChanges();
                 result = true;

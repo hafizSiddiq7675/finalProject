@@ -22,5 +22,6 @@ namespace businessProBms.Models
         public bool isGroup { get; set; }
         public decimal openingDebit { get; set; }
         public decimal openingCredit { get; set; }
+        public Nullable<bool> isActive { get; set; }
     }
 }

@@ -36,6 +36,7 @@
           <Property Name="isGroup" Type="bit" Nullable="false" />
           <Property Name="openingDebit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
           <Property Name="openingCredit" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="isActive" Type="bit" />
         </EntityType>
         <EntityType Name="Product">
           <Key>
@@ -45,9 +46,9 @@
           <Property Name="name" Type="nvarchar" MaxLength="30" Nullable="false" />
           <Property Name="UOM" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="price" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-          <Property Name="averagePrice" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="lastPurchasePrice" Type="decimal" Precision="18" Scale="0" />
-          <Property Name="currentQuantity" Type="int" />
+          <Property Name="averagePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="lastPurchasePrice" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="currentQuantity" Type="int" Nullable="false" />
           <Property Name="categoryCode" Type="int" Nullable="false" />
           <Property Name="categoryName" Type="varchar" MaxLength="30" Nullable="false" />
           <Property Name="chartOfAccCode" Type="int" Nullable="false" />
@@ -240,16 +241,16 @@
             <End Role="Voucher" EntitySet="Vouchers" />
             <End Role="VoucherBody" EntitySet="VoucherBodies" />
           </AssociationSet>
-          <EntitySet Name="Categories" EntityType="businessProBmsModel.Category" />
           <EntitySet Name="Customers" EntityType="businessProBmsModel.Customer" />
-          <EntitySet Name="ExpenseAccounts" EntityType="businessProBmsModel.ExpenseAccount" />
-          <EntitySet Name="Products" EntityType="businessProBmsModel.Product" />
           <EntitySet Name="sysdiagrams" EntityType="businessProBmsModel.sysdiagram" />
           <EntitySet Name="Vendors" EntityType="businessProBmsModel.Vendor" />
+          <EntitySet Name="Categories" EntityType="businessProBmsModel.Category" />
+          <EntitySet Name="Products" EntityType="businessProBmsModel.Product" />
           <AssociationSet Name="FK_Product_Category1" Association="businessProBmsModel.FK_Product_Category1">
             <End Role="Category" EntitySet="Categories" />
             <End Role="Product" EntitySet="Products" />
           </AssociationSet>
+          <EntitySet Name="ExpenseAccounts" EntityType="businessProBmsModel.ExpenseAccount" />
           </EntityContainer>
         <EntityType Name="Purchase">
           <Key>
@@ -359,15 +360,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="Category">
-          <Key>
-            <PropertyRef Name="code" />
-          </Key>
-          <Property Name="code" Type="Int32" Nullable="false" />
-          <Property Name="categoryName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
-          <Property Name="discription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Products" Relationship="businessProBmsModel.FK_Product_Category1" FromRole="Category" ToRole="Product" />
-        </EntityType>
         <EntityType Name="Customer">
           <Key>
             <PropertyRef Name="customerCode" />
@@ -378,35 +370,6 @@
           <Property Name="address" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="creditLimit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <Property Name="chartOfAccCode" Type="Int32" Nullable="false" />
-        </EntityType>
-        <EntityType Name="ExpenseAccount">
-          <Key>
-            <PropertyRef Name="code" />
-          </Key>
-          <Property Name="code" Type="Int32" Nullable="false" />
-          <Property Name="accountType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="parentCode" Type="Int32" Nullable="false" />
-          <Property Name="isGroup" Type="Boolean" Nullable="false" />
-          <Property Name="openingDebit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="openingCredit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-        </EntityType>
-        <EntityType Name="Product">
-          <Key>
-            <PropertyRef Name="productCode" />
-          </Key>
-          <Property Name="productCode" Type="Int32" Nullable="false" />
-          <Property Name="name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
-          <Property Name="UOM" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="price" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="averagePrice" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="lastPurchasePrice" Type="Decimal" Precision="18" Scale="0" />
-          <Property Name="currentQuantity" Type="Int32" />
-          <Property Name="categoryCode" Type="Int32" Nullable="false" />
-          <Property Name="categoryName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="chartOfAccCode" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Category" Relationship="businessProBmsModel.FK_Product_Category1" FromRole="Product" ToRole="Category" />
         </EntityType>
         <EntityType Name="sysdiagram">
           <Key>
@@ -429,6 +392,31 @@
           <Property Name="debitLimit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
           <Property Name="chartOfAccCode" Type="Int32" Nullable="false" />
         </EntityType>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="Int32" Nullable="false" />
+          <Property Name="categoryName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="discription" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Products" Relationship="businessProBmsModel.FK_Product_Category1" FromRole="Category" ToRole="Product" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="productCode" />
+          </Key>
+          <Property Name="productCode" Type="Int32" Nullable="false" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="UOM" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="price" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="averagePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="lastPurchasePrice" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="currentQuantity" Type="Int32" Nullable="false" />
+          <Property Name="categoryCode" Type="Int32" Nullable="false" />
+          <Property Name="categoryName" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="chartOfAccCode" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Category" Relationship="businessProBmsModel.FK_Product_Category1" FromRole="Product" ToRole="Category" />
+        </EntityType>
         <Association Name="FK_Product_Category1">
           <End Type="businessProBmsModel.Category" Role="Category" Multiplicity="1" />
           <End Type="businessProBmsModel.Product" Role="Product" Multiplicity="*" />
@@ -441,6 +429,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ExpenseAccount">
+          <Key>
+            <PropertyRef Name="code" />
+          </Key>
+          <Property Name="code" Type="Int32" Nullable="false" />
+          <Property Name="accountType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="description" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="parentCode" Type="Int32" Nullable="false" />
+          <Property Name="isGroup" Type="Boolean" Nullable="false" />
+          <Property Name="openingDebit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="openingCredit" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="isActive" Type="Boolean" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -519,15 +521,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Categories">
-            <EntityTypeMapping TypeName="businessProBmsModel.Category">
-              <MappingFragment StoreEntitySet="Category">
-                <ScalarProperty Name="discription" ColumnName="discription" />
-                <ScalarProperty Name="categoryName" ColumnName="categoryName" />
-                <ScalarProperty Name="code" ColumnName="code" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Customers">
             <EntityTypeMapping TypeName="businessProBmsModel.Customer">
               <MappingFragment StoreEntitySet="Customer">
@@ -537,36 +530,6 @@
                 <ScalarProperty Name="contact" ColumnName="contact" />
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="customerCode" ColumnName="customerCode" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ExpenseAccounts">
-            <EntityTypeMapping TypeName="businessProBmsModel.ExpenseAccount">
-              <MappingFragment StoreEntitySet="ExpenseAccount">
-                <ScalarProperty Name="openingCredit" ColumnName="openingCredit" />
-                <ScalarProperty Name="openingDebit" ColumnName="openingDebit" />
-                <ScalarProperty Name="isGroup" ColumnName="isGroup" />
-                <ScalarProperty Name="parentCode" ColumnName="parentCode" />
-                <ScalarProperty Name="description" ColumnName="description" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="accountType" ColumnName="accountType" />
-                <ScalarProperty Name="code" ColumnName="code" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Products">
-            <EntityTypeMapping TypeName="businessProBmsModel.Product">
-              <MappingFragment StoreEntitySet="Product">
-                <ScalarProperty Name="chartOfAccCode" ColumnName="chartOfAccCode" />
-                <ScalarProperty Name="categoryName" ColumnName="categoryName" />
-                <ScalarProperty Name="categoryCode" ColumnName="categoryCode" />
-                <ScalarProperty Name="currentQuantity" ColumnName="currentQuantity" />
-                <ScalarProperty Name="lastPurchasePrice" ColumnName="lastPurchasePrice" />
-                <ScalarProperty Name="averagePrice" ColumnName="averagePrice" />
-                <ScalarProperty Name="price" ColumnName="price" />
-                <ScalarProperty Name="UOM" ColumnName="UOM" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="productCode" ColumnName="productCode" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -590,6 +553,46 @@
                 <ScalarProperty Name="contact" ColumnName="contact" />
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="vendorCode" ColumnName="vendorCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Categories">
+            <EntityTypeMapping TypeName="businessProBmsModel.Category">
+              <MappingFragment StoreEntitySet="Category">
+                <ScalarProperty Name="discription" ColumnName="discription" />
+                <ScalarProperty Name="categoryName" ColumnName="categoryName" />
+                <ScalarProperty Name="code" ColumnName="code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Products">
+            <EntityTypeMapping TypeName="businessProBmsModel.Product">
+              <MappingFragment StoreEntitySet="Product">
+                <ScalarProperty Name="chartOfAccCode" ColumnName="chartOfAccCode" />
+                <ScalarProperty Name="categoryName" ColumnName="categoryName" />
+                <ScalarProperty Name="categoryCode" ColumnName="categoryCode" />
+                <ScalarProperty Name="currentQuantity" ColumnName="currentQuantity" />
+                <ScalarProperty Name="lastPurchasePrice" ColumnName="lastPurchasePrice" />
+                <ScalarProperty Name="averagePrice" ColumnName="averagePrice" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="UOM" ColumnName="UOM" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="productCode" ColumnName="productCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExpenseAccounts">
+            <EntityTypeMapping TypeName="businessProBmsModel.ExpenseAccount">
+              <MappingFragment StoreEntitySet="ExpenseAccount">
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
+                <ScalarProperty Name="openingCredit" ColumnName="openingCredit" />
+                <ScalarProperty Name="openingDebit" ColumnName="openingDebit" />
+                <ScalarProperty Name="isGroup" ColumnName="isGroup" />
+                <ScalarProperty Name="parentCode" ColumnName="parentCode" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="accountType" ColumnName="accountType" />
+                <ScalarProperty Name="code" ColumnName="code" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

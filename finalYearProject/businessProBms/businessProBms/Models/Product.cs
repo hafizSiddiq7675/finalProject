@@ -18,9 +18,9 @@ namespace businessProBms.Models
         public string name { get; set; }
         public string UOM { get; set; }
         public decimal price { get; set; }
-        public Nullable<decimal> averagePrice { get; set; }
-        public Nullable<decimal> lastPurchasePrice { get; set; }
-        public Nullable<int> currentQuantity { get; set; }
+        public decimal averagePrice { get; set; }
+        public decimal lastPurchasePrice { get; set; }
+        public int currentQuantity { get; set; }
         public int categoryCode { get; set; }
         public string categoryName { get; set; }
         public int chartOfAccCode { get; set; }

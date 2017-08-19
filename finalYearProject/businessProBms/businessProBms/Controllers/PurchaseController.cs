@@ -54,6 +54,7 @@ namespace businessProBms.Controllers
                     {
                         purchasedetail.unitOfMeasure = uom.UOM;
                         uom.currentQuantity += pu.quantity;
+                        uom.lastPurchasePrice = pu.purchasePrice;
                     }
                     purchasedetail.purchaseDetailsId = pu.purchaseId;
                     purchasedetail.productCode = pu.productCode;
@@ -64,8 +65,9 @@ namespace businessProBms.Controllers
                     db.PurchaseDetails.Add(purchasedetail);
                     db.SaveChanges();
                     VoucherBody vbc = new VoucherBody();
-                    vbc.accountNo = pu.vendorCode;
-                    vbc.accountName = pu.vendorName;
+                    var ven = db.Vendors.SingleOrDefault(r => r.vendorCode == pu.vendorCode);
+                    vbc.accountNo = ven.chartOfAccCode;
+                    vbc.accountName = ven.name;
                     vbc.credit = pu.quantity * pu.purchasePrice;
                     vbc.debit = 0;
                     vbc.description = "Item Purchased";
@@ -94,6 +96,7 @@ namespace businessProBms.Controllers
                     {
                         purchasedetail.unitOfMeasure = uom.UOM;
                         uom.currentQuantity += pu.quantity;
+                        uom.lastPurchasePrice = pu.purchasePrice;
                     }
                     purchasedetail.purchaseDetailsId = pu.purchaseId;
                     purchasedetail.productCode = pu.productCode;
@@ -104,8 +107,9 @@ namespace businessProBms.Controllers
                     db.PurchaseDetails.Add(purchasedetail);
                     db.SaveChanges();
                     VoucherBody vbc = new VoucherBody();
-                    vbc.accountNo = pu.vendorCode;
-                    vbc.accountName = pu.vendorName;
+                    var ven = db.Vendors.SingleOrDefault(r => r.vendorCode == pu.vendorCode);
+                    vbc.accountNo = ven.chartOfAccCode;
+                    vbc.accountName = ven.name;
                     vbc.credit = pu.quantity * pu.purchasePrice;
                     vbc.debit = 0;
                     vbc.description = "Item Purchased";
@@ -133,7 +137,10 @@ namespace businessProBms.Controllers
             decimal total = 0;
             db.Configuration.ProxyCreationEnabled = false;
             total = db.PurchaseDetails.Where(r => r.purchaseDetailsId == id).Sum(r => r.amount);
-            var purchase = db.PurchaseDetails.Where(r => r.purchaseDetailsId == id);
+            var purchase = from p in db.PurchaseDetails
+                           where (p.purchaseDetailsId == id)
+                           join pr in db.Products on p.productCode equals pr.productCode
+                           select p;
             var result = new { Purchase = purchase, Total = total };
             return Json(result, JsonRequestBehavior.AllowGet);
         }

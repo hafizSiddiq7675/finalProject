@@ -20,7 +20,7 @@ namespace businessProBms.Controllers
             vm.voucher.voucherNo = maxId == null ? 1 : (maxId.voucherNo) + 1;
             vm.voucher.voucherDate = DateTime.Now.Date;
             ViewBag.vouchers = db.Vouchers.ToList();
-            ViewBag.accounts = db.ExpenseAccounts.Where(r=>r.isGroup==false).ToList();
+            ViewBag.accounts = db.ExpenseAccounts.Where(r=>r.isGroup==false && r.isActive==true).ToList();
             var enumData = from VoucherTypeModel v in Enum.GetValues(typeof(VoucherTypeModel))
                            select new
                            {
@@ -150,6 +150,9 @@ namespace businessProBms.Controllers
         }
         public JsonResult srcData(int acc, DateTime startDate, DateTime endDate)
         {
+            ExpenseAccount ea = db.ExpenseAccounts.Where(a => a.code == acc).SingleOrDefault();
+            decimal openingbalance = ea.openingDebit - ea.openingCredit;
+
             var data = (from v in db.Vouchers
                         join vb in db.VoucherBodies on v.voucherNo equals vb.voucherNo
                         where (vb.accountNo == acc) && (v.voucherDate >= startDate) && (v.voucherDate <= endDate)
@@ -162,17 +165,26 @@ namespace businessProBms.Controllers
                             debit = vb.debit,
                             credit = vb.credit,
                         }).ToList();
+            data.Insert(0, new
+            {
+                vdate = startDate,
+                vno = 0,
+                accountno = acc,
+                accountname = db.ExpenseAccounts.Where(a => a.code == acc).SingleOrDefault().name,
+                debit = openingbalance >= 0 ? openingbalance : 0,
+                credit = openingbalance < 0 ? 0 : openingbalance
+            });
             decimal drTot = 0;
             decimal crTot = 0;
-            decimal currentTot=0;
+            decimal currentTot = 0;
             var item = data.OrderBy(i => i.vdate).Select(r =>
             {
-                currentTot += (r.debit-r.credit);
+                currentTot += (r.debit - r.credit);
                 drTot += r.debit;
                 crTot += r.credit;
-                return new { vdate = r.vdate, vno = r.vno, accountno = r.accountno, accountname = r.accountname, debit = r.debit, credit = r.credit, balance = currentTot, drTot,crTot};
+                return new {vdate = r.vdate, vno = r.vno, accountno = r.accountno, accountname = r.accountname, debit = r.debit, credit = r.credit, balance = currentTot, drTot,crTot};
             });
-            var result = new { DrTotal = drTot, CrTotal=crTot, Result = item };
+            var result = new { DrTotal = drTot, CrTotal=crTot, Result = item};
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         public ActionResult trailBalance()
@@ -181,10 +193,10 @@ namespace businessProBms.Controllers
         }
         public JsonResult Result(DateTime startDate, DateTime endDate)
         {
-            var data = (from c in db.ExpenseAccounts
+            var data = (from c in db.ExpenseAccounts where (c.isGroup == false) && (c.isActive == true)
                         join vb in db.VoucherBodies on c.code equals vb.accountNo
                         join v in db.Vouchers on vb.voucherNo equals v.voucherNo
-                        where (c.isGroup == false) && (v.voucherDate >= startDate) && (v.voucherDate <= endDate)
+                        where (v.voucherDate >= startDate) && (v.voucherDate <= endDate) 
                         select new
                         {
                             accountname = vb.accountName,
@@ -203,7 +215,7 @@ namespace businessProBms.Controllers
         public JsonResult income(DateTime startDate, DateTime endDate)
         {
             var data = (from e in db.ExpenseAccounts
-                           where (e.accountType == "Revenue" || e.accountType=="Expense") && (e.isGroup == false)
+                           where (e.accountType == "Revenue" || e.accountType=="Expense") && (e.isGroup == false) && (e.isActive==true)
                            join vb in db.VoucherBodies on e.code equals vb.accountNo
                            join v in db.Vouchers on vb.voucherNo equals v.voucherNo where (v.voucherDate>=startDate) && (v.voucherDate<=endDate)
                            select new
@@ -216,7 +228,7 @@ namespace businessProBms.Controllers
 
             var revenue = data.Where(r=>r.accounttype=="Revenue").GroupBy(i => new { i.accountname }).Select(s =>
             {
-                return new { accountname = s.Select(c => c.accountname).Distinct(), balance = (s.Sum(c => c.debit) - s.Sum(c => c.credit)) };
+                return new {accountname = s.Select(c => c.accountname).Distinct(), balance = (s.Sum(c => c.debit) - s.Sum(c => c.credit)) };
             });
             var expense = data.Where(r => r.accounttype == "Expense").GroupBy(i => new { i.accountname }).Select(s =>
             {
@@ -234,7 +246,7 @@ namespace businessProBms.Controllers
             decimal revenueTot = 0;
             decimal expenseTot = 0;
             var data = (from e in db.ExpenseAccounts
-                        where (e.accountType == "Assets" || e.accountType == "Liability" || e.accountType == "Capital" || e.accountType == "Revenue" || e.accountType == "Expense") && (e.isGroup == false)
+                        where (e.accountType == "Assets" || e.accountType == "Liability" || e.accountType == "Capital" || e.accountType == "Revenue" || e.accountType == "Expense") && (e.isGroup == false) && (e.isActive==true)
                        join vb in db.VoucherBodies on e.code equals vb.accountNo
                        join v in db.Vouchers on vb.voucherNo equals v.voucherNo where (v.voucherDate>=startDate) && (v.voucherDate<=endDate)
                        select new
@@ -267,6 +279,64 @@ namespace businessProBms.Controllers
                 return new { expenseTot };
             });
             var result = new { Assets = assets, Liability = liability, Capital = capital, Revenue=revenue, Expense=expense };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult saleReport()
+        {
+            return View();
+        }
+        public ActionResult purchaseReport()
+        {
+            return View();
+        }
+        public JsonResult PurchaseR(DateTime startDate, DateTime endDate)
+        {
+            var data = (from p in db.Purchases
+                        join pd in db.PurchaseDetails on p.purchaseId equals pd.purchaseDetailsId
+                        where (p.purchaseDate >= startDate) && (p.purchaseDate <= endDate)
+                        select new
+                        {
+                            purchaseId = p.purchaseId,
+                            purchasedate = p.purchaseDate,
+                            vendorname=p.vendorName,
+                            //productname=pd.productName,
+                            qty = pd.quantity, 
+                            //price = pd.purchasePrice,
+                            amount = pd.amount
+                        }).ToList();
+            var result = data.GroupBy(r => r.purchaseId).Select(s =>
+            {
+                return new { amount = s.Sum(f=>f.amount), purchaseId=s.Select(f=>f.purchaseId).Distinct(), purchasedate=s.Select(f=>f.purchasedate).Distinct(),
+                    vendorname=s.Select(f=>f.vendorname).Distinct(), qty=s.Sum(f=>f.qty)
+                };
+            });
+            var value = new { Data = data, ptot = result };
+            return Json(value, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult SaleR(DateTime startDate, DateTime endDate)
+        {
+            var data = (from s in db.Sales
+                        join sd in db.SaleDetails on s.saleId equals sd.saleDetailsId
+                        where (s.saleDate >= startDate) && (s.saleDate <= endDate)
+                        select new
+                        {
+                            saleId = s.saleId,
+                            saledate = s.saleDate,
+                            customername = s.customerName,
+                            qty = sd.quantity,
+                            amount = sd.amount
+                        }).ToList();
+            var result = data.GroupBy(r => r.saleId).Select(s =>
+            {
+                return new
+                {
+                    amount = s.Sum(f => f.amount),
+                    saleId = s.Select(f => f.saleId).Distinct(),
+                    saledate = s.Select(f => f.saledate).Distinct(),
+                    customername = s.Select(f => f.customername).Distinct(),
+                    qty = s.Sum(f => f.qty)
+                };
+            });
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

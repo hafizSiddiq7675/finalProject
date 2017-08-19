@@ -63,7 +63,10 @@
                     @Html.TextBoxFor(m => m.price, new { placeholder = "Enter Product Price(Sale) Here..", @class = "form-control" })
                     @Html.ValidationMessageFor(m => m.price)
                 </div>
-
+                <div class="form-group">
+                    <label>Current Quantity</label>
+                    @Html.TextBoxFor(m => m.currentQuantity, new { placeholder="Enter Current Quantity Available Here..", @class="form-control"})
+                </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
                         <input type="submit" value="Save" class="btn btn-success" aria-hidden="true" />
@@ -99,6 +102,9 @@
                 <th>
                     @Html.DisplayNameFor(model => model.price)
                 </th>
+                <th>
+                    Current Quantity
+                </th>
                 <th>Action</th>
             </tr>
 
@@ -122,6 +128,9 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.price)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.currentQuantity)
                     </td>
                     <td>
                         @Html.ActionLink("Edit", "Edit", new { id = item.productCode }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |

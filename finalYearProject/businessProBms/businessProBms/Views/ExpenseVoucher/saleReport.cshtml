@@ -1,0 +1,189 @@
+﻿@using businessProBms.Models
+@{
+    ViewBag.Title = "SaleReport";
+}
+<h2>Sale Report</h2>
+<script src="~/Scripts/moment.js"></script>
+<script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+<hr />
+<form>
+    <div class="container" style="position:relative">
+        <table class="table table-responsive">
+            <tr>
+                <th>
+                    From Date
+                </th>
+                <th>
+                    To Date
+                </th>
+                <th>
+                    &nbsp;
+                </th>
+                <th>
+                    &nbsp;
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <div class='col-xs-8 input-group date'>
+                        <input type="text" id="sdate" class="form-control" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <div class='col-xs-8 input-group date'>
+                        <input type="text" id="edate" class="form-control" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </td>
+                <td>
+                    <input type="button" value="Show" class="btn btn-primary" onclick="result()" />
+                </td>
+                <td>
+                    <input type="button" value="Print" class="btn btn-success disabled" id="btnprint" onclick="CallPrint('divPrint')" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<br />
+<div id="divPrint">
+    <center><h1 id="heading" style="background-color:aqua; color:black"></h1></center>
+    <table class="table table-responsive" id="tblResult">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+    <center><h2 id="details" style="background-color:aqua; color:black;"></h2></center>
+    <table class="table table-responsive" id="tblDetails">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+</div>
+<br />
+<script>
+    $.noConflict();
+    jQuery(document).ready(function ($) {
+        $(function () {
+            $('#sdate').datetimepicker({ format: 'YYYY-MM-DD' });
+            $("#edate").datetimepicker({ format: 'YYYY-MM-DD' });
+        });
+    });
+    function CallPrint(strid) {
+        var prtContent = document.getElementById(strid);
+        var WinPrint = window.open('PrintDiv', 'Print-Window', 'width=920,height=750,top=100,left=100');
+        WinPrint.document.write(prtContent.innerHTML);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+        WinPrint.close();
+        prtContent.innerHTML = strOldOne;
+    }
+    function result() {
+        var val = {};
+        val.startDate = $("#sdate").val();
+        val.endDate = $("#edate").val();
+        $.ajax({
+            cashe: false,
+            url: "/ExpenseVoucher/SaleR",
+            data: val,
+            success: function (data) {
+                var head = '';
+                head += "<tr>"
+                head += "<th>Sale ID</th>"
+                head += "<th>Date</th>"
+                head += "<th>Customer</th>"
+                head += "<th>Total Quantity</th>"
+                head += "<th>Total Amount (RS)</th>"
+                head += "<th>Action</th>"
+                head += "</tr>";
+                var heading = "Sale Report for the Business <br>From " + val.startDate + " To " + val.endDate;
+                $("#heading").html(heading);
+                $("#tblResult thead").html(head);
+                var rows = '';
+                var total = 0;
+                $.each(data, function (i, item) {
+                    total += item.amount;
+                    var date = ToJavaScriptDate(item.saledate);
+                    rows += "<tr class='Search'>"
+                    rows += "<td>" + item.saleId + "</td>"
+                    rows += "<td>" + date + "</td>"
+                    rows += "<td>" + item.customername + "</td>"
+                    rows += "<td>" + item.qty + "</td>"
+                    rows += "<td> RS " + item.amount + "</td>"
+                    rows += "<td><a href='javascript:;' onclick='return getSaleDetailsById(" + item.saleId + ")'><span class='glyphicon glyphicon-book'></span> Details</a></td>"
+                    rows += "</tr>";
+                    $("#tblResult tbody").html(rows);
+                });
+                rows += "<tr>"
+                rows += "<td>&nbsp;</td>"
+                rows += "<td>&nbsp;</td>"
+                rows += "<td>&nbsp;</td>"
+                rows += "<td><b>Grand Total : </b></td>"
+                rows += "<td> RS " + total + "</td>"
+                rows += "</tr>";
+                $("#tblResult tbody").html(rows);
+                $("#btnprint").removeClass('disabled');
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('There is an error ');
+            }
+        });
+    }
+    function ToJavaScriptDate(value) {
+        var pattern = /Date\(([^)]+)\)/;
+        var results = pattern.exec(value);
+        var dt = new Date(parseFloat(results[1]));
+        // return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+        return dt.getFullYear() + "/" + (dt.getMonth() + 1) + "/" + dt.getDate();
+    }
+    function getSaleDetailsById(element) {
+        $.ajax({
+            url: "/Sale/getSaleDetails",
+            type: "GET",
+            data: { id: element },
+            dataType: "json",
+            success: function (data) {
+                var head = '';
+                head += "<tr>"
+                head += "<th>Product Name</th>"
+                head += "<th>UOM</th>"
+                head += "<th>Quantity</th>"
+                head += "<th>Price</th>"
+                head += "<th>Amount</th>"
+                head += "</tr>";
+                var heading = "Sale Details for the Sale Invoice # " + element;
+                $("#details").html(heading);
+                $("#tblDetails thead").html(head);
+                var rows = '';
+                var q = 0;
+                $.each(data.Sales, function (i, item) {
+                    q += item.quantity;
+                    rows += "<tr class='Search' id='_row(" + item.code + ")'>"
+                    rows += "<td>" + item.productName + "</td>"
+                    rows += "<td>" + item.unitOfMeasure + "</td>"
+                    rows += "<td>" + item.quantity + "</td>"
+                    rows += "<td> RS " + item.salePrice + "</td>"
+                    rows += "<td> RS " + item.amount + "</td>"
+                    rows += "</tr>"
+                    $("#tblDetails tbody").html(rows);
+                });
+                rows += "<tr>"
+                rows += "<td><b>Totals : </b></td>"
+                rows += "<td>&nbsp;</td>"
+                rows += "<td>" + q + "</td>"
+                rows += "<td>&nbsp;</td>"
+                rows += "<td> RS " + data.Total + "</td>"
+                rows += "</tr>";
+                $("#tblDetails tbody").html(rows);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert('There is an error ');
+            }
+        });
+    }
+</script>

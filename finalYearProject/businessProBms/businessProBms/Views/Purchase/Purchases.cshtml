@@ -87,6 +87,7 @@
             <tbody></tbody>
         </table>
         <hr />
+        <input type="button" class="btn btn-info disabled" value="Save" id="save" />
         <div style="padding:10px 0; text-align:right">
             <a href="@Url.Action("printPurchaseInvoice", "Purchase", new { id = @Model.purchases.purchaseId })"><input id="submit" type="button" value="Print" class="btn btn-warning disabled" style="padding:10px 20px" /></a>
         </div>
@@ -290,6 +291,7 @@
                 success: function (result) {
                     getPurchaseDetails($("#pid").val());
                     $("#submit").removeClass('disabled');
+                    $("#save").removeClass('disabled');
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     alert('There is an error ');

@@ -73,15 +73,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="Categories">
-      <EntityTypeMapping TypeName="businessProBmsModel.Category">
-        <MappingFragment StoreEntitySet="Category">
-          <ScalarProperty Name="discription" ColumnName="discription" />
-          <ScalarProperty Name="categoryName" ColumnName="categoryName" />
-          <ScalarProperty Name="code" ColumnName="code" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="Customers">
       <EntityTypeMapping TypeName="businessProBmsModel.Customer">
         <MappingFragment StoreEntitySet="Customer">
@@ -91,36 +82,6 @@
           <ScalarProperty Name="contact" ColumnName="contact" />
           <ScalarProperty Name="name" ColumnName="name" />
           <ScalarProperty Name="customerCode" ColumnName="customerCode" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="ExpenseAccounts">
-      <EntityTypeMapping TypeName="businessProBmsModel.ExpenseAccount">
-        <MappingFragment StoreEntitySet="ExpenseAccount">
-          <ScalarProperty Name="openingCredit" ColumnName="openingCredit" />
-          <ScalarProperty Name="openingDebit" ColumnName="openingDebit" />
-          <ScalarProperty Name="isGroup" ColumnName="isGroup" />
-          <ScalarProperty Name="parentCode" ColumnName="parentCode" />
-          <ScalarProperty Name="description" ColumnName="description" />
-          <ScalarProperty Name="name" ColumnName="name" />
-          <ScalarProperty Name="accountType" ColumnName="accountType" />
-          <ScalarProperty Name="code" ColumnName="code" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="Products">
-      <EntityTypeMapping TypeName="businessProBmsModel.Product">
-        <MappingFragment StoreEntitySet="Product">
-          <ScalarProperty Name="chartOfAccCode" ColumnName="chartOfAccCode" />
-          <ScalarProperty Name="categoryName" ColumnName="categoryName" />
-          <ScalarProperty Name="categoryCode" ColumnName="categoryCode" />
-          <ScalarProperty Name="currentQuantity" ColumnName="currentQuantity" />
-          <ScalarProperty Name="lastPurchasePrice" ColumnName="lastPurchasePrice" />
-          <ScalarProperty Name="averagePrice" ColumnName="averagePrice" />
-          <ScalarProperty Name="price" ColumnName="price" />
-          <ScalarProperty Name="UOM" ColumnName="UOM" />
-          <ScalarProperty Name="name" ColumnName="name" />
-          <ScalarProperty Name="productCode" ColumnName="productCode" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -144,6 +105,46 @@
           <ScalarProperty Name="contact" ColumnName="contact" />
           <ScalarProperty Name="name" ColumnName="name" />
           <ScalarProperty Name="vendorCode" ColumnName="vendorCode" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Categories">
+      <EntityTypeMapping TypeName="businessProBmsModel.Category">
+        <MappingFragment StoreEntitySet="Category">
+          <ScalarProperty Name="discription" ColumnName="discription" />
+          <ScalarProperty Name="categoryName" ColumnName="categoryName" />
+          <ScalarProperty Name="code" ColumnName="code" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Products">
+      <EntityTypeMapping TypeName="businessProBmsModel.Product">
+        <MappingFragment StoreEntitySet="Product">
+          <ScalarProperty Name="chartOfAccCode" ColumnName="chartOfAccCode" />
+          <ScalarProperty Name="categoryName" ColumnName="categoryName" />
+          <ScalarProperty Name="categoryCode" ColumnName="categoryCode" />
+          <ScalarProperty Name="currentQuantity" ColumnName="currentQuantity" />
+          <ScalarProperty Name="lastPurchasePrice" ColumnName="lastPurchasePrice" />
+          <ScalarProperty Name="averagePrice" ColumnName="averagePrice" />
+          <ScalarProperty Name="price" ColumnName="price" />
+          <ScalarProperty Name="UOM" ColumnName="UOM" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="productCode" ColumnName="productCode" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ExpenseAccounts">
+      <EntityTypeMapping TypeName="businessProBmsModel.ExpenseAccount">
+        <MappingFragment StoreEntitySet="ExpenseAccount">
+          <ScalarProperty Name="isActive" ColumnName="isActive" />
+          <ScalarProperty Name="openingCredit" ColumnName="openingCredit" />
+          <ScalarProperty Name="openingDebit" ColumnName="openingDebit" />
+          <ScalarProperty Name="isGroup" ColumnName="isGroup" />
+          <ScalarProperty Name="parentCode" ColumnName="parentCode" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="accountType" ColumnName="accountType" />
+          <ScalarProperty Name="code" ColumnName="code" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

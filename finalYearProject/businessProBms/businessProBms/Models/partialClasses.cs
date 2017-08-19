@@ -13,10 +13,12 @@ namespace businessProBms.Models
     [MetadataType(typeof(vendorMetadata))]
     public partial class Vendor
     {
+        public decimal openingCredit { get; set; }
     }
     [MetadataType(typeof(customerMetadata))]
     public partial class Customer 
-    { 
+    {
+        public decimal openingDebit { get; set; }
     }
     [MetadataType(typeof(purchaseMetadata))]
     public partial class Purchase

@@ -5,8 +5,6 @@
 <h2>Balance Sheet</h2>
 <hr />
 <script src="~/Scripts/moment.js"></script>
-<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-<script src="~/Scripts/bootstrap.min.js"></script>
 <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
 <form>
     <div class="container" style="position:relative">
@@ -61,9 +59,6 @@
     </table>
 </div>
 <br />
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
 <script>
     $.noConflict();
     jQuery(document).ready(function ($) {
@@ -173,7 +168,7 @@
                     rows += "</tr>";
                 }
                 else {
-                    cTot = cTot - net;
+                    cTot = cTot - Math.abs(net);
                     rows += "<tr>"
                     rows += "<td><b>Loss (Sub) : </b></td>"
                     rows += "<td style='color:red'><b> RS " + net + "</td>"

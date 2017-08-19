@@ -4,6 +4,7 @@ using businessProBms.Models;
 using System.Net;
 using PagedList;
 using PagedList.Mvc;
+using System;
 namespace businessProBms.Controllers
 {
     public class ExpenseController : Controller
@@ -16,18 +17,19 @@ namespace businessProBms.Controllers
             var maxId = db.ExpenseAccounts.ToList().OrderByDescending(r => r.code).FirstOrDefault();
             ex.code = maxId == null ? 1 : (maxId.code) + 1;
             ViewBag.parentAcc = db.ExpenseAccounts.Where(r => r.isGroup == true).ToList();
-            ViewBag.expenses = (db.ExpenseAccounts.ToList().ToPagedList(page ?? 1, 8));
+            ViewBag.expenses = (db.ExpenseAccounts.Where(r=>r.isActive==true).ToList().ToPagedList(page ?? 1, 8));
             return View(ex);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Expenses([Bind(Include="accountType,code,name,description,parentCode,isGroup,openingDebit,openingCredit")] ExpenseAccount exp)
+        public ActionResult Expenses([Bind(Include="accountType,code,name,description,parentCode,isGroup,openingDebit,openingCredit, isActive")] ExpenseAccount exp)
         {
             if(ModelState.IsValid)
             {
                 ExpenseAccount e = db.ExpenseAccounts.Find(exp.code);
                 if (e == null)
                 {
+                    exp.isActive = true;
                     db.ExpenseAccounts.Add(exp);
                 }
                 else

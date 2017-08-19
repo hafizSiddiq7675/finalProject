@@ -1,0 +1,101 @@
+﻿@using businessProBms.Models
+@{
+    ViewBag.Title = "Inventory";
+}
+<style>
+    #circle {
+        background: #cccccc;
+        border-radius: 0.8em;
+        -moz-border-radius: 0.8em;
+        -webkit-border-radius: 0.8em;
+        color: #ffffff;
+        display: inline-block;
+        font-weight: bold;
+        line-height: 1.6em;
+        margin-right: 5px;
+        text-align: center;
+        width: 1.6em;
+    }
+</style>
+<h2>Inventory Control</h2>
+<hr />
+<div class="row">
+    <div class="col-md-3">
+        <table class="table table-responsive">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.categories as List<Category>)
+                {
+                    string f = item.categoryName.Substring(0, 1);
+                    <tr>
+                        <td>
+                            <div id="circle"><b style="color:black;">@f</b></div> <a href="javascript:;" onclick="details(@item.code)">
+                                <span class='glyphicon glyphicon-book'></span> @Html.DisplayFor(m => item.categoryName)
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-9">
+        <h1 style="color:black;" id="heading"></h1>
+        <table class="table table-responsive" id="tblResult">
+            <tbody></tbody>
+            <thead></thead>
+        </table>
+    </div>
+</div>
+<script>
+    function details(element) {
+        $.ajax({
+            url: "/Inventory/getProducts",
+            data: {id: element},
+            dataType: "json",
+            success: function(data){
+                var head = '';
+                head += "<tr>"
+                head += "<th>Product Name</th>"
+                head += "<th>UOM</th>"
+                head += "<th>Price</th>"
+                head += "<th>Average Price </th>"
+                head += "<th>Last Purchase Price</th>"
+                head += "<th>Current Quantity</th>"
+                head += "</tr>"
+                var heading = "Details"
+                $("#heading").html(heading);
+                $("#tblResult thead").html(head);
+                var rows='';
+                var q = 0;
+                $.each(data, function(i, item) {
+                    q += item.qty;
+                    rows += "<tr>"
+                    rows += "<td>" + item.pname + "</td>"
+                    rows += "<td>" + item.uom + "</td>"
+                    rows += "<td>" + item.price + "</td>"
+                    rows += "<td>" + item.average + "</td>"
+                    rows += "<td>" + item.lastprice + "</td>"
+                    rows += "<td>" + item.qty + "</td>"
+                    rows += "</tr>"
+                    $("#tblResult tbody").html(rows);
+                });
+                rows += "<tr>"
+                rows += "<td><b>Total<b></td>"
+                rows += "<td>&nbsp</td>"
+                rows += "<td>&nbsp</td>"
+                rows += "<td>&nbsp</td>"
+                rows += "<td>&nbsp</td>"
+                rows += "<td>" + q + "</td>"
+                rows += "</tr>"
+                $("#tblResult tbody").html(rows);
+            },
+            error: function (err) {
+                alert("Error : " + err.responseText);
+            }
+        });
+    }
+</script>

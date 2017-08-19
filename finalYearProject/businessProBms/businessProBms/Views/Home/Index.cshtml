@@ -1,32 +1,161 @@
 ﻿@{
     ViewBag.Title = "Home Page";
 }
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/modernizr")
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style > #quote-carousel {
+        padding: 0 10px 30px 10px;
+        margin-top: 30px;
+        /* Control buttons  */
+        /* Previous button  */
+        /* Next button  */
+        /* Changes the position of the indicators */
+        /* Changes the color of the indicators */
+    }
 
-<div class="jumbotron">
-    <h1>BUSINESS PRO: BUSINESS MANAGEMENT SYSTEM</h1>
-    <p class="lead">Business PRO: BMS is a free Online Management System
-     for Handling All Of Your Business Related Actities</p>
-    <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
-</div>
+    #quote-carousel .carousel-control {
+        background: none;
+        color: #CACACA;
+        font-size: 2.3em;
+        text-shadow: none;
+        margin-top: 30px;
+    }
 
-@*<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
+        #quote-carousel .carousel-control.left {
+            left: -60px;
+        }
+
+        #quote-carousel .carousel-control.right {
+            right: -60px;
+        }
+
+    #quote-carousel .carousel-indicators {
+        right: 50%;
+        top: auto;
+        bottom: 0px;
+        margin-right: -19px;
+    }
+
+        #quote-carousel .carousel-indicators li {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            cursor: pointer;
+            border: 4px solid #CCC;
+            border-radius: 50px;
+            opacity: 0.4;
+            overflow: hidden;
+            transition: all 0.4s;
+        }
+
+        #quote-carousel .carousel-indicators .active {
+            background: #333333;
+            width: 128px;
+            height: 128px;
+            border-radius: 100px;
+            border-color: #f33;
+            opacity: 1;
+            overflow: hidden;
+        }
+
+    .carousel-inner {
+        min-height: 300px;
+    }
+
+    .item blockquote {
+        border-left: none;
+        margin: 0;
+    }
+
+        .item blockquote p:before {
+            content: "\f10d";
+            font-family: 'Fontawesome';
+            float: left;
+            margin-right: 10px;
+        }
+
+    </style >
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12" data-wow-delay="0.2s">
+                <div class="carousel slide" data-ride="carousel" id="quote-carousel" data-interval="5000" data-pause="hover" data-wrap="true">
+                    <!-- Bottom Carousel Indicators -->
+                    <ol class="carousel-indicators">
+                        <li data-target="#quote-carousel" data-slide-to="0" class="active">
+                            <img class="img-responsive" src="~/images/Siddiq.jpg" alt="" />
+                        </li>
+                        <li data-target="#quote-carousel" data-slide-to="1">
+                            <img class="img-responsive" src="~/images/Siddiq.jpg" alt="" />
+                        </li>
+                        <li data-target="#quote-carousel" data-slide-to="2">
+                            <img class="img-responsive" src="~/images/Siddiq.jpg" alt="" />
+                        </li>
+                    </ol>
+                    <!-- Carousel Slides / Quotes -->
+                    <div class="carousel-inner text-center">
+                        <!-- Quote 1 -->
+                        <div class="item active">
+                            <blockquote>
+                                <div class="row">
+                                    <div class="col-sm-8 col-sm-offset-2">
+                                        <p><strong>Business Pro: Business Management System</strong> can handle all of Your Business Related Activities in an organized way!</p>
+                                        <small>Hafiz Siddiq Umer</small>
+                                    </div>
+                                </div>
+                            </blockquote>
+                        </div>
+                        <!-- Quote 2 -->
+                        <div class="item">
+                            <blockquote>
+                                <div class="row">
+                                    <div class="col-sm-8 col-sm-offset-2">
+                                        <p><strong>Business Pro: Business Management System</strong> can help you managing Inventory, Keep Track of products, Manage Sale and Purchase, Keep Track of Sale and Purchase, Generate Invoices and much more! </p>
+                                        <small>Hafiz Siddiq Umer</small>
+                                    </div>
+                                </div>
+                            </blockquote>
+                        </div>
+                        <!-- Quote 3 -->
+                        <div class="item">
+                            <blockquote>
+                                <div class="row">
+                                    <div class="col-sm-8 col-sm-offset-2">
+                                        <p><strong>Reports</strong> are important part of business. By reports a business man can know exact about his financial conditions, profit, loss, and also he can make decisions! <strong>Business Pro: Business Management System </strong> have a well organized way of reporting. it can genrate Income Statement, Trail Balance, Balance Sheet, Manage Accounts in Ledger, Sale Report Purchase Report etc.</p>
+                                        <small>Hafiz Siddiq Umer</small>
+                                    </div>
+                                </div>
+                            </blockquote>
+                        </div>
+                    </div>
+                    <!-- Carousel Buttons Next/Prev -->
+                    <a data-slide="prev" href="#quote-carousel" class="left carousel-control"><i class="fa fa-chevron-left"></i></a>
+                    <a data-slide="next" href="#quote-carousel" class="right carousel-control"><i class="fa fa-chevron-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-md-3">
+        <h2>Getting Started</h2>
         <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
+            You are here, because you want to Manage Your Business
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+        <p><a class="btn btn-default" href="@Url.Action("Create","Category")">CATEGORY &raquo;</a></p>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+    <div class="col-md-3">
+        <h2>Add Products</h2>
+        <p>You can Add Products for a specific Category </p>
+        <p><a class="btn btn-default" href="@Url.Action("Add", "Product")">PRODUCTS &raquo;</a></p>
     </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    <div class="col-md-3">
+        <h2>Add Vendors</h2>
+        <p>You can easily add New Vendors so that you can deal with them,</p>
+        <p><a class="btn btn-default" href="@Url.Action("Vendors", "Vendor")">VENDORS &raquo;</a></p>
     </div>
-</div>*@
+    <div class="col-md-3">
+        <h2>Add Customers</h2>
+        <p>You can easily add New Customers so that you can deal with them,</p>
+        <p><a class="btn btn-default" href="@Url.Action("Customers", "Customer")">CUSTOMERS &raquo;</a></p>
+    </div>
+</div>

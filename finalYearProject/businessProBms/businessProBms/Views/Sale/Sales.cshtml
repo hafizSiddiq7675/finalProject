@@ -95,6 +95,7 @@
             <tbody></tbody>
         </table>
         <hr />
+        <input type="button" class="btn btn-info disabled" value="Save" id="save" />
         <div style="padding:10px 0; text-align:right">
             <a href="@Url.Action("printSaleInvoice", "Sale", new { id = @Model.sales.saleId })"><input id="submit" type="button" value="Print" class="btn btn-warning disabled" style="padding:10px 20px" /></a>
         </div>
@@ -266,7 +267,7 @@
             else {
                 $('#quantity').siblings('span.error').css('visibility', 'hidden');
             }
-            if ((parseInt($('#quantity').val(), 10) > nq) || (parseInt($('#quantity').val(), 10) < nq)) {
+            if ((parseInt($('#quantity').val(), 10) > nq)) {
                 isAllValid = false;
                 $('#quantity').siblings('span.error').css('visibility', 'visible').text("Available Quantity in Stock is " + nq + " " + uom);
             }
@@ -298,6 +299,7 @@
                     success: function (result) {
                         getSaleDetails($("#sid").val());
                         $("#submit").removeClass('disabled');
+                        $("#save").removeClass('disabled');
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         alert('There is an error ');

@@ -32,7 +32,7 @@
 
                     <div class="form-group">
                         @Html.LabelFor(model => model.discription, new { @class = "control-label" })
-                        @Html.TextBoxFor(model => model.discription, htmlAttributes: new { PlaceHolder = "Enter Discription Here..", @class = "form-control" })
+                        @Html.TextAreaFor(model => model.discription, htmlAttributes: new { PlaceHolder = "Enter Discription Here..", @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.discription)
                     </div>
 
