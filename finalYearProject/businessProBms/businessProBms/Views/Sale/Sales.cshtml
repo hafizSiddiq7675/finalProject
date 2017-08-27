@@ -40,6 +40,7 @@
                         @Html.DropDownListFor(m => m.sales.customerCode, new SelectList(ViewBag.customers, "customerCode", "name"),
             "--Select Customer Here--", new { @class = "form-control", id = "ccode" })
                         @Html.ValidationMessageFor(m => m.sales.customerCode)
+                        <span class="error">Customer Field is Required</span>
                     </td>
                 </tr>
             </table>
@@ -52,8 +53,9 @@
             <div class="form-horizontal">
                 <div class="form-group">
                     <label>Product</label>
-                    @Html.DropDownListFor(m => m.saleDetails.productCode, new SelectList(ViewBag.products, "productCode", "name"),
+                    @Html.DropDownListFor(m => m.productCode, new SelectList(ViewBag.products, "productCode", "name"),
                               "--Select Product Here--", new { @class = "form-control", id = "pcode", onchange="getquantity()" })
+                    <span class="error">Product Field is Required</span>
                 </div>
                 <div class="form-group">
                     <label>Unit Of Measure </label>
@@ -61,20 +63,21 @@
                     <input type="hidden" id="curQuantity" />
                 </div>
                 <div class="form-group">
-                    @Html.LabelFor(m => m.saleDetails.quantity, new { @class="label-control"})
-                    @Html.TextBoxFor(m => m.saleDetails.quantity, new { placeholder = "Enter Quantity Here..", @class = "form-control", id = "quantity" })
-                    @Html.ValidationMessageFor(m=>m.saleDetails.quantity)
+                    <label>Quantity</label>
+                    @Html.TextBoxFor(m => m.quantity, new { placeholder = "Enter Quantity Here..", @class = "form-control", id = "quantity" })
+                    @Html.ValidationMessageFor(m=>m.quantity)
                     <span class="error">Valid Quantity Required</span>
                 </div>
                 <div class="form-group">
-                    @Html.LabelFor(m => m.saleDetails.salePrice, new { @class = "label-control" })
-                    @Html.TextBoxFor(m => m.saleDetails.salePrice, new { placeholder = "Enter Quantity Here..", @class = "form-control", id = "price" })
-                    @Html.ValidationMessageFor(m => m.saleDetails.salePrice)
+                    <label>Sale Price</label>
+                    @Html.TextBoxFor(m => m.salePrice, new { placeholder = "Enter Quantity Here..", @class = "form-control", id = "price" })
+                    @Html.ValidationMessageFor(m => m.salePrice)
                     <span class="error">Valid Price Required</span>
                 </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
-                        <input type="button" value="Save" id="addbtn" class="btn btn-success" aria-hidden="true" />
+                        <input type="button" value="Add" id="add" class="btn btn-success" aria-hidden="true" />
+                        <input type="button" value="Edit" id="Edit" class="btn btn-success hidden" />
                     </div>
                 </div>
             </div>
@@ -87,15 +90,42 @@
                 <tr>
                     <th>Product Code</th>
                     <th>Product Name</th>
+                    <th>UOM</th>
                     <th>Quantity</th>
                     <th>Price(RS)</th>
                     <th>Amount</th>
+                    <th>Action</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="hafiz"></tbody>
+            <tr id="siddiq"></tr>
         </table>
         <hr />
-        <input type="button" class="btn btn-info disabled" value="Save" id="save" />
+        <table class="table table-responsive">
+            <tr>
+                <th>Transaction Type</th>
+                <th>Payment</th>
+                <th>Account</th>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DropDownListFor(m => m.transactionType, new SelectList(new[] { new { Value = "0", Text = "--Select Option--" }, new { Value = "1", Text = "Cash" },
+                   new { Value = "2", Text = "On Account/R" }, }, "Value", "Text", Model),
+                   new { @class = "form-control", id = "type", onchange = "trans()" })
+                    <span class="error">Transaction Field is Required</span>
+            </td>
+            <td>@Html.TextBoxFor(m => m.netPayment, new { @class = "form-control", @readonly = "readonly", id = "payment" })
+                <span class="error">Valid Payment is Required</span>
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.accountno, new SelectList(ViewBag.accounts, "code", "name"),
+                    "--Select Account Here--", new { @class = "form-control", id = "ano" })
+                    <span class="error">Account Field is Required</span>
+                </td>
+        </tr>
+    </table>
+
+        <input type="button" class="btn btn-info" value="Save" id="save" />
         <div style="padding:10px 0; text-align:right">
             <a href="@Url.Action("printSaleInvoice", "Sale", new { id = @Model.sales.saleId })"><input id="submit" type="button" value="Print" class="btn btn-warning disabled" style="padding:10px 20px" /></a>
         </div>
@@ -110,7 +140,7 @@
     <br />
     <br />
     <table class="table table-bordered table-responsive table-striped">
-        <tr>
+        <tr style="background-color:#0094ff; color:white;">
             <th>
                 @Html.DisplayNameFor(model => model.sales.saleId)
             </th>
@@ -119,6 +149,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.sales.customerName)
+            </th>
+            <th>
+                Voucher
             </th>
             <th>Action</th>
         </tr>
@@ -136,7 +169,10 @@
                     @Html.DisplayFor(modelItem => item.customerName)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.saleId }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
+                    @Html.DisplayFor(modelItem => item.saleVoucherNo)
+                </td>
+                <td>
+                    @*@Html.ActionLink("Edit", "Edit", new { id = item.saleId }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |*@
                     <a href="#" onclick="getSaleDetails(@item.saleId)"><span class="glyphicon glyphicon-book"></span>&nbsp; Details</a> |
                     <a href="#" onclick="ConfirmDelete(@item.saleId)"><span class="glyphicon glyphicon-trash"></span>&nbsp; Delete</a> |
                     @Html.ActionLink("Print", "printSaleInvoice", new { id = item.saleId }, htmlAttributes: new { @class = "glyphicon glyphicon-print" })
@@ -189,6 +225,15 @@
     <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
     <script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
     <script>
+        function trans() {
+            var v = $("#type").val();
+            if (v == 1) {
+                $("#payment").removeAttr('readonly');
+            }
+            else {
+                $("#payment").attr('readonly', true);
+            }
+        }
         function getquantity() {
             var id = $("#pcode").val();
             $.ajax({
@@ -256,58 +301,6 @@
                 });
             });
         });
-        $("#addbtn").click(function () {
-            var nq = $("#curQuantity").val();
-            var uom = $("#uom").val();
-            var isAllValid = true;
-            if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
-                isAllValid = false;
-                $('#quantity').siblings('span.error').css('visibility', 'visible').text("Qunatity Can not be Zero");
-            }
-            else {
-                $('#quantity').siblings('span.error').css('visibility', 'hidden');
-            }
-            if ((parseInt($('#quantity').val(), 10) > nq)) {
-                isAllValid = false;
-                $('#quantity').siblings('span.error').css('visibility', 'visible').text("Available Quantity in Stock is " + nq + " " + uom);
-            }
-            else {
-                $('#quantity').siblings('span.error').css('visibility', 'hidden');
-            }
-            if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
-                isAllValid = false;
-                $('#price').siblings('span.error').css('visibility', 'visible').text("Price Must be Greater Than Zero");
-            }
-            else {
-                $('#price').siblings('span.error').css('visibility', 'hidden');
-            }
-            if (isAllValid) {
-                var val = {};
-                val.saleId = $("#sid").val();
-                val.saleDate = $("#sdate").val();
-                val.customerCode = $("#ccode").val();
-                val.customerName = $("#ccode :selected").text();
-                val.productCode = $("#pcode").val();
-                val.productName = $("#pcode :selected").text();
-                val.quantity = parseInt($("#quantity").val(), 10);
-                val.salePrice = parseFloat($("#price").val(), 10);
-                $.ajax({
-                    cache: false,
-                    type: "POST",
-                    url: "/Sale/Sales/",
-                    data: val,
-                    success: function (result) {
-                        getSaleDetails($("#sid").val());
-                        $("#submit").removeClass('disabled');
-                        $("#save").removeClass('disabled');
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        alert('There is an error ');
-                    }
-                });
-
-            }
-        })
         function getSaleDetails(element) {
             $.ajax({
                 url: "/Sale/getSaleDetails",
@@ -320,12 +313,14 @@
                         rows += "<tr class='Search' id='_row(" + item.code + ")'>"
                         rows += "<td>" + item.productCode + "</td>"
                         rows += "<td>" + item.productName + "</td>"
+                        rows += "<td>" + item.unitOfMeasure + "</td>"
                         rows += "<td>" + item.quantity + "</td>"
                         rows += "<td>" + item.salePrice + "</td>"
                         rows += "<td>" + item.amount + "</td>"
-                        rows += "<td><a href='#' onclick='return getPurchaseById(" + item.code + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a> |<a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
+                        rows +="<td>&nbsp</td>"
+                        //rows += "<td><a href='#' onclick='return getPurchaseById(" + item.code + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a> |<a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
                         rows += "</tr>";
-                        $("#listSale tbody").html(rows);
+                        $("#hafiz").html(rows);
                         //Show Model
                     });
                     rows += "<tr>"
@@ -333,14 +328,310 @@
                     rows += "<td>&nbsp;</td>"
                     rows += "<td>&nbsp;</td>"
                     rows += "<td>&nbsp;</td>"
+                    rows += "<td>&nbsp;</td>"
                     rows += "<td>" + data.Total + "</td>"
                     rows += "<td>&nbsp;</td>"
                     rows += "</tr>";
-                    $("#listSale tbody").html(rows);
+                    $("#hafiz").html(rows);
                 },
                 error: function (err) {
                     alert("Error : " + err.responseText);
                 }
             });
         }
+        $('#add').on('click', function(e) {
+            var val= $("#ccode").val();
+            var val2= $("#pcode").val();
+            var nq = $("#curQuantity").val();
+            var uom = $("#uom").val();
+            var isAllValid = true;
+            if(val == '') {
+                isAllValid=false;
+                $('#ccode').siblings('span.error').css('visibility', 'visible');
+            }
+            else {
+                $('#ccode').siblings('span.error').css('visibility', 'hidden');
+            }
+            if(val2 == '') {
+                isAllValid=false;
+                $('#pcode').siblings('span.error').css('visibility', 'visible');
+            }
+            else {
+                $('#pcode').siblings('span.error').css('visibility', 'hidden');
+            }
+            if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+                isAllValid = false;
+                $('#quantity').siblings('span.error').css('visibility', 'visible').text("Qunatity Can not be Zero");
+            }
+            else {
+                if ((parseInt($('#quantity').val(), 10) > nq)) {
+                    isAllValid = false;
+                    $('#quantity').siblings('span.error').css('visibility', 'visible').text("Available Quantity in Stock is " + nq + " " + uom);
+                }
+                else {
+                    $('#quantity').siblings('span.error').css('visibility', 'hidden');
+                }
+            }            
+            if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+                isAllValid = false;
+                $('#price').siblings('span.error').css('visibility', 'visible').text("Price Must be Greater Than Zero");
+            }
+            else {
+                $('#price').siblings('span.error').css('visibility', 'hidden');
+            }
+            if(isAllValid) {
+                var productCode = $("#pcode").val();
+                var productName = $("#pcode :selected").text();
+                var uom = $("#uom").val();
+                var quantity = parseInt($("#quantity").val(), 10);
+                var salePrice = parseFloat($("#price").val(), 10);
+                var tr = $('<tr></tr>');
+                var td = $('<td class="pcode">' + productCode + '</td>').appendTo(tr);
+                var td = $('<td class="pname">' + productName + '</td>').appendTo(tr);
+                var td = $('<td class="uom">' + uom + '</td>').appendTo(tr);
+                var td = $('<td class="quantity">' + quantity + '</td>').appendTo(tr);
+                var td = $('<td class="price">' + salePrice + '</td>').appendTo(tr);
+                var td = $('<td class="amount">' + quantity*salePrice + '</td>').appendTo(tr);
+                var deleteTd = $('<td></td>', {
+                    html: '<button class="edit btn btn-default">Edit</button>&nbsp<button class="dlt btn btn-danger">Delete</button>'
+                }).appendTo(tr);
+                //$('#pcode').val('');
+                //$('#uom').val('');
+                //$('#quantity').val('0');
+                //$('#price').val('0');
+                $('#hafiz').append(tr);
+                var tot = 0;
+                $('#hafiz tr').each(function(i,ele){
+                    tot += (parseInt($('.quantity', this).text()) * parseFloat($('.price', this).text())) 
+                });
+                var tdn = '';
+                tdn += '<td><b>Totals(RS) : </b></td>'
+                tdn += '<td>&nbsp</td>'
+                tdn += '<td>&nbsp</td>'
+                tdn += '<td>&nbsp</td>'
+                tdn += '<td>&nbsp</td>'
+                tdn += '<td class="tot">' + tot + '</td>'
+                tdn += '<td>&nbsp</td>'
+                $('#siddiq').html(tdn);
+            }
+        });
+        $('#listSale').on('click', '.dlt', function(e){
+            var q=$(this).closest('tr').find('td.quantity').text();
+            var p=$(this).closest('tr').find('td.price').text();
+            var amt=p*q;
+            $(this).closest('tr').remove();
+            var pre= $("#siddiq").closest('tr').find('td.tot').text();
+            var tot=0;
+            tot=pre-amt;
+            var tdn = '';
+            tdn += '<td><b>Totals(RS) : </b></td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td class="tot">' + tot + '</td>'
+            tdn += '<td>&nbsp</td>'
+            $('#siddiq').html(tdn);
+        });
+        $('#listSale').on('click', '.edit', function(e){
+            var pc = $(this).closest('tr').find('td.pcode').text();
+            var q = $(this).closest('tr').find('td.quantity').text();
+            var p = $(this).closest('tr').find('td.price').text();
+            var u = $(this).closest('tr').find('td.uom').text();
+            var pre = $("#siddiq").closest('tr').find('td.tot').text();
+            var amt = p*q;
+            var tot = pre-amt;
+            $("#pcode").val(pc);
+            $("#uom").val(u);
+            $("#quantity").val(q);
+            $("#price").val(p);
+            $("#add").hide();
+            $("#Edit").removeClass('hidden').addClass('btn-danger').removeClass('btn-success');
+            $(this).closest('tr').remove();
+            var tdn = '';
+            tdn += '<td><b>Totals(RS) : </b></td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td class="tot">' + tot + '</td>'
+            tdn += '<td>&nbsp</td>'
+            $('#siddiq').html(tdn);
+        });
+        $('#Edit').on('click', function(e){
+            var val= $("#ccode").val();
+            var val2= $("#pcode").val();
+            var nq = $("#curQuantity").val();
+            var uom = $("#uom").val();
+            var isAllValid = true;
+            if(val == '') {
+                isAllValid=false;
+                $('#ccode').siblings('span.error').css('visibility', 'visible');
+            }
+            else {
+                $('#ccode').siblings('span.error').css('visibility', 'hidden');
+            }
+            if(val2 == '') {
+                isAllValid=false;
+                $('#pcode').siblings('span.error').css('visibility', 'visible');
+            }
+            else {
+                $('#pcode').siblings('span.error').css('visibility', 'hidden');
+            }
+            if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+                isAllValid = false;
+                $('#quantity').siblings('span.error').css('visibility', 'visible').text("Qunatity Can not be Zero");
+            }
+            else {
+                if ((parseInt($('#quantity').val(), 10) > nq)) {
+                    isAllValid = false;
+                    $('#quantity').siblings('span.error').css('visibility', 'visible').text("Available Quantity in Stock is " + nq + " " + uom);
+                }
+                else {
+                    $('#quantity').siblings('span.error').css('visibility', 'hidden');
+                }
+            }            
+            if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+                isAllValid = false;
+                $('#price').siblings('span.error').css('visibility', 'visible').text("Price Must be Greater Than Zero");
+            }
+            else {
+                $('#price').siblings('span.error').css('visibility', 'hidden');
+            }
+            if(isAllValid) {
+                var productCode = $("#pcode").val();
+                var productName = $("#pcode :selected").text();
+                var uom=$("#uom").val();
+                var quantity = parseInt($("#quantity").val(), 10);
+                var salePrice = parseFloat($("#price").val(), 10);
+                var tr = $('<tr></tr>');
+                var td = $('<td class="pcode">' + productCode + '</td>').appendTo(tr);
+                var td = $('<td class="pname">' + productName + '</td>').appendTo(tr);
+                var td = $('<td class="uom">' + uom + '</td>').appendTo(tr);
+                var td = $('<td class="quantity">' + quantity + '</td>').appendTo(tr);
+                var td = $('<td class="price">' + salePrice + '</td>').appendTo(tr);
+                var td = $('<td class="amount">' + quantity*salePrice + '</td>').appendTo(tr);
+                var trn = $('<tr></tr>');
+                var deleteTd = $('<td></td>', {
+                    html: '<button class="edit btn btn-default">Edit</button>&nbsp<button class="dlt btn btn-danger">Delete</button>'
+                }).appendTo(tr);
+                //$('#pcode').val('');
+                //$('#uom').val('');
+                //$('#quantity').val('0');
+                //$('#price').val('0');
+                $('#hafiz').append(tr);
+                var tot=0;
+                $('#hafiz tr').each(function(i,ele){
+                    tot+= (parseInt($('.quantity', this).text()) * parseFloat($('.price', this).text())) 
+                });
+                var tdn = '';
+                tdn += '<td><b>Totals(RS) : </b></td>'
+                tdn += '<td>&nbsp</td>'
+                tdn += '<td>&nbsp</td>'
+                tdn += '<td>&nbsp</td>'
+                tdn += '<td>&nbsp</td>'
+                tdn += '<td class="tot">' + tot + '</td>'
+                tdn += '<td>&nbsp</td>'
+                $('#siddiq').html(tdn);
+                $("#Edit").hide();
+                $("#add").show();
+            }
+        });
+        $("#save").click(function () {
+            var val= $("#ccode").val();
+            var val2= $("#pcode").val();
+            var t=$("#type").val();
+            var p=$("#payment").val();
+            var a=$("#ano").val();
+            var isAllValid = true;
+            var isAllValid = true;
+            if(val == '') {
+                isAllValid=false;
+                $('#ccode').siblings('span.error').css('visibility', 'visible');
+            }
+            else {
+                $('#ccode').siblings('span.error').css('visibility', 'hidden');
+            }
+            if(val2 == '') {
+                isAllValid=false;
+                $('#pcode').siblings('span.error').css('visibility', 'visible');
+            }
+            else {
+                $('#pcode').siblings('span.error').css('visibility', 'hidden');
+            }
+            if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+                isAllValid = false;
+                $('#quantity').siblings('span.error').css('visibility', 'visible').text("Qunatity Can not be Zero");
+            }
+            else {
+                $('#quantity').siblings('span.error').css('visibility', 'hidden');
+            }            
+            if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+                isAllValid = false;
+                $('#price').siblings('span.error').css('visibility', 'visible').text("Price Must be Greater Than Zero");
+            }
+            else {
+                $('#price').siblings('span.error').css('visibility', 'hidden');
+            }
+            if(t == 0) {
+                isAllValid=false;
+                $('#type').siblings('span.error').css('visibility', 'visible');
+            }
+            else {
+                $('#type').siblings('span.error').css('visibility', 'hidden');
+                if(t==1) {
+                    if(p<=0) {
+                        isAllValid=false;
+                        $('#payment').siblings('span.error').css('visibility', 'visible').text('Payment Must be greater than 0');
+                    }
+                    else {
+                        $('#payment').siblings('span.error').css('visibility', 'hidden');
+                    }
+                    if(a == '') {
+                        isAllValid=false;
+                        $('#ano').siblings('span.error').css('visibility', 'visible');
+                    }
+                    else {
+                        $('#ano').siblings('span.error').css('visibility', 'hidden');
+                    }
+                }
+            }
+            if(isAllValid) {
+                var list = [];
+                $('#hafiz tr').each(function(i,ele) {
+                    var item = { 
+                        productCode: $('.pcode', this).text(),
+                        productName: $('.pname', this).text(),
+                        unitOfMeasure: $('.uom', this).text(),
+                        quantity: $('.quantity', this).text(),
+                        salePrice: $('.price', this).text(),
+                        amount: $('.amount', this).text()
+                    }
+                    list.push(item);
+                });
+                var data = {
+                    saleId: $("#sid").val(),
+                    saleDate: $("#sdate").val(),
+                    customerCode: $("#ccode").val(),
+                    customerName: $("#ccode :selected").text(),
+                    transactionType: $("#type").val(),
+                    netPayment: $("#payment").val(),
+                    accountno: $("#ano").val(),
+                    saleDetails: list
+                }
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "/Sale/voucher/",
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function (result) {
+                        window.location="/Sale/Sales";
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert('There is an error ');
+                    }
+                });
+            }
+        })
  </script>

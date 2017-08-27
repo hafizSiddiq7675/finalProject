@@ -78,7 +78,10 @@ namespace businessProBms.Controllers
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-
+        public ActionResult Learnmore()
+        {
+            return View();
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

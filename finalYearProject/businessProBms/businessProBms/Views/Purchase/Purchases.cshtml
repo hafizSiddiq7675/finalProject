@@ -1,9 +1,18 @@
 ﻿@using businessProBms.Models
+@using System.Web.UI.WebControls
 @model purchaseViewModel
 @{
     ViewBag.Title = "Purchase";
 }
 <link href="~/Content/Site.css" rel="stylesheet" />
+<style>
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+</style>
 <h2>Purchases</h2>
 <hr />
 <div class="well well-sm"><b>Purchase Order</b></div>
@@ -30,6 +39,7 @@
                     <td>
                         @Html.DropDownListFor(m => m.purchases.vendorCode, new SelectList(ViewBag.vendors, "vendorCode", "name"),
             "--Select Vendor Here--", new { @class = "form-control", id = "vcode" })
+                        <span class="error">Vendor Field is Required</span>
                         @Html.ValidationMessageFor(m => m.purchases.vendorCode)
                     </td>
                 </tr>
@@ -43,8 +53,9 @@
             <div class="form-horizontal">
                 <div class="form-group">
                     <label>Product</label>
-                    @Html.DropDownListFor(m => m.purchaseDetails.productCode, new SelectList(ViewBag.products, "productCode", "name"),
-                     "--Select Product Here--", new { @class = "form-control", id = "pcode", onchange = "getquantity()" })
+                    @Html.DropDownListFor(m => m.productCode, new SelectList(ViewBag.products, "productCode", "name"),
+                    "--Select Product Here--" ,new { @class = "form-control", id = "pcode", onchange = "getquantity()" })
+                    <span class="error">Product Field is Required</span>
                 </div>
                 <div class="form-group">
                     <label>Unit Of Measure </label>
@@ -52,20 +63,21 @@
                     <input type="hidden" id="curQuantity" />
                 </div>
                 <div class="form-group">
-                    @Html.LabelFor(m => m.purchaseDetails.quantity, new { @class = "label-control" })
-                    @Html.TextBoxFor(m => m.purchaseDetails.quantity, new { placeholder = "Enter Quantity Here..", @class = "form-control", id = "quantity" })
-                    @Html.ValidationMessageFor(m => m.purchaseDetails.quantity)
+                    @Html.LabelFor(m => m.quantity, new { @class = "label-control" })
+                    @Html.TextBoxFor(m => m.quantity, new { placeholder = "Enter Quantity Here..", @class = "form-control", id = "quantity" })
+                    @Html.ValidationMessageFor(m => m.quantity)
                     <span class="error">Valid Quantity Required</span>
                 </div>
                 <div class="form-group">
-                    @Html.LabelFor(m => m.purchaseDetails.purchasePrice, new { @class = "label-control" })
-                    @Html.TextBoxFor(m => m.purchaseDetails.purchasePrice, new { placeholder = "Enter Price Here..", @class = "form-control", id = "price" })
-                    @Html.ValidationMessageFor(m => m.purchaseDetails.purchasePrice)
+                    @Html.LabelFor(m => m.purchasePrice, new { @class = "label-control" })
+                    @Html.TextBoxFor(m => m.purchasePrice, new { placeholder = "Enter Price Here..", @class = "form-control", id = "price" })
+                    @Html.ValidationMessageFor(m => m.purchasePrice)
                     <span class="error">Valid Price Required</span>
                 </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
-                        <input type="button" value="Save" id="addbtn" class="btn btn-success" aria-hidden="true" />
+                        <input type="button" value="Add" id="add" class="btn btn-success" aria-hidden="true" />
+                        <input type="button" value="Edit" id="Edit" class="btn btn-success hidden"/>
                     </div>
                 </div>
             </div>
@@ -78,16 +90,40 @@
                 <tr>
                     <th>Product Code</th>
                     <th>Product Name</th>
+                    <th>UOM</th>
                     <th>Quantity</th>
                     <th>Price(RS)</th>
                     <th>Amount</th>
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="hafiz">
+            </tbody>
+            <tr id="siddiq"></tr>
         </table>
         <hr />
-        <input type="button" class="btn btn-info disabled" value="Save" id="save" />
+        <table class="table table-responsive">
+            <tr>
+                <th>Transaction Type</th>
+                <th>Payment</th>
+                <th>Account</th>
+            </tr>
+            <tr>
+                <td>@Html.DropDownListFor(m => m.transactionType, new SelectList(new[] { new { Value = "0", Text = "--Select Option--" }, new { Value = "1", Text = "Cash" }, 
+                   new { Value = "2", Text = "On Account/P" }, }, "Value", "Text", Model), 
+                   new { @class = "form-control", id = "type", onchange = "trans()" })
+                    <span class="error">Transaction Field is Required</span></td>
+                <td>@Html.TextBoxFor(m => m.netPayment, new { @class = "form-control", @readonly = "readonly", id = "payment" })
+                    <span class="error">Valid Payment is Required</span>
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.accountno, new SelectList(ViewBag.accounts, "code", "name"),
+                    "--Select Account Here--", new { @class = "form-control", id = "ano" })
+                    <span class="error">Account Field is Required</span>
+                 </td>
+            </tr>
+        </table>
+        <input type="button" class="btn btn-info" value="Save" id="save" />
         <div style="padding:10px 0; text-align:right">
             <a href="@Url.Action("printPurchaseInvoice", "Purchase", new { id = @Model.purchases.purchaseId })"><input id="submit" type="button" value="Print" class="btn btn-warning disabled" style="padding:10px 20px" /></a>
         </div>
@@ -102,7 +138,7 @@
     <br />
     <br />
     <table class="table table-bordered table-responsive table-striped">
-        <tr>
+        <tr style="background-color:#0094ff; color:white;">
             <th>
                 @Html.DisplayNameFor(model => model.purchases.purchaseId)
             </th>
@@ -111,6 +147,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.purchases.vendorName)
+            </th>
+            <th>
+                Voucher
             </th>
             <th>Action</th>
         </tr>
@@ -128,7 +167,10 @@
                     @Html.DisplayFor(modelItem => item.vendorName)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.purchaseId }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
+                    @Html.DisplayFor(modelItem=>item.purVoucherNo)
+                </td>
+                <td>
+                    @*@Html.ActionLink("Edit", "Edit", new { id = item.purchaseId }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |*@
                     <a href="#" onclick="getPurchaseDetails(@item.purchaseId)"><span class="glyphicon glyphicon-book"></span>&nbsp; Details</a> |
                     <a href="#" onclick="ConfirmDelete(@item.purchaseId)"><span class="glyphicon glyphicon-trash"></span>&nbsp; Delete</a> |
                     @Html.ActionLink("Print", "printPurchaseInvoice", new { id = item.purchaseId }, htmlAttributes: new { @class = "glyphicon glyphicon-print" })
@@ -180,15 +222,16 @@
 <script src='@Url.Content("~/Scripts/jquery.validate.js")'></script>
 <script src='@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")'></script>
 <script src="~/Scriptsi/jquery-1.10.2.min.js"></script>
-<style>
-    span.error {
-        display: block;
-        visibility: hidden;
-        color: red;
-        font-size: 90%;
-    }
-</style>
 <script>
+    function trans() {
+        var v=$("#type").val();
+        if (v==1) {
+            $("#payment").removeAttr('readonly');
+        }
+        else {
+            $("#payment").attr('readonly', true);
+        }
+    }
     function getquantity() {
         var id = $("#pcode").val();
         $.ajax({
@@ -256,50 +299,6 @@
             });
         });
     });
-    $("#addbtn").click(function () {
-        var isAllValid = true;
-        if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
-            isAllValid = false;
-            $('#quantity').siblings('span.error').css('visibility', 'visible');
-        }
-        else {
-            $('#quantity').siblings('span.error').css('visibility', 'hidden');
-        }
-
-        if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
-            isAllValid = false;
-            $('#price').siblings('span.error').css('visibility', 'visible');
-        }
-        else {
-            $('#price').siblings('span.error').css('visibility', 'hidden');
-        }
-        if (isAllValid) {
-            var val = {};
-            val.purchaseId = $("#pid").val();
-            val.purchaseDate = $("#pdate").val();
-            val.vendorCode = $("#vcode").val();
-            val.vendorName = $("#vcode :selected").text();
-            val.productCode = $("#pcode").val();
-            val.productName = $("#pcode :selected").text();
-            val.quantity = parseInt($("#quantity").val(), 10);
-            val.purchasePrice = parseFloat($("#price").val(), 10);
-            $.ajax({
-                cache: false,
-                type: "POST",
-                url: "/Purchase/Purchases/",
-                data: val,
-                success: function (result) {
-                    getPurchaseDetails($("#pid").val());
-                    $("#submit").removeClass('disabled');
-                    $("#save").removeClass('disabled');
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert('There is an error ');
-                }
-            });
-
-        }
-    })
     function getPurchaseDetails(element) {
         $.ajax({
             url: "/Purchase/getPurchaseDetails",
@@ -312,12 +311,14 @@
                     rows += "<tr class='Search' id='_row(" + item.code + ")'>"
                     rows += "<td>" + item.productCode + "</td>"
                     rows += "<td>" + item.productName + "</td>"
+                    rows += "<td>" +item.unitOfMeasure + "</td>"
                     rows += "<td>" + item.quantity + "</td>"
                     rows += "<td>" + item.purchasePrice + "</td>"
                     rows += "<td>" + item.amount + "</td>"
-                    rows += "<td><a href='#' onclick='return getPurchaseById(" + item.code + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a> |<a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
+                    rows +="<td>&nbsp</td>"
+                    //rows += "<td><a href='#' onclick='return getPurchaseById(" + item.code + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a> |<a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
                     rows += "</tr>";
-                    $("#listPurchase tbody").html(rows);
+                    $("#hafiz").html(rows);
                     //Show Model
                 });
                 rows += "<tr>"
@@ -325,14 +326,294 @@
                 rows += "<td>&nbsp;</td>"
                 rows += "<td>&nbsp;</td>"
                 rows += "<td>&nbsp;</td>"
+                rows += "<td>&nbsp;</td>"
                 rows += "<td>" + data.Total + "</td>"
                 rows += "<td>&nbsp;</td>"
+                rows += "<td>&nbsp;</td>"
                 rows += "</tr>";
-                $("#listPurchase tbody").html(rows);
+                $("#hafiz").html(rows);
             },
             eror: function (err) {
                 alert("Error : " + err.responseText);
             }
         });
     }
+    $("#save").click(function () {
+        var val= $("#vcode").val();
+        var val2= $("#pcode").val();
+        var t=$("#type").val();
+        var p=$("#payment").val();
+        var a=$("#ano").val();
+        var isAllValid = true;
+        if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+            isAllValid = false;
+            $('#quantity').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#quantity').siblings('span.error').css('visibility', 'hidden');
+        }
+        if(val == '') {
+            isAllValid=false;
+            $('#vcode').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#vcode').siblings('span.error').css('visibility', 'hidden');
+        }
+        if(val2 == '') {
+            isAllValid=false;
+            $('#pcode').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#pcode').siblings('span.error').css('visibility', 'hidden');
+        }
+        if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+            isAllValid = false;
+            $('#price').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#price').siblings('span.error').css('visibility', 'hidden');
+        }
+        if(t == 0) {
+            isAllValid=false;
+            $('#type').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#type').siblings('span.error').css('visibility', 'hidden');
+            if(t==1) {
+                if(p<=0) {
+                    isAllValid=false;
+                    $('#payment').siblings('span.error').css('visibility', 'visible').text('Payment Must be greater than 0');
+                }
+                else {
+                    $('#payment').siblings('span.error').css('visibility', 'hidden');
+                }
+                if(a == '') {
+                    isAllValid=false;
+                    $('#ano').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#ano').siblings('span.error').css('visibility', 'hidden');
+                }
+            }
+        }
+        if(isAllValid) {
+                var list = [];
+                $('#hafiz tr').each(function(i,ele) {
+                    var item = { 
+                        productCode: $('.pcode', this).text(),
+                        productName: $('.pname', this).text(),
+                        unitOfMeasure: $('.uom', this).text(),
+                        quantity: $('.quantity', this).text(),
+                        purchasePrice: $('.price', this).text(),
+                        amount: $('.amount', this).text()
+                    }
+                    list.push(item);
+                });
+                var data = {
+                    purchaseId: $("#pid").val(),
+                    purchaseDate: $("#pdate").val(),
+                    vendorCode: $("#vcode").val(),
+                    vendorName: $("#vcode :selected").text(),
+                    transactionType: $("#type").val(),
+                    netPayment: $("#payment").val(),
+                    accountno: $("#ano").val(),
+                    purchaseDetails: list
+                }
+                $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "/Purchase/voucher/",
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function (result) {
+                        window.location="/Purchase/Purchases";
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert('There is an error ');
+                    }
+                });
+            }
+    })
+    $('#add').on('click', function(e) {
+        var val= $("#vcode").val();
+        var val2= $("#pcode").val();
+        var isAllValid = true;
+        if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+            isAllValid = false;
+            $('#quantity').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#quantity').siblings('span.error').css('visibility', 'hidden');
+        }
+        if(val == '') {
+            isAllValid=false;
+            $('#vcode').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#vcode').siblings('span.error').css('visibility', 'hidden');
+        }
+        if(val2 == '') {
+            isAllValid=false;
+            $('#pcode').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#pcode').siblings('span.error').css('visibility', 'hidden');
+        }
+        if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+            isAllValid = false;
+            $('#price').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#price').siblings('span.error').css('visibility', 'hidden');
+        }
+        if(isAllValid) {
+            var productCode = $("#pcode").val();
+            var productName = $("#pcode :selected").text();
+            var uom = $("#uom").val();
+            var quantity = parseInt($("#quantity").val(), 10);
+            var purchasePrice = parseFloat($("#price").val(), 10);
+            var tr = $('<tr></tr>');
+            var td = $('<td class="pcode">' + productCode + '</td>').appendTo(tr);
+            var td = $('<td class="pname">' + productName + '</td>').appendTo(tr);
+            var td = $('<td class="uom">' + uom + '</td>').appendTo(tr);
+            var td = $('<td class="quantity">' + quantity + '</td>').appendTo(tr);
+            var td = $('<td class="price">' + purchasePrice + '</td>').appendTo(tr);
+            var td = $('<td class="amount">' + quantity*purchasePrice + '</td>').appendTo(tr);
+            var deleteTd = $('<td></td>', {
+                html: '<button class="edit btn btn-default">Edit</button>&nbsp<button class="dlt btn btn-danger">Delete</button>'
+            }).appendTo(tr);
+            //$('#pcode').val('');
+            //$('#uom').val('');
+            //$('#quantity').val('0');
+            //$('#price').val('0');
+            $('#hafiz').append(tr);
+            var tot = 0;
+            $('#hafiz tr').each(function(i,ele){
+                tot+= (parseInt($('.quantity', this).text()) * parseFloat($('.price', this).text())) 
+            });
+            var tdn = '';
+             tdn += '<td><b>Totals(RS) : </b></td>'
+             tdn += '<td>&nbsp</td>'
+             tdn += '<td>&nbsp</td>'
+             tdn += '<td>&nbsp</td>'
+             tdn += '<td>&nbsp</td>'
+             tdn += '<td class="tot">' + tot + '</td>'
+             tdn += '<td>&nbsp</td>'
+            $('#siddiq').html(tdn);
+        }
+    });
+    $('#listPurchase').on('click', '.dlt', function(e){
+        var q=$(this).closest('tr').find('td.quantity').text();
+        var p=$(this).closest('tr').find('td.price').text();
+        var amt=p*q;
+        $(this).closest('tr').remove();
+        var pre= $("#siddiq").closest('tr').find('td.tot').text();
+        var tot=0;
+        tot=pre-amt;
+        var tdn = '';
+        tdn += '<td><b>Totals(RS) : </b></td>'
+        tdn += '<td>&nbsp</td>'
+        tdn += '<td>&nbsp</td>'
+        tdn += '<td>&nbsp</td>'
+        tdn += '<td>&nbsp</td>'
+        tdn += '<td class="tot">' + tot + '</td>'
+        tdn += '<td>&nbsp</td>'
+        $('#siddiq').html(tdn);
+    });
+    $('#listPurchase').on('click', '.edit', function(e){
+        var pc = $(this).closest('tr').find('td.pcode').text();
+        var q = $(this).closest('tr').find('td.quantity').text();
+        var p = $(this).closest('tr').find('td.price').text();
+        var u = $(this).closest('tr').find('td.uom').text();
+        var pre = $("#siddiq").closest('tr').find('td.tot').text();
+        var amt = p*q;
+        var tot = pre-amt;
+        $("#pcode").val(pc);
+        $("#uom").val(u);
+        $("#quantity").val(q);
+        $("#price").val(p);
+        $("#add").hide();
+        $("#Edit").removeClass('hidden').addClass('btn-danger').removeClass('btn-success');
+        $(this).closest('tr').remove();
+        var tdn = '';
+        tdn += '<td><b>Totals(RS) : </b></td>'
+        tdn += '<td>&nbsp</td>'
+        tdn += '<td>&nbsp</td>'
+        tdn += '<td>&nbsp</td>'
+        tdn += '<td>&nbsp</td>'
+        tdn += '<td class="tot">' + tot + '</td>'
+        tdn += '<td>&nbsp</td>'
+        $('#siddiq').html(tdn);
+    });
+    $('#Edit').on('click', function(e) {
+        var val= $("#vcode").val();
+        var val2= $("#pcode").val();
+        var isAllValid = true;
+        if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val(), 10) || 0))) {
+            isAllValid = false;
+            $('#quantity').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#quantity').siblings('span.error').css('visibility', 'hidden');
+        }
+        if(val == '') {
+            isAllValid=false;
+            $('#vcode').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#vcode').siblings('span.error').css('visibility', 'hidden');
+        }
+        if(val2 == '') {
+            isAllValid=false;
+            $('#pcode').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#pcode').siblings('span.error').css('visibility', 'hidden');
+        }
+        if (!($('#price').val().trim() != '' && (parseFloat($('#price').val(), 10) || 0) && !isNaN($('#price').val().trim()))) {
+            isAllValid = false;
+            $('#price').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#price').siblings('span.error').css('visibility', 'hidden');
+        }
+        if(isAllValid) {
+            var productCode = $("#pcode").val();
+            var productName = $("#pcode :selected").text();
+            var uom=$("#uom").val();
+            var quantity = parseInt($("#quantity").val(), 10);
+            var purchasePrice = parseFloat($("#price").val(), 10);
+            var tr = $('<tr></tr>');
+            var td = $('<td class="pcode">' + productCode + '</td>').appendTo(tr);
+            var td = $('<td class="pname">' + productName + '</td>').appendTo(tr);
+            var td = $('<td class="uom">' + uom + '</td>').appendTo(tr);
+            var td = $('<td class="quantity">' + quantity + '</td>').appendTo(tr);
+            var td = $('<td class="price">' + purchasePrice + '</td>').appendTo(tr);
+            var td = $('<td class="amount">' + quantity*purchasePrice + '</td>').appendTo(tr);
+            var trn = $('<tr></tr>');
+            var deleteTd = $('<td></td>', {
+                html: '<button class="edit btn btn-default">Edit</button>&nbsp<button class="dlt btn btn-danger">Delete</button>'
+            }).appendTo(tr);
+            //$('#pcode').val('');
+            //$('#uom').val('');
+            //$('#quantity').val('0');
+            //$('#price').val('0');
+            $('#hafiz').append(tr);
+            var tot=0;
+            $('#hafiz tr').each(function(i,ele){
+                tot+= (parseInt($('.quantity', this).text()) * parseFloat($('.price', this).text())) 
+            });
+            var tdn = '';
+            tdn += '<td><b>Totals(RS) : </b></td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td>&nbsp</td>'
+            tdn += '<td class="tot">' + tot + '</td>'
+            tdn += '<td>&nbsp</td>'
+            $('#siddiq').html(tdn);
+            $("#Edit").hide();
+            $("#add").show();
+        }
+    });
 </script>

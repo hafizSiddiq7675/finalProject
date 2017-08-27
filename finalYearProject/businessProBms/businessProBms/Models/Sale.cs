@@ -23,6 +23,7 @@ namespace businessProBms.Models
         public System.DateTime saleDate { get; set; }
         public int customerCode { get; set; }
         public string customerName { get; set; }
+        public int saleVoucherNo { get; set; }
     
         public virtual ICollection<SaleDetail> SaleDetails { get; set; }
     }

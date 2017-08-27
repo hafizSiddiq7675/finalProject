@@ -440,6 +440,7 @@
     <Content Include="Views\ExpenseVoucher\saleReport.cshtml" />
     <Content Include="Views\ExpenseVoucher\purchaseReport.cshtml" />
     <Content Include="Views\Inventory\Inventory.cshtml" />
+    <Content Include="Views\Category\Learnmore.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

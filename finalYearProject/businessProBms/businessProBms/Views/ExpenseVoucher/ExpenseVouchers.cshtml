@@ -91,7 +91,7 @@
     <br />
     <br />
     <table class="table table-bordered table-striped table-responsive">
-        <tr>
+        <tr style="color:white; background-color:#0094ff">
             <th>
                 @Html.DisplayNameFor(m => m.voucher.voucherNo)
             </th>
@@ -112,7 +112,7 @@
                     @Html.DisplayFor(m => item.voucherDate)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.voucherNo }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |
+                    @*@Html.ActionLink("Edit", "Edit", new { id = item.voucherNo }, htmlAttributes: new { @class = "glyphicon glyphicon-pencil" }) |*@
                     @*@Html.ActionLink("Details", null, new { id = item.voucherNo }, htmlAttributes: new { @class = "glyphicon glyphicon-book", onclick ="getDetails(@item.voucherNo)" })*@
                     <a href="#" onclick="getDetails(@item.voucherNo)"><span class="glyphicon glyphicon-book"></span>&nbsp; Details</a> |
                     <a href="#" onclick="ConfirmDelete(@item.voucherNo)"><span class="glyphicon glyphicon-trash"></span>&nbsp; Delete</a> |
@@ -282,7 +282,7 @@
                     rows += "<td>" + item.description + "</td>"
                     rows += "<td>" + item.debit + "</td>"
                     rows += "<td>" + item.credit + "</td>"
-                    rows += "<td><a href='#' onclick='return getPurchaseById(" + item.code + ")'><span class='glyphicon glyphicon-pencil'></span>Edit</a> |<a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
+                    rows += "<td><a href='#' onclick='return ConfirmDeleteDetail(" + item.code + ")'><span class='glyphicon glyphicon-trash'></span>Delete</a></td>"
                     rows += "</tr>";
                     $("#listExpenses tbody").html(rows);
                 });

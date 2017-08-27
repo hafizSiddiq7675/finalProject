@@ -1,56 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
   <EntityContainerMapping StorageEntityContainer="businessProBmsModelStoreContainer" CdmEntityContainer="businessProBmsEntities">
-    <EntitySetMapping Name="Purchases">
-      <EntityTypeMapping TypeName="businessProBmsModel.Purchase">
-        <MappingFragment StoreEntitySet="Purchase">
-          <ScalarProperty Name="vendorName" ColumnName="vendorName" />
-          <ScalarProperty Name="vendorCode" ColumnName="vendorCode" />
-          <ScalarProperty Name="purchaseDate" ColumnName="purchaseDate" />
-          <ScalarProperty Name="purchaseId" ColumnName="purchaseId" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="PurchaseDetails">
-      <EntityTypeMapping TypeName="businessProBmsModel.PurchaseDetail">
-        <MappingFragment StoreEntitySet="PurchaseDetail">
-          <ScalarProperty Name="amount" ColumnName="amount" />
-          <ScalarProperty Name="purchasePrice" ColumnName="purchasePrice" />
-          <ScalarProperty Name="quantity" ColumnName="quantity" />
-          <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />
-          <ScalarProperty Name="productName" ColumnName="productName" />
-          <ScalarProperty Name="productCode" ColumnName="productCode" />
-          <ScalarProperty Name="serialNo" ColumnName="serialNo" />
-          <ScalarProperty Name="purchaseDetailsId" ColumnName="purchaseDetailsId" />
-          <ScalarProperty Name="code" ColumnName="code" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="Sales">
-      <EntityTypeMapping TypeName="businessProBmsModel.Sale">
-        <MappingFragment StoreEntitySet="Sale">
-          <ScalarProperty Name="customerName" ColumnName="customerName" />
-          <ScalarProperty Name="customerCode" ColumnName="customerCode" />
-          <ScalarProperty Name="saleDate" ColumnName="saleDate" />
-          <ScalarProperty Name="saleId" ColumnName="saleId" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="SaleDetails">
-      <EntityTypeMapping TypeName="businessProBmsModel.SaleDetail">
-        <MappingFragment StoreEntitySet="SaleDetail">
-          <ScalarProperty Name="amount" ColumnName="amount" />
-          <ScalarProperty Name="salePrice" ColumnName="salePrice" />
-          <ScalarProperty Name="quantity" ColumnName="quantity" />
-          <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />
-          <ScalarProperty Name="productName" ColumnName="productName" />
-          <ScalarProperty Name="productCode" ColumnName="productCode" />
-          <ScalarProperty Name="serialNo" ColumnName="serialNo" />
-          <ScalarProperty Name="saleDetailsId" ColumnName="saleDetailsId" />
-          <ScalarProperty Name="code" ColumnName="code" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="Vouchers">
       <EntityTypeMapping TypeName="businessProBmsModel.Voucher">
         <MappingFragment StoreEntitySet="Voucher">
@@ -144,6 +94,58 @@
           <ScalarProperty Name="description" ColumnName="description" />
           <ScalarProperty Name="name" ColumnName="name" />
           <ScalarProperty Name="accountType" ColumnName="accountType" />
+          <ScalarProperty Name="code" ColumnName="code" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Purchases">
+      <EntityTypeMapping TypeName="businessProBmsModel.Purchase">
+        <MappingFragment StoreEntitySet="Purchase">
+          <ScalarProperty Name="purVoucherNo" ColumnName="purVoucherNo" />
+          <ScalarProperty Name="vendorName" ColumnName="vendorName" />
+          <ScalarProperty Name="vendorCode" ColumnName="vendorCode" />
+          <ScalarProperty Name="purchaseDate" ColumnName="purchaseDate" />
+          <ScalarProperty Name="purchaseId" ColumnName="purchaseId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PurchaseDetails">
+      <EntityTypeMapping TypeName="businessProBmsModel.PurchaseDetail">
+        <MappingFragment StoreEntitySet="PurchaseDetail">
+          <ScalarProperty Name="amount" ColumnName="amount" />
+          <ScalarProperty Name="purchasePrice" ColumnName="purchasePrice" />
+          <ScalarProperty Name="quantity" ColumnName="quantity" />
+          <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />
+          <ScalarProperty Name="productName" ColumnName="productName" />
+          <ScalarProperty Name="productCode" ColumnName="productCode" />
+          <ScalarProperty Name="serialNo" ColumnName="serialNo" />
+          <ScalarProperty Name="purchaseDetailsId" ColumnName="purchaseDetailsId" />
+          <ScalarProperty Name="code" ColumnName="code" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sales">
+      <EntityTypeMapping TypeName="businessProBmsModel.Sale">
+        <MappingFragment StoreEntitySet="Sale">
+          <ScalarProperty Name="saleVoucherNo" ColumnName="saleVoucherNo" />
+          <ScalarProperty Name="customerName" ColumnName="customerName" />
+          <ScalarProperty Name="customerCode" ColumnName="customerCode" />
+          <ScalarProperty Name="saleDate" ColumnName="saleDate" />
+          <ScalarProperty Name="saleId" ColumnName="saleId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SaleDetails">
+      <EntityTypeMapping TypeName="businessProBmsModel.SaleDetail">
+        <MappingFragment StoreEntitySet="SaleDetail">
+          <ScalarProperty Name="amount" ColumnName="amount" />
+          <ScalarProperty Name="salePrice" ColumnName="salePrice" />
+          <ScalarProperty Name="quantity" ColumnName="quantity" />
+          <ScalarProperty Name="unitOfMeasure" ColumnName="unitOfMeasure" />
+          <ScalarProperty Name="productName" ColumnName="productName" />
+          <ScalarProperty Name="productCode" ColumnName="productCode" />
+          <ScalarProperty Name="serialNo" ColumnName="serialNo" />
+          <ScalarProperty Name="saleDetailsId" ColumnName="saleDetailsId" />
           <ScalarProperty Name="code" ColumnName="code" />
         </MappingFragment>
       </EntityTypeMapping>

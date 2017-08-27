@@ -33,7 +33,7 @@ namespace businessProBms.Controllers
                     ex.code = maxCode == null ? 1 : (maxCode.code) + 1;
                     ex.accountType = "Liability";
                     ex.description = "Vendors Accounts";
-                    ex.name = vendor.name;
+                    ex.name = vendor.name + " Payables";
                     ex.parentCode = 5;
                     ex.isGroup = false;
                     ex.isActive = true;

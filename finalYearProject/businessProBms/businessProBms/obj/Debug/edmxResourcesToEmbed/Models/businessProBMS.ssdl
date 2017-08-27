@@ -56,6 +56,7 @@
     <Property Name="purchaseDate" Type="date" Nullable="false" />
     <Property Name="vendorCode" Type="int" Nullable="false" />
     <Property Name="vendorName" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="purVoucherNo" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="PurchaseDetail">
     <Key>
@@ -79,6 +80,7 @@
     <Property Name="saleDate" Type="date" Nullable="false" />
     <Property Name="customerCode" Type="int" Nullable="false" />
     <Property Name="customerName" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="saleVoucherNo" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="SaleDetail">
     <Key>

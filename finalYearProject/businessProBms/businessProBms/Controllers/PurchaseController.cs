@@ -16,121 +16,13 @@ namespace businessProBms.Controllers
             ViewBag.vendors = db.Vendors.ToList();
             ViewBag.products = db.Products.ToList();
             ViewBag.purchases = db.Purchases.ToList();
+            ViewBag.accounts = db.ExpenseAccounts.Where(r => r.isGroup == false && r.isActive == true && r.accountType == "Assets" && r.name == "Cash").ToList();
             purchaseViewModel pvm = new purchaseViewModel();
             pvm.purchases = new Purchase();
-            pvm.purchaseDetails = new PurchaseDetail();
             var maxId = db.Purchases.ToList().OrderByDescending(r => r.purchaseId).FirstOrDefault();
             pvm.purchases.purchaseId = maxId == null ? 1 : (maxId.purchaseId) + 1;
             pvm.purchases.purchaseDate = DateTime.Now.Date;
             return View(pvm);
-        }
-        [HttpPost]
-        public JsonResult Purchases(purchaseViewModel pu)
-        {
-            bool result = false;
-            if (pu != null)
-            {
-                int count = db.Purchases.Count(r => r.purchaseId == pu.purchaseId);
-                if (count == 0)
-                {
-                    Purchase purchase = new Purchase();
-                    purchase.purchaseId = pu.purchaseId;
-                    purchase.purchaseDate = pu.purchaseDate;
-                    purchase.vendorCode = pu.vendorCode;
-                    purchase.vendorName = pu.vendorName;
-                    db.Purchases.Add(purchase);
-                    db.SaveChanges();
-                    Voucher v = new Voucher();
-                    var max = db.Vouchers.ToList().OrderByDescending(r => r.voucherNo).FirstOrDefault();
-                    v.voucherNo = max == null ? 1 : (max.voucherNo) + 1;
-                    v.voucherDate = pu.purchaseDate;
-                    v.voucherType = 10;
-                    db.Vouchers.Add(v);
-                    db.SaveChanges();
-                    PurchaseDetail purchasedetail = new PurchaseDetail();
-                    purchasedetail.serialNo = db.Purchases.Sum(r => r.purchaseId).ToString();
-                    Product uom = db.Products.Single(s => s.productCode == pu.productCode);
-                    if (uom != null)
-                    {
-                        purchasedetail.unitOfMeasure = uom.UOM;
-                        uom.currentQuantity += pu.quantity;
-                        uom.lastPurchasePrice = pu.purchasePrice;
-                    }
-                    purchasedetail.purchaseDetailsId = pu.purchaseId;
-                    purchasedetail.productCode = pu.productCode;
-                    purchasedetail.productName = pu.productName;
-                    purchasedetail.quantity = pu.quantity;
-                    purchasedetail.purchasePrice = pu.purchasePrice;
-                    purchasedetail.amount = pu.purchasePrice * pu.quantity;
-                    db.PurchaseDetails.Add(purchasedetail);
-                    db.SaveChanges();
-                    VoucherBody vbc = new VoucherBody();
-                    var ven = db.Vendors.SingleOrDefault(r => r.vendorCode == pu.vendorCode);
-                    vbc.accountNo = ven.chartOfAccCode;
-                    vbc.accountName = ven.name;
-                    vbc.credit = pu.quantity * pu.purchasePrice;
-                    vbc.debit = 0;
-                    vbc.description = "Item Purchased";
-                    vbc.voucherNo = db.Vouchers.Max(r => r.voucherNo);
-                    db.VoucherBodies.Add(vbc);
-                    db.SaveChanges();
-                    VoucherBody vbd = new VoucherBody();
-                    ExpenseAccount ex = new ExpenseAccount();
-                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode);
-                    vbd.accountNo = ex.code;
-                    vbd.accountName = ex.name;
-                    vbd.debit = pu.quantity * pu.purchasePrice;
-                    vbd.credit = 0;
-                    vbd.description = "Item Purchased";
-                    vbd.voucherNo = db.Vouchers.Max(r => r.voucherNo);
-                    db.VoucherBodies.Add(vbd);
-                    db.SaveChanges();
-                    result = true;
-                }
-                else
-                {
-                    PurchaseDetail purchasedetail = new PurchaseDetail();
-                    purchasedetail.serialNo = db.Purchases.Sum(r => r.purchaseId).ToString();
-                    Product uom = db.Products.Single(s => s.productCode == pu.productCode);
-                    if (uom != null)
-                    {
-                        purchasedetail.unitOfMeasure = uom.UOM;
-                        uom.currentQuantity += pu.quantity;
-                        uom.lastPurchasePrice = pu.purchasePrice;
-                    }
-                    purchasedetail.purchaseDetailsId = pu.purchaseId;
-                    purchasedetail.productCode = pu.productCode;
-                    purchasedetail.productName = pu.productName;
-                    purchasedetail.quantity = pu.quantity;
-                    purchasedetail.purchasePrice = pu.purchasePrice;
-                    purchasedetail.amount = pu.purchasePrice * pu.quantity;
-                    db.PurchaseDetails.Add(purchasedetail);
-                    db.SaveChanges();
-                    VoucherBody vbc = new VoucherBody();
-                    var ven = db.Vendors.SingleOrDefault(r => r.vendorCode == pu.vendorCode);
-                    vbc.accountNo = ven.chartOfAccCode;
-                    vbc.accountName = ven.name;
-                    vbc.credit = pu.quantity * pu.purchasePrice;
-                    vbc.debit = 0;
-                    vbc.description = "Item Purchased";
-                    vbc.voucherNo = db.Vouchers.Max(r => r.voucherNo);
-                    db.VoucherBodies.Add(vbc);
-                    db.SaveChanges();
-                    VoucherBody vbd = new VoucherBody();
-                    ExpenseAccount ex = new ExpenseAccount();
-                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode);
-                    vbd.accountNo = ex.code;
-                    vbd.accountName = ex.name;
-                    vbd.debit = pu.quantity * pu.purchasePrice;
-                    vbd.credit = 0;
-                    vbd.description = "Item Purchased";
-                    vbd.voucherNo = db.Vouchers.Max(r => r.voucherNo);
-                    db.VoucherBodies.Add(vbd);
-                    db.SaveChanges();
-                    result = true;
-                }
-            }
-            return Json(result, JsonRequestBehavior.AllowGet);
         }
         public ActionResult getPurchaseDetails(int? id)
         {
@@ -148,16 +40,20 @@ namespace businessProBms.Controllers
         {
             bool result = false;
             Purchase p = db.Purchases.SingleOrDefault(f => f.purchaseId == id);
+            var pv = db.Vouchers.SingleOrDefault(r => r.voucherNo == p.purVoucherNo);
             if (p != null)
             {
                 db.Purchases.Remove(p);
+                db.Vouchers.Remove(pv);
                 db.PurchaseDetails.RemoveRange(db.PurchaseDetails.Where(f => f.purchaseDetailsId == id));
+                db.VoucherBodies.RemoveRange(db.VoucherBodies.Where(r => r.voucherNo == pv.voucherNo));
                 db.SaveChanges();
                 result = true;
             }
             else
             {
                 PurchaseDetail pd = db.PurchaseDetails.Single(r => r.code == id);
+                var vb = db.VoucherBodies.Where(r => r.voucherNo == pd.Purchase.purVoucherNo);
                 db.PurchaseDetails.Remove(pd);
                 db.SaveChanges();
                 result = true;
@@ -169,13 +65,15 @@ namespace businessProBms.Controllers
             ViewBag.vendors = db.Vendors.ToList();
             ViewBag.products = db.Products.ToList();
             ViewBag.purchases = db.Purchases.ToList();
+            ViewBag.accounts = db.ExpenseAccounts.Where(r => (r.isGroup == false) && (r.isActive == true) && (r.accountType == "Assets") && (r.name == "Cash")).ToList();
             purchaseViewModel pu = new purchaseViewModel();
             pu.purchases = new Purchase();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            pu.purchases = db.Purchases.Find(id);
+            var p = db.Purchases.Find(id);
+            pu.purchases = p;
             if (pu == null)
             {
                 return HttpNotFound();
@@ -197,6 +95,101 @@ namespace businessProBms.Controllers
             db.Configuration.ProxyCreationEnabled = false;
             Product p = db.Products.Single(r => r.productCode == id);
             return Json(p, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public ActionResult voucher(purchaseViewModel pvm)
+        {
+            Voucher vo = new Voucher();
+            var max = db.Vouchers.ToList().OrderByDescending(r => r.voucherNo).FirstOrDefault();
+            vo.voucherNo = max == null ? 1 : (max.voucherNo) + 1;
+            vo.voucherDate = pvm.purchaseDate;
+            vo.voucherType = 10; //Purchase Voucher
+            db.Vouchers.Add(vo);
+            db.SaveChanges();
+            Purchase purchase = new Purchase();
+            purchase.purchaseId = pvm.purchaseId;
+            purchase.purchaseDate = pvm.purchaseDate;
+            purchase.vendorCode = pvm.vendorCode;
+            purchase.vendorName = pvm.vendorName;
+            purchase.purVoucherNo = vo.voucherNo;
+            db.Purchases.Add(purchase);
+            decimal cr = 0;
+            foreach (var item in pvm.purchaseDetails)
+            {
+                PurchaseDetail pd = new PurchaseDetail();
+                    pd.serialNo = db.Purchases.Sum(r => r.purchaseId).ToString();
+                    Product uom = db.Products.Single(s => s.productCode == item.productCode);
+                    if (uom != null)
+                    {
+                        uom.currentQuantity += item.quantity;
+                        uom.averagePrice = uom.averagePrice + item.purchasePrice / 2;
+                        uom.lastPurchasePrice = item.purchasePrice;
+                    }
+                    pd.purchaseDetailsId = pvm.purchaseId;
+                    pd.productCode = item.productCode;
+                    pd.productName = item.productName;
+                    pd.unitOfMeasure = item.unitOfMeasure;
+                    pd.quantity = item.quantity;
+                    pd.purchasePrice = item.purchasePrice;
+                    pd.amount = item.amount;
+                    db.PurchaseDetails.Add(pd);
+                    db.SaveChanges();
+                    VoucherBody vbdp = new VoucherBody();
+                    ExpenseAccount ex = new ExpenseAccount();
+                    ex = db.ExpenseAccounts.Single(r => r.code == uom.chartOfAccCode);
+                    vbdp.accountNo = ex.code;
+                    vbdp.accountName = ex.name;
+                    vbdp.debit = item.amount;
+                    vbdp.credit = 0;
+                    vbdp.description = "Item Purchased";
+                    vbdp.voucherNo = vo.voucherNo;
+                    db.VoucherBodies.Add(vbdp);
+                    db.SaveChanges();
+                    cr += item.amount;
+            }
+            VoucherBody vbcp = new VoucherBody();
+            var ven = db.Vendors.SingleOrDefault(r => r.vendorCode == pvm.vendorCode);
+            var ea = db.ExpenseAccounts.Single(r => r.code == ven.chartOfAccCode);
+            vbcp.accountNo = ea.code;
+            vbcp.accountName = ea.name;
+            vbcp.credit = cr;
+            vbcp.debit = 0;
+            vbcp.description = "Item Purchased";
+            vbcp.voucherNo = vo.voucherNo;
+            db.VoucherBodies.Add(vbcp);
+            db.SaveChanges();
+            if (pvm.transactionType == 1)
+            {
+                Voucher v = new Voucher();
+                var maximum = db.Vouchers.ToList().OrderByDescending(r => r.voucherNo).FirstOrDefault();
+                v.voucherNo = max == null ? 1 : (maximum.voucherNo) + 1;
+                v.voucherDate = pvm.purchaseDate;
+                v.voucherType = 1; //Cash Payment
+                db.Vouchers.Add(v);
+                db.SaveChanges();
+                VoucherBody vbd = new VoucherBody();
+                var vender = db.Vendors.SingleOrDefault(r => r.vendorCode == pvm.vendorCode);
+                var exv = db.ExpenseAccounts.Single(r => r.code == vender.chartOfAccCode);
+                vbd.accountNo = exv.code;
+                vbd.accountName = exv.name;
+                vbd.credit = 0;
+                vbd.debit = pvm.netPayment;
+                vbd.description = "Cash Payment";
+                vbd.voucherNo = v.voucherNo;
+                db.VoucherBodies.Add(vbd);
+                db.SaveChanges();
+                VoucherBody vbc = new VoucherBody();
+                ExpenseAccount exp = db.ExpenseAccounts.Single(r => r.code==pvm.accountno);
+                vbc.accountNo = exp.code;
+                vbc.accountName = exp.name;
+                vbc.debit = 0;
+                vbc.credit = pvm.netPayment;
+                vbc.description = "Paid";
+                vbc.voucherNo = v.voucherNo;
+                db.VoucherBodies.Add(vbc);
+                db.SaveChanges();
+            }
+            return Json("");
         }
     }
 }

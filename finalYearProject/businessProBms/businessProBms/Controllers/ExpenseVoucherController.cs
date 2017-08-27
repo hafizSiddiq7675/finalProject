@@ -163,16 +163,38 @@ namespace businessProBms.Controllers
                             accountno = vb.accountNo,
                             accountname = vb.accountName,
                             debit = vb.debit,
-                            credit = vb.credit,
+                            credit = vb.credit
                         }).ToList();
+            var preveous = (from v in db.Vouchers
+                            join vb in db.VoucherBodies on v.voucherNo equals vb.voucherNo
+                            where (vb.accountNo == acc) && (v.voucherDate < startDate)
+                            select new
+                            {
+                                debit = vb.debit,
+                                credit = vb.credit
+                            }).ToList();
+            decimal prebalance = 0;
+            foreach (var v in preveous)
+            {
+                prebalance += (v.debit - v.credit);
+            }
             data.Insert(0, new
             {
                 vdate = startDate,
                 vno = 0,
                 accountno = acc,
-                accountname = db.ExpenseAccounts.Where(a => a.code == acc).SingleOrDefault().name,
-                debit = openingbalance >= 0 ? openingbalance : 0,
-                credit = openingbalance < 0 ? 0 : openingbalance
+                accountname = db.ExpenseAccounts.Where(a => a.code == acc).SingleOrDefault().name + " (Opning Balance)",
+                debit = openingbalance >= 0 ? Math.Abs(openingbalance) : 0,
+                credit = openingbalance < 0 ? Math.Abs(openingbalance) : 0
+            });
+            data.Insert(1, new
+            {
+                vdate = startDate,
+                vno = 0,
+                accountno = acc,
+                accountname = db.ExpenseAccounts.Where(a => a.code == acc).SingleOrDefault().name + " (Preveous Balance)",
+                debit = prebalance >= 0 ? Math.Abs(prebalance) : 0,
+                credit = prebalance < 0 ? Math.Abs(prebalance) : 0
             });
             decimal drTot = 0;
             decimal crTot = 0;
@@ -203,6 +225,26 @@ namespace businessProBms.Controllers
                             debit=vb.debit,
                             credit=vb.credit
                         }).ToList();
+            var opening = db.ExpenseAccounts.Where(r=>r.isGroup==false && r.isActive==true && (Math.Abs(r.openingDebit-r.openingCredit))>0).ToList();
+            var preveous = (from e in db.ExpenseAccounts
+                            where (e.isActive == true) && (e.isGroup == false)
+                            join vb in db.VoucherBodies on e.code equals vb.accountNo
+                            join v in db.Vouchers on vb.voucherNo equals v.voucherNo
+                            where (v.voucherDate < startDate)
+                            select new
+                            {
+                                accountname = vb.accountName,
+                                debit = vb.debit,
+                                credit = vb.credit
+                            }).ToList();
+            foreach (var j in opening)
+            {
+                data.Insert(0, new { accountname = j.name + " Opening", debit = (j.openingDebit - j.openingCredit) >= 0 ? Math.Abs((j.openingDebit - j.openingCredit)) : 0, credit = (j.openingDebit - j.openingCredit) < 0 ? ((j.openingDebit - j.openingCredit)) : 0 });
+            }
+            foreach (var i in preveous)
+            {
+                data.Insert(1, new { accountname = i.accountname + " Prevoeous", debit = i.debit, credit = i.credit });
+            }
             var item= data.GroupBy(r=>new {r.accountname}).Select(s=>{
                 return new {balance=(s.Sum(c=>c.debit)-s.Sum(c=>c.credit)), accountname=s.Select(c=>c.accountname).Distinct()};
             });
@@ -226,6 +268,27 @@ namespace businessProBms.Controllers
                                credit = vb.credit
                            }).ToList();
 
+            var preveous = (from e in db.ExpenseAccounts
+                        where (e.accountType == "Revenue" || e.accountType == "Expense") && (e.isGroup == false) && (e.isActive == true)
+                        join vb in db.VoucherBodies on e.code equals vb.accountNo
+                        join v in db.Vouchers on vb.voucherNo equals v.voucherNo
+                        where (v.voucherDate < startDate)
+                        select new
+                        {
+                            accounttype = e.accountType,
+                            accountname = e.name,
+                            debit = vb.debit,
+                            credit = vb.credit
+                        }).ToList();
+            var opening = db.ExpenseAccounts.Where(r => r.isGroup == false && r.isActive == true && (Math.Abs(r.openingDebit - r.openingCredit)) > 0);
+            foreach (var j in opening)
+            {
+                data.Insert(0, new { accounttype = j.accountType, accountname = j.name + " Opening", debit = (j.openingDebit - j.openingCredit) >= 0 ? (j.openingDebit - j.openingCredit) : 0, credit = (j.openingDebit - j.openingCredit) < 0 ? (j.openingDebit - j.openingCredit) : 0 });
+            }
+            foreach (var i in preveous)
+            {
+                data.Insert(1, new { accounttype = i.accounttype, accountname = i.accountname + " Preveous", debit = i.debit, credit = i.credit });
+            }
             var revenue = data.Where(r=>r.accounttype=="Revenue").GroupBy(i => new { i.accountname }).Select(s =>
             {
                 return new {accountname = s.Select(c => c.accountname).Distinct(), balance = (s.Sum(c => c.debit) - s.Sum(c => c.credit)) };
@@ -256,6 +319,27 @@ namespace businessProBms.Controllers
                            debit=vb.debit,
                            credit=vb.credit
                        }).ToList();
+            var opening = db.ExpenseAccounts.Where(r => r.isActive == true && r.isGroup == false && (Math.Abs(r.openingDebit - r.openingCredit)) > 0);
+            var preveous = (from e in db.ExpenseAccounts
+                        where (e.accountType == "Assets" || e.accountType == "Liability" || e.accountType == "Capital" || e.accountType == "Revenue" || e.accountType == "Expense") && (e.isGroup == false) && (e.isActive == true)
+                        join vb in db.VoucherBodies on e.code equals vb.accountNo
+                        join v in db.Vouchers on vb.voucherNo equals v.voucherNo
+                        where (v.voucherDate < startDate)
+                        select new
+                        {
+                            accounttype = e.accountType,
+                            accountname = e.name,
+                            debit = vb.debit,
+                            credit = vb.credit
+                        }).ToList();
+            foreach (var i in opening)
+            {
+                data.Insert(0, new { accounttype = i.accountType, accountname = i.name + " Opening", debit = (i.openingDebit - i.openingCredit) >= 0 ? (i.openingDebit - i.openingCredit) : 0, credit = (i.openingDebit - i.openingCredit) < 0 ? (i.openingDebit - i.openingCredit) : 0 });
+            }
+            foreach (var j in preveous)
+            {
+                data.Insert(1, new { accounttype = j.accounttype, accountname = j.accountname + " Preveous", debit = j.debit, credit = j.credit });
+            }
             var assets = data.Where(r => r.accounttype == "Assets").GroupBy(i => new { i.accountname }).Select(s =>
             {
                 return new { accountname = s.Select(c => c.accountname).Distinct(), balance = (s.Sum(c => c.debit) - s.Sum(c => c.credit)) };

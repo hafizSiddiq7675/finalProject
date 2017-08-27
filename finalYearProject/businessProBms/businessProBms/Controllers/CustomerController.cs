@@ -38,7 +38,7 @@ namespace businessProBms.Controllers
                     ex.description = "Customers Accounts";
                     ex.isGroup = false;
                     ex.isActive = true;
-                    ex.name = customer.name;
+                    ex.name = customer.name + " Receivables";
                     ex.parentCode = 4; // This is Manual entry 
                     ex.openingCredit = 0;
                     ex.openingDebit = customer.openingDebit;
