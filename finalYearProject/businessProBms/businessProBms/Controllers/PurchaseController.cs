@@ -124,6 +124,7 @@ namespace businessProBms.Controllers
                         uom.currentQuantity += item.quantity;
                         uom.averagePrice = uom.averagePrice + item.purchasePrice / 2;
                         uom.lastPurchasePrice = item.purchasePrice;
+                        uom.price = item.purchasePrice;
                     }
                     pd.purchaseDetailsId = pvm.purchaseId;
                     pd.productCode = item.productCode;

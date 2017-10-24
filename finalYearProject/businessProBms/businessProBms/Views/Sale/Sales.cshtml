@@ -61,6 +61,7 @@
                     <label>Unit Of Measure </label>
                     <input type="text" id="uom" class="form-control" readonly="readonly" />
                     <input type="hidden" id="curQuantity" />
+                    <input type="hidden" id="curPrice" />
                 </div>
                 <div class="form-group">
                     <label>Quantity</label>
@@ -243,7 +244,9 @@
                 success: function(data) {
                     $("#uom").val(data.UOM);
                     var q = data.currentQuantity;
+                    var p=data.price;
                     $("#curQuantity").val(q);
+                    $("#curPrice").val(p);
                 },
                 error: function(err) {
                     alert("Error : " + err.responseText);
@@ -344,6 +347,8 @@
             var val2= $("#pcode").val();
             var nq = $("#curQuantity").val();
             var uom = $("#uom").val();
+            var price=$("#curPrice").val();
+            var p = (parseInt($('#price').val(), 10));
             var isAllValid = true;
             if(val == '') {
                 isAllValid=false;
@@ -377,7 +382,13 @@
                 $('#price').siblings('span.error').css('visibility', 'visible').text("Price Must be Greater Than Zero");
             }
             else {
-                $('#price').siblings('span.error').css('visibility', 'hidden');
+                if(p < price) {
+                    isAllValid=false;
+                    $('#price').siblings('span.error').css('visibility', 'visible').text("Price must be greater than " +price);
+                }
+                else {
+                    $('#price').siblings('span.error').css('visibility', 'hidden');
+                }
             }
             if(isAllValid) {
                 var productCode = $("#pcode").val();
@@ -463,6 +474,8 @@
             var val2= $("#pcode").val();
             var nq = $("#curQuantity").val();
             var uom = $("#uom").val();
+            var price=$("#curPrice").val();
+            var p = (parseInt($('#price').val(), 10));
             var isAllValid = true;
             if(val == '') {
                 isAllValid=false;
@@ -496,7 +509,13 @@
                 $('#price').siblings('span.error').css('visibility', 'visible').text("Price Must be Greater Than Zero");
             }
             else {
-                $('#price').siblings('span.error').css('visibility', 'hidden');
+                if(p < price) {
+                    isAllValid=false;
+                    $('#price').siblings('span.error').css('visibility', 'visible').text("Price must be greater than " +price);
+                }
+                else {
+                    $('#price').siblings('span.error').css('visibility', 'hidden');
+                }
             }
             if(isAllValid) {
                 var productCode = $("#pcode").val();

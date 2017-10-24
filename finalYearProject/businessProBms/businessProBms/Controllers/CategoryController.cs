@@ -40,7 +40,6 @@ namespace businessProBms.Controllers
                     catDb.code = category.code;
                     catDb.categoryName = category.categoryName;
                     catDb.discription = category.discription;
-
                 }
                 db.SaveChanges();
                 return RedirectToAction("Create");
